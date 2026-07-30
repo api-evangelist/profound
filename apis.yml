@@ -1,8 +1,26 @@
 aid: profound
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source: []
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/profound.png
 name: Profound
-description: 'Profound is a company surfaced as a portfolio company of kleiner-perkins and added to the
-  API Evangelist network as a stub for enrichment. Sector: ai. This profile is a lead awaiting the enrichment
-  pipeline.'
+description: 'Profound is a marketing platform for the AI era and a leading platform
+  for Answer Engine Optimization (AEO). Operated by Cooper Square Technologies Inc.
+  (dba Profound) in New York, it helps brands measure and improve how they are represented
+  across AI answer engines and assistants — ChatGPT, Perplexity, Claude, Gemini, Google
+  AI Overviews and AI Mode, Copilot, and Grok — through answer-engine insights, agent
+  analytics, prompt volumes, shopping visibility, and content optimization. Profound
+  runs a programmatic Profound External API and an Agent Analytics Ingestion API (API
+  access is included on the Enterprise plan), is SOC 2 and HIPAA aligned, and publishes
+  a responsible-disclosure policy. Backed by Kleiner Perkins.'
 url: https://raw.githubusercontent.com/api-evangelist/profound/refs/heads/main/apis.yml
 x-type: company
 x-source: kleiner-perkins-portfolio
@@ -10,10 +28,17 @@ x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-20'
 tags:
 - Company
-- Ai
+- AI
+- Answer Engine Optimization
+- AEO
+- AI Search
+- Generative Engine Optimization
+- Marketing
+- Analytics
+- Agent Analytics
 apis: []
 maintainers:
 - FN: Kin Lane
@@ -23,3 +48,46 @@ maintainers:
 common:
 - type: Website
   url: https://www.tryprofound.com
+- type: DeveloperPortal
+  url: https://docs.tryprofound.com
+- type: Documentation
+  url: https://docs.tryprofound.com
+- type: GettingStarted
+  url: https://help.tryprofound.com
+- type: Support
+  url: https://help.tryprofound.com
+- type: Blog
+  url: https://www.tryprofound.com/blog
+- type: StatusPage
+  url: https://status.tryprofound.com
+- type: Pricing
+  url: https://www.tryprofound.com/pricing
+- type: Login
+  url: https://platform.tryprofound.com/welcome
+- type: PrivacyPolicy
+  url: https://www.tryprofound.com/legal/privacy-policy
+- type: Integrations
+  url: https://www.tryprofound.com/integrations
+- type: Lifecycle
+  url: lifecycle/profound-lifecycle.yml
+- type: LLMsTxt
+  url: llms/profound-llms.txt
+- type: WellKnown
+  url: well-known/profound-well-known.yml
+- type: SecurityTxt
+  url: well-known/profound-security.txt
+- type: DomainSecurity
+  url: security/profound-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/profound-vulnerability-disclosure.yml
+- type: Security
+  url: https://www.tryprofound.com/vulnerability-reporting
+- type: TrustCenter
+  url: security/profound-trust-center.yml
+- type: Compliance
+  url: https://trust.tryprofound.com
+x-enrichment:
+  date: '2026-07-20'
+  status: enriched
+  artifacts_added: 7
+  pass: local-v1
