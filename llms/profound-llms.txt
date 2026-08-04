@@ -1,0 +1,35 @@
+# Profound
+
+> Profound is a marketing platform for the AI era and a leading platform for Answer Engine Optimization (AEO). It helps brands measure and improve how they appear across AI answer engines and assistants — ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, and Grok — through answer-engine insights, agent analytics, prompt volumes, and content optimization. Operated by Cooper Square Technologies Inc. (dba Profound), New York, NY. A programmatic "Profound External API" and an "Agent Analytics Ingestion API" are available (API access is included on the Enterprise plan).
+
+## Company
+- Website: https://www.tryprofound.com
+- Pricing: https://www.tryprofound.com/pricing
+- Enterprise: https://www.tryprofound.com/enterprise
+- Integrations: https://www.tryprofound.com/integrations
+- Blog: https://www.tryprofound.com/blog
+- Engineering Blog: https://www.tryprofound.com/engineering
+- AI Instructions (canonical guidance for AI assistants): https://www.tryprofound.com/ai-instructions
+
+## Product
+- Answer Engine Insights: https://www.tryprofound.com/features/answer-engine-insights
+- Agents: https://www.tryprofound.com/features/agents
+- Agent Analytics: https://www.tryprofound.com/features/agent-analytics
+- Prompt Volumes: https://www.tryprofound.com/features/prompt-volumes
+- Shopping: https://www.tryprofound.com/features/shopping
+
+## Developers
+- Developer Docs: https://docs.tryprofound.com
+- Agent Analytics integration guides: https://docs.tryprofound.com
+- Platform / Login: https://platform.tryprofound.com/welcome
+
+## Support
+- Help Center / Knowledge Base: https://help.tryprofound.com
+- Status: https://status.tryprofound.com
+
+## Security & Trust
+- Vulnerability Reporting Policy: https://www.tryprofound.com/vulnerability-reporting
+- security.txt: https://www.tryprofound.com/.well-known/security.txt
+- Trust Center (SOC 2, HIPAA): https://trust.tryprofound.com
+- Privacy Policy: https://www.tryprofound.com/legal/privacy-policy
+- Cookie Policy: https://www.tryprofound.com/legal/cookie-policy

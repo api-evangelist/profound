@@ -1,0 +1,6 @@
+Contact: mailto:security@tryprofound.com
+Expires: 2027-04-01T03:00:00.000Z
+Preferred-Languages: en
+Canonical: https://www.tryprofound.com/.well-known/security.txt
+Hiring: https://www.tryprofound.com/careers
+Policy: https://www.tryprofound.com/vulnerability-reporting

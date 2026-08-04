@@ -1,0 +1,24 @@
+generated: '2026-07-20'
+method: searched
+source: https://status.tryprofound.com
+status_page: https://status.tryprofound.com
+status_page_provider: Better Stack
+monitored_components:
+- name: tryprofound.com
+  status: operational
+- name: Agent Analytics Ingestion API
+  status: operational
+- name: Profound External API
+  status: operational
+versioning:
+  scheme: unknown
+  note: Profound exposes a "Profound External API" (Enterprise plan) and an "Agent
+    Analytics Ingestion API"; no public versioning or deprecation policy is documented
+    on the public developer surface.
+deprecation:
+  policy_url: null
+  sunset_header: null
+sla:
+  url: null
+  note: SLA offered under Enterprise contracts; not publicly published.
+deprecated_operations: []
