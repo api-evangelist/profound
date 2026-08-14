@@ -1,15 +1,22 @@
 aid: profound
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: paid
+  onboarding: request
   trial: false
   try_now: false
   public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  label: Enterprise, on request
+  confidence: high
+  source:
+  - https://www.tryprofound.com/pricing
+  - https://docs.tryprofound.com/rest-api/introduction
+  generated: '2026-08-13'
+  method: searched
+  note: >-
+    The OpenAPI is anonymously readable at https://api.tryprofound.com/openapi.json,
+    but calling the API requires an Enterprise plan plus an access request to
+    support. Neither the Starter ($99/mo) nor Growth ($399/mo) tier includes API
+    access.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/profound.png
 name: Profound
 description: 'Profound is a marketing platform for the AI era and a leading platform
@@ -18,17 +25,20 @@ description: 'Profound is a marketing platform for the AI era and a leading plat
   across AI answer engines and assistants — ChatGPT, Perplexity, Claude, Gemini, Google
   AI Overviews and AI Mode, Copilot, and Grok — through answer-engine insights, agent
   analytics, prompt volumes, shopping visibility, and content optimization. Profound
-  runs a programmatic Profound External API and an Agent Analytics Ingestion API (API
-  access is included on the Enterprise plan), is SOC 2 and HIPAA aligned, and publishes
-  a responsible-disclosure policy. Backed by Kleiner Perkins.'
+  publishes a 125-operation OpenAPI 3.1 for its External API at api.tryprofound.com,
+  runs a separate Agent Analytics Ingestion API, ships official Python and TypeScript
+  SDKs, and operates a hosted remote MCP server at mcp.tryprofound.com with OAuth 2.1
+  and a conformant A2A agent card. API access is included on the Enterprise plan on
+  request. Profound is SOC 2 and HIPAA aligned and publishes a responsible-disclosure
+  policy. Backed by Kleiner Perkins.'
 url: https://raw.githubusercontent.com/api-evangelist/profound/refs/heads/main/apis.yml
 x-type: company
 x-source: kleiner-perkins-portfolio
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: profiled
+x-tier-reason: published-openapi-and-mcp-server
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-20'
+modified: '2026-08-13'
 tags:
 - Company
 - AI
@@ -39,35 +49,140 @@ tags:
 - Marketing
 - Analytics
 - Agent Analytics
-apis: []
+- Brand Visibility
+- Citations
+- MCP
+apis:
+- aid: profound-external-api
+  name: Profound External API
+  description: >-
+    The programmatic interface to Profound's Answer Engine Optimization data:
+    brand visibility, citations, sentiment, query fan-outs, FactCheck accuracy,
+    shopping visibility, YouTube social reports, AI crawler (bot) and human
+    referral traffic, plus knowledge bases, documents, projects, content
+    optimization and runnable Profound Agents. 125 operations across v1 and v2,
+    with server-sent-event /stream variants on every v2 query endpoint.
+    Authentication is an X-API-Key header; access is Enterprise-only on request.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Analytics
+  - Answer Engine Optimization
+  - Brand Visibility
+  - Citations
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-external-api-openapi.json
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Overlay
+    url: overlays/profound-external-api-overlay.yaml
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound-agent-analytics-ingestion-api
+  name: Profound Agent Analytics Ingestion API
+  description: >-
+    The inbound log-ingestion endpoint for Profound Agent Analytics. Customers
+    POST batches of up to 1,000 web-request log entries as JSON (timestamp,
+    method, host, path, status_code, ip, user_agent, plus optional query_params,
+    referer, bytes_sent and duration_ms) so Profound can attribute AI crawler
+    and human referral traffic. Authenticated with a Profound Log Ingestion
+    Token in the x-api-key header. Listed as a separately monitored component on
+    the Profound status page. No OpenAPI is published for this surface.
+  humanURL: https://docs.tryprofound.com/agent-analytics/custom
+  baseURL: https://artemis.api.tryprofound.com
+  tags:
+  - Agent Analytics
+  - Log Ingestion
+  - Bot Traffic
+  properties:
+  - type: Documentation
+    url: https://docs.tryprofound.com/agent-analytics/custom
+  - type: GettingStarted
+    url: https://docs.tryprofound.com/agent-analytics/overview
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/profound-agentic-access.yml
 - type: Website
   url: https://www.tryprofound.com
 - type: DeveloperPortal
   url: https://docs.tryprofound.com
 - type: Documentation
   url: https://docs.tryprofound.com
+- type: APIReference
+  url: https://docs.tryprofound.com/api-reference/organization/get-categories
 - type: GettingStarted
-  url: https://help.tryprofound.com
+  url: https://docs.tryprofound.com/rest-api/introduction
 - type: Support
   url: https://help.tryprofound.com
 - type: Blog
   url: https://www.tryprofound.com/blog
+- type: GitHubOrganization
+  url: https://github.com/cooper-square-technologies
 - type: StatusPage
   url: https://status.tryprofound.com
+- type: Deprecation
+  url: https://docs.tryprofound.com/rest-api/changelog
 - type: Pricing
   url: https://www.tryprofound.com/pricing
+- type: SignUp
+  url: https://platform.tryprofound.com/signup
 - type: Login
   url: https://platform.tryprofound.com/welcome
 - type: PrivacyPolicy
   url: https://www.tryprofound.com/legal/privacy-policy
 - type: Integrations
   url: https://www.tryprofound.com/integrations
+- type: OpenAPI
+  url: openapi/profound-external-api-openapi.json
+- type: Overlay
+  url: overlays/profound-external-api-overlay.yaml
+- type: Packages
+  url: packages/profound-packages.yml
+- type: SDKs
+  url: packages/profound-packages.yml
+- type: Python SDK
+  url: https://pypi.org/project/profound/
+- type: JavaScript SDK
+  url: https://www.npmjs.com/package/@profoundai/client
+- type: MCPServer
+  url: mcp/profound-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/profound-tool-crosswalk.yml
+- type: AgentCard
+  url: a2a/profound-a2a.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Authentication
+  url: authentication/profound-authentication.yml
+- type: OAuthScopes
+  url: scopes/profound-scopes.yml
+- type: Conventions
+  url: conventions/profound-conventions.yml
+- type: ErrorCatalog
+  url: errors/profound-problem-types.yml
+- type: DataModel
+  url: data-model/profound-data-model.yml
+- type: Conformance
+  url: conformance/profound-conformance.yml
+- type: ChangeLog
+  url: changelog/profound-changelog.yml
+- type: RateLimits
+  url: rate-limits/profound-rate-limits.yml
+- type: Plans
+  url: plans/profound-plans-pricing.yml
 - type: Lifecycle
   url: lifecycle/profound-lifecycle.yml
 - type: LLMsTxt
@@ -87,7 +202,7 @@ common:
 - type: Compliance
   url: https://trust.tryprofound.com
 x-enrichment:
-  date: '2026-07-20'
+  date: '2026-08-13'
   status: enriched
-  artifacts_added: 7
+  artifacts_added: 18
   pass: local-v1
