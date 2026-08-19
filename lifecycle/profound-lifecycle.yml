@@ -1,6 +1,9 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: https://status.tryprofound.com
+source: >-
+  https://docs.tryprofound.com/rest-api/introduction,
+  https://docs.tryprofound.com/rest-api/changelog,
+  https://status.tryprofound.com
 status_page: https://status.tryprofound.com
 status_page_provider: Better Stack
 monitored_components:
@@ -11,14 +14,73 @@ monitored_components:
 - name: Profound External API
   status: operational
 versioning:
-  scheme: unknown
-  note: Profound exposes a "Profound External API" (Enterprise plan) and an "Agent
-    Analytics Ingestion API"; no public versioning or deprecation policy is documented
-    on the public developer surface.
+  scheme: uri-path
+  current: v2
+  active: [v1, v2]
+  docs: https://docs.tryprofound.com/rest-api/introduction#api-versioning
+  note: >-
+    Versioned path prefixes. v2 covers Answer Engine Insights and Agent Analytics
+    reports plus /v2/prompts/answers, each with a /stream SSE variant; v1 remains
+    fully active. The OpenAPI info.version is a git commit SHA
+    (6551bd49db665ffb7f80780b3e150b8e8b780cc3) rather than a semantic version,
+    so the contract carries no human-readable release identifier.
 deprecation:
-  policy_url: null
-  sunset_header: null
+  policy_url: https://docs.tryprofound.com/rest-api/changelog
+  policy_published: true
+  sunset_header: false
+  rfc8594: false
+  note: >-
+    Profound does not publish a standalone deprecation policy page, but the API
+    changelog defines a formal Deprecated category and has been used to announce
+    real deprecations with a stated commitment that "a sunset date will be
+    announced before removal". No Sunset or Deprecation response headers are
+    documented.
+  announced_deprecations:
+  - target: POST /v1/reports/visibility
+    announced: '2026-06'
+    replacement: POST /v2/reports/visibility
+    sunset_date: null
+  - target: POST /v1/reports/citations
+    announced: '2026-06'
+    replacement: POST /v2/reports/citations
+    sunset_date: null
+  - target: POST /v1/reports/sentiment
+    announced: '2026-06'
+    replacement: POST /v2/reports/sentiment
+    sunset_date: null
+  - target: POST /v1/reports/sentiment-v2
+    announced: '2026-06'
+    replacement: POST /v2/reports/sentiment
+    sunset_date: null
+  - target: POST /v1/reports/query-fanouts
+    announced: '2026-06'
+    replacement: POST /v2/reports/query-fanouts
+    sunset_date: null
+  - target: POST /v1/logs/raw
+    announced: '2026-04'
+    replacement: null
+    sunset_date: null
+    note: Raw Agent Analytics endpoint; already absent from the current published spec.
+  - target: POST /v1/logs/raw/bots
+    announced: '2026-04'
+    replacement: POST /v2/reports/bots
+    sunset_date: null
+    note: Already absent from the current published spec.
+deprecated_operations: []
+deprecated_operations_note: >-
+  No operation in openapi/_original/profound-openapi.json carries deprecated:
+  true, even though five v1 report endpoints are announced as deprecated in the
+  changelog. The deprecation is documented in prose but not expressed in the
+  machine-readable contract, so a generated client cannot see it.
 sla:
   url: null
+  uptime_target: null
   note: SLA offered under Enterprise contracts; not publicly published.
-deprecated_operations: []
+changelog:
+  api: https://docs.tryprofound.com/rest-api/changelog
+  product: https://product.tryprofound.com/changelog
+  see: changelog/profound-changelog.yml
+support:
+  channel: mailto:support@tryprofound.com
+  help_center: https://help.tryprofound.com
+  enterprise: Dedicated Slack support on the Enterprise plan.

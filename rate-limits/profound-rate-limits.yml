@@ -1,0 +1,44 @@
+generated: '2026-08-13'
+method: searched
+source: https://docs.tryprofound.com/rest-api/introduction
+corroborated_by:
+- https://docs.tryprofound.com/cookbook/setup/conventions
+- https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+api: Profound External API
+limit_count: 1
+rate_limits:
+- scope: per-api-key
+  limit: 600
+  window: 1h
+  unit: requests
+  burst: null
+  default: true
+  negotiable: true
+  note: >-
+    Published as the default limit. The docs invite customers needing higher
+    limits to contact support, so the ceiling is contractual rather than fixed.
+headers:
+  limit: X-RateLimit-Limit
+  remaining: X-RateLimit-Remaining
+  reset: X-RateLimit-Reset
+  reset_format: unix-timestamp
+  retry_after: Retry-After
+  standard: >-
+    Vendor-prefixed X-RateLimit-* rather than the IETF RateLimit-* draft headers.
+    Returned on every API response, not only on 429.
+exhaustion:
+  status: 429
+  body: Too Many Requests
+  retry_after_present: true
+guidance:
+  from_docs: >-
+    Cache responses where you can and batch period-over-period or multi-asset
+    queries instead of fanning out.
+method_note: >-
+  searched, not probed — every endpoint requires an Enterprise API key, so the
+  live headers could not be observed anonymously. Values are the provider's
+  published numbers.
+x-evidence:
+  fetched: '2026-08-13'
+  url: https://docs.tryprofound.com/rest-api/introduction
+  http_status: 200

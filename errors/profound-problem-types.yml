@@ -1,0 +1,72 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/_original/profound-openapi.json
+enriched_from: >-
+  https://docs.tryprofound.com/rest-api/introduction and the provider-published
+  Agent Skill at
+  https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+format: fastapi-detail
+rfc9457: false
+note: >-
+  The OpenAPI declares exactly one error response class — 422 — on all 125
+  operations, the FastAPI default. The runtime errors an integrator actually has
+  to handle (401, 403, 429) are documented in prose but are absent from the spec,
+  so an agent generating a client from the contract alone would not know to
+  handle authentication failure or rate limiting. Recorded as a contract gap.
+envelope:
+  validation: '{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}'
+  schema: '#/components/schemas/HTTPValidationError'
+  content_type: application/json
+problems:
+- status: 422
+  title: Validation Error
+  schema: HTTPValidationError
+  in_spec: true
+  occurrences: 125
+  description: >-
+    Request failed schema validation. detail carries an array of ValidationError
+    objects, each with loc (the path to the offending field), msg and type.
+  source_operation: all operations in openapi/_original/profound-openapi.json
+- status: 401
+  title: Unauthorized
+  in_spec: false
+  description: Invalid or missing API key.
+  remediation: >-
+    Send a valid key in the X-API-Key header (or as Authorization Bearer).
+    Keys expire on the date set at creation and can be revoked from
+    Settings → API Keys.
+  source: https://docs.tryprofound.com/rest-api/introduction
+- status: 403
+  title: Forbidden
+  in_spec: false
+  description: >-
+    Insufficient permissions — the key is valid but the organization does not
+    have access to the requested resource or entitlement.
+  remediation: >-
+    Confirm the category, domain or feature belongs to the key's organization.
+    API access is Enterprise-only and granted per account by support.
+  source: https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+- status: 429
+  title: Too Many Requests
+  in_spec: false
+  description: Rate limit exceeded — more than 600 requests in one hour on a single key.
+  remediation: >-
+    Read Retry-After and back off. Check X-RateLimit-Remaining before fanning
+    out; cache responses and batch multi-asset or period-over-period queries
+    instead of issuing parallel calls.
+  source: https://docs.tryprofound.com/rest-api/introduction
+domain_errors:
+- name: AgentValidation
+  schema: AgentValidation
+  description: >-
+    Agent definition validation result carrying an issues array of
+    AgentValidationIssue. Returned by the agent build/validate flow rather than
+    as an HTTP error status.
+- name: AgentValidationIssue
+  schema: AgentValidationIssue
+  description: A single structural problem found in an agent definition graph.
+gaps:
+- No RFC 9457 application/problem+json responses anywhere in the spec.
+- No error-code registry — errors are HTTP statuses plus a free-text detail.
+- 401/403/429 undeclared in the OpenAPI despite being documented behaviour.
+- No 5xx responses declared on any operation.

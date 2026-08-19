@@ -1,0 +1,39 @@
+generated: '2026-08-13'
+method: searched
+source: https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+note: >-
+  Profound publishes its own Agent Skill at a /.well-known/agent-skills/ path and
+  references it from its A2A agent card. It is harvested verbatim rather than
+  generated — a provider-authored skill always outranks one we would write from
+  the OpenAPI.
+skills:
+- file: profound-profound-skill.md
+  name: Profound
+  description: >-
+    Use when building AI analytics integrations, querying brand visibility and
+    citation data, tracking AI crawler activity, managing knowledge bases,
+    building and running AI agents, or connecting to AI tools via Model Context
+    Protocol (MCP).
+  api: openapi/profound-external-api-openapi.json
+  source: https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+  method: searched
+  version: '1.0'
+  operations:
+  - query_visibility_v2_v2_reports_visibility_post
+  - query_citations_v2_v2_reports_citations_post
+  - query_sentiment_v2_v2_reports_sentiment_post
+  - query_fanouts_v2_v2_reports_query_fanouts_post
+  - query_scores_v2_reports_factcheck_post
+  - get_agent_v1_agents__agent_id__get
+  - run_agent_v1_agents__agent_id__runs_post
+  - get_agent_run_v1_agents__agent_id__runs__run_id__get
+  - search_knowledge_base_v1_knowledge_bases__knowledge_base_id__search_post
+  - add_document_v1_knowledge_bases__knowledge_base_id__documents_post
+  - get_categories_v1_org_categories_get
+  - get_domains_v1_org_domains_get
+  operations_note: >-
+    operationIds verified verbatim against openapi/_original/profound-openapi.json.
+    The skill's own endpoint table cites `POST /v1/agents/{agent_id}/run`, which
+    does not exist in the published spec — the real path is
+    `POST /v1/agents/{agent_id}/runs` (run_agent_v1_agents__agent_id__runs_post).
+    Recorded as a provider documentation defect, not corrected in the verbatim file.

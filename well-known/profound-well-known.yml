@@ -1,16 +1,87 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: live probes of https://www.tryprofound.com/.well-known/
-host: https://www.tryprofound.com
-documents:
-- path: /.well-known/security.txt          # RFC 9116
-  status: 200
-  file: profound-security.txt
-- path: /.well-known/openid-configuration   # OIDC discovery
-  status: 404
-- path: /.well-known/oauth-authorization-server  # RFC 8414
-  status: 404
-- path: /.well-known/api-catalog             # RFC 9727
-  status: 404
-- path: /.well-known/ai-plugin.json
-  status: 404
+source: live probes of the Profound website, docs, API and MCP hosts
+note: >-
+  Four hosts probed. The discovery surface is split: the marketing host serves
+  security.txt, the docs host serves the A2A agent card, and the MCP host serves
+  both OAuth metadata documents. The API host itself serves nothing under
+  /.well-known/ — every path there returns the API's own JSON 404.
+hosts:
+- host: https://www.tryprofound.com
+  role: website
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: profound-security.txt
+    spec: RFC 9116
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://docs.tryprofound.com
+  role: documentation
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: ../a2a/profound-agent-card.json
+    spec: A2A 1.0.0
+    note: See a2a/profound-a2a.yml — graded conformant.
+  - path: /.well-known/agent-skills/profound/skill.md
+    status: 200
+    file: ../skills/profound-profound-skill.md
+    spec: Agent Skill
+  - path: /.well-known/llms.txt
+    status: 200
+    note: Mirror of https://docs.tryprofound.com/llms.txt; harvested to llms/profound-llms.txt.
+  - path: /.well-known/security.txt
+    status: 404
+- host: https://mcp.tryprofound.com
+  role: mcp-server
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: profound-mcp-oauth-authorization-server.json
+    spec: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: profound-mcp-oauth-protected-resource.json
+    spec: RFC 9728
+- host: https://api.tryprofound.com
+  role: api
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+security_txt:
+  contact: mailto:security@tryprofound.com
+  expires: '2027-04-01T03:00:00.000Z'
+  policy: https://www.tryprofound.com/vulnerability-reporting
+  canonical: https://www.tryprofound.com/.well-known/security.txt
+  hiring: https://www.tryprofound.com/careers
+  preferred_languages: en
+x-evidence:
+  fetched: '2026-08-13'
+  hosts_probed: 4
+  paths_probed: 25
+  documents_found: 6

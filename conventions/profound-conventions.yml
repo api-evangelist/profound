@@ -1,0 +1,140 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://docs.tryprofound.com/rest-api/introduction,
+  https://docs.tryprofound.com/cookbook/setup/conventions,
+  https://docs.tryprofound.com/rest-api/response-format,
+  https://docs.tryprofound.com/rest-api/date-ranges
+derived_from: openapi/_original/profound-openapi.json
+api: Profound External API
+base_url: https://api.tryprofound.com
+authentication:
+  style: api-key
+  header: X-API-Key
+  alternative: Authorization Bearer <api_key>
+  docs: https://docs.tryprofound.com/rest-api/authentication
+  scope: >-
+    Each API key is scoped to one organization and grants read access to all of
+    that organization's analytics data. Keys are created with a mandatory
+    expiration date in Settings → API Keys and are shown once only.
+  env_var: PROFOUND_API_KEY
+  gate: Enterprise plan, plus API access granted on request by Profound support.
+  see: authentication/profound-authentication.yml
+idempotency:
+  supported: false
+  idempotency_key_header: null
+  note: >-
+    Profound publishes no idempotency-key contract. There is no Idempotency-Key
+    header or parameter anywhere in the 125-operation OpenAPI, and the docs never
+    mention request replay. Retry safety comes from shape rather than contract:
+    every report is a POST used as a read (a query body, not a mutation), and the
+    MCP server advertises idempotentHint true on those report tools, meaning a
+    retry with identical arguments is safe. The genuinely mutating surface —
+    prompts, documents, projects, tasks, knowledge bases, agent definitions — has
+    no replay protection. Deliberately NOT wired as a type Idempotency pointer:
+    an MCP behavioural hint is not a published idempotency contract.
+pagination:
+  style: offset
+  request:
+    envelope: pagination
+    params: [limit, offset]
+    default_limit: 100
+    max_limit: 50000
+    example: 'pagination: {limit: 50000, offset: 0}'
+  response:
+    total_field: info.total_rows
+  note: >-
+    Increment offset by limit until total_rows is covered. The docs note that
+    almost all queries fit in a single 50k page, and only heavy
+    dimensions=["url", ...] citation queries typically need a second page.
+  cursor:
+    present: true
+    note: >-
+      Agents and some v2 listing tools expose cursor / next_cursor / page_size
+      instead of offset pagination.
+response_envelope:
+  reports:
+    shape: '{info: {total_rows, query}, data: [{dimensions: [...], metrics: [...]}]}'
+    critical: >-
+      Rows pack metrics and dimensions as positional ARRAYS. The column order
+      comes from info.query.metrics and info.query.dimensions in the response —
+      NOT from the order sent in the request. Always resolve the index by looking
+      up the field name in info.query before reading a value.
+    docs: https://docs.tryprofound.com/rest-api/response-format
+  other:
+    shape: standard JSON objects
+    note: /v1/org/* and /v1/prompts/* return conventional object structures.
+  content_type: application/json
+versioning:
+  scheme: uri-path
+  current: v2
+  active: [v1, v2]
+  note: >-
+    v2 spans Answer Engine Insights and Agent Analytics reports under
+    /v2/reports/{visibility,citations,sentiment,query-fanouts,factcheck,
+    factcheck/claims} plus /v2/prompts/answers, each with a /stream SSE variant.
+    v1 endpoints remain active. The v1 report endpoints are formally deprecated
+    in favour of the v2 equivalents; no sunset date has been announced.
+  docs: https://docs.tryprofound.com/rest-api/introduction#api-versioning
+  see: lifecycle/profound-lifecycle.yml
+streaming:
+  style: server-sent-events
+  operations: 15
+  pattern: >-
+    Every v2 query endpoint has a sibling /stream path returning SSE. This is
+    response streaming for a single request, not a subscription or event bus —
+    Profound publishes no webhooks and no AsyncAPI, so there is no push surface.
+dates_and_time:
+  format: ISO 8601 YYYY-MM-DD
+  timezone: >-
+    Data is stored in UTC but processing runs on an Eastern-time day boundary.
+    A date without a Z suffix is interpreted as ET; a date with Z is literal UTC.
+  end_date_exclusive: true
+  gotcha: >-
+    end_date is parsed at the START of that day in Eastern Time and is therefore
+    EXCLUDED. To include all of May 10, send end_date="2026-05-11". The docs call
+    incorrect timezone handling the most common cause of missing data.
+  date_interval: [day, week, month]
+  docs: https://docs.tryprofound.com/rest-api/date-ranges
+filtering:
+  scoping: >-
+    Every Answer Engine Insights report is scoped to exactly one category_id;
+    there are no cross-category queries. Traffic reports (bots, referrals) are
+    domain-scoped instead.
+  filters: >-
+    filters narrow which prompts contribute (asset_name, topic_id, tag_id, and
+    similar); dimensions break results out by slice (model, region, persona, tag).
+  v2_identifiers: v2 filters accept names OR UUIDs.
+analytics_gotchas:
+- issue: Period-over-period deltas are client-side
+  detail: >-
+    The API does not return change versus a previous period. Run the same call
+    twice — current window and an equal-length prior window — and subtract.
+- issue: Do not average daily rows to get a period score
+  detail: >-
+    A call with dimensions=["date"] returns one row per day; a call without date
+    returns one traffic-weighted row for the window. These are different numbers.
+    Use the no-date call for headlines and the with-date call for charts; never
+    derive one from the other.
+rate_limiting:
+  limit: 600 requests per hour per API key
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset]
+  exhausted_status: 429
+  retry_header: Retry-After
+  see: rate-limits/profound-rate-limits.yml
+request_tracing:
+  request_id_header: null
+  note: No request-id or correlation header is documented.
+errors:
+  envelope: >-
+    422 validation failures return {"detail": [ValidationError]} (FastAPI shape).
+    Documented runtime errors — 401, 403, 429 — are described in the docs and the
+    provider Agent Skill but are not declared in the OpenAPI responses.
+  rfc9457: false
+  see: errors/profound-problem-types.yml
+cross_links:
+  authentication: authentication/profound-authentication.yml
+  errors: errors/profound-problem-types.yml
+  lifecycle: lifecycle/profound-lifecycle.yml
+  rate_limits: rate-limits/profound-rate-limits.yml
+  data_model: data-model/profound-data-model.yml

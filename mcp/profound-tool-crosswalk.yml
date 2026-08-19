@@ -1,0 +1,316 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  mcp/profound-mcp.yml (tool catalog from docs.tryprofound.com/mcp/capabilities/*)
+  bound against openapi/_original/profound-openapi.json
+note: >-
+  The live MCP tools/list is OAuth-gated (HTTP 401), so tools are mapped to REST
+  operations by name and documented semantics rather than by comparing declared
+  inputSchemas. Every operationId below was grepped verbatim out of the published
+  OpenAPI. Confidence is set honestly per row; where a tool has both a v1 and v2
+  backing operation the v2 form is listed first because the docs describe the
+  tool behaviour in v2 terms.
+surfaces:
+  openapi:
+    file: openapi/_original/profound-openapi.json
+    title: External API
+    version: 6551bd49db665ffb7f80780b3e150b8e8b780cc3
+    servers: [https://api.tryprofound.com]
+    operations: 125
+    gated: false
+    note: Spec is anonymously readable; calling it requires an Enterprise API key.
+  mcp:
+    url: https://mcp.tryprofound.com/mcp
+    gated: true
+    note: tools/list returns 401 invalid_token; OAuth 2.1 or a Bearer API key required.
+  graphql:
+    endpoint: null
+    note: No GraphQL surface published; /graphql on the API host returns 404.
+crosswalk:
+- tool: whoami
+  category: discovery
+  rest: []
+  binding: mcp-only
+  confidence: high
+  note: >-
+    No REST equivalent. Session identity/entitlement introspection is an MCP
+    server concern; the REST API scopes by API key implicitly.
+- tool: list_organizations
+  category: discovery
+  rest: [list_organizations_v1_org_get]
+  binding: rest
+  confidence: high
+- tool: list_regions
+  category: discovery
+  rest: [get_regions_v1_org_regions_get, get_category_regions_v1_org_categories__category_id__regions_get]
+  binding: rest
+  confidence: high
+  note: Fans out to org-level and category-scoped region listings.
+- tool: list_models
+  category: discovery
+  rest: [get_models_v1_org_models_get]
+  binding: rest
+  confidence: high
+- tool: list_categories
+  category: discovery
+  rest: [get_categories_v1_org_categories_get]
+  binding: rest
+  confidence: high
+- tool: list_domains
+  category: discovery
+  rest: [get_domains_v1_org_domains_get]
+  binding: rest
+  confidence: high
+- tool: list_tags
+  category: discovery
+  rest: [get_category_tags_v1_org_categories__category_id__tags_get]
+  binding: rest
+  confidence: high
+- tool: list_topics
+  category: discovery
+  rest: [get_category_topics_v1_org_categories__category_id__topics_get]
+  binding: rest
+  confidence: high
+- tool: list_prompts
+  category: discovery
+  rest: [get_category_prompts_v1_org_categories__category_id__prompts_get]
+  binding: rest
+  confidence: high
+  note: Docs describe optional status, tag and topic filters, matching the query parameters on this operation.
+- tool: get_visibility_report
+  category: brand-visibility
+  rest: [query_visibility_v2_v2_reports_visibility_post, query_visibility_v1_reports_visibility_post]
+  binding: rest
+  confidence: high
+- tool: get_sentiment_report
+  category: brand-visibility
+  rest: [query_sentiment_v2_v2_reports_sentiment_post, query_sentiment_v1_reports_sentiment_post]
+  binding: rest
+  confidence: high
+- tool: get_citations_report
+  category: brand-visibility
+  rest: [query_citations_v2_v2_reports_citations_post, query_citations_v1_reports_citations_post]
+  binding: rest
+  confidence: high
+- tool: get_prompt_answers
+  category: brand-visibility
+  rest: [query_answers_v2_v2_prompts_answers_post, get_answers_v1_prompts_answers_post]
+  binding: rest
+  confidence: high
+- tool: get_factcheck_report
+  category: brand-visibility
+  rest: [query_scores_v2_reports_factcheck_post]
+  binding: rest
+  confidence: high
+- tool: get_factcheck_claims
+  category: brand-visibility
+  rest: [query_claims_v2_reports_factcheck_claims_post]
+  binding: rest
+  confidence: high
+- tool: get_referrals_report
+  category: traffic
+  rest: [get_referrals_report_v2_v2_reports_referrals_post, get_referrals_report_v1_v1_reports_referrals_post]
+  binding: rest
+  confidence: high
+- tool: get_bots_report
+  category: traffic
+  rest: [get_bots_report_v2_v2_reports_bots_post, get_bots_report_v1_v1_reports_bots_post]
+  binding: rest
+  confidence: high
+- tool: list_agents
+  category: agents
+  rest: [list_agents_v1_agents_get]
+  binding: rest
+  confidence: high
+- tool: get_agent
+  category: agents
+  rest: [get_agent_v1_agents__agent_id__get]
+  binding: rest
+  confidence: high
+- tool: run_agent
+  category: agents
+  rest: [run_agent_v1_agents__agent_id__runs_post]
+  binding: rest
+  confidence: high
+- tool: get_agent_run
+  category: agents
+  rest: [get_agent_run_v1_agents__agent_id__runs__run_id__get]
+  binding: rest
+  confidence: high
+- tool: list_agent_node_types
+  category: agents
+  rest: [list_node_types_v1_agents_node_types_get]
+  binding: rest
+  confidence: high
+- tool: get_agent_node_schema
+  category: agents
+  rest: [get_node_type_schema_v1_agents_node_types__node_type__schema_get]
+  binding: rest
+  confidence: high
+- tool: create_agent_definition
+  category: agents
+  rest: [create_agent_v1_agents_post]
+  binding: rest
+  confidence: medium
+  note: >-
+    The MCP tool adds a preview flag and a build-session id that the REST
+    operation does not expose; the underlying create is the same operation.
+- tool: update_agent_definition
+  category: agents
+  rest: [update_agent_v1_agents__agent_id__patch]
+  binding: rest
+  confidence: medium
+  note: Same preview/build-session divergence as create_agent_definition.
+- tool: publish_agent_definition
+  category: agents
+  rest: [publish_agent_v1_agents__agent_id__publish_post]
+  binding: rest
+  confidence: medium
+  note: MCP wraps the publish with a preview plan step not present in REST.
+- tool: get_agent_definition
+  category: agents
+  rest: [get_agent_graph_v1_agents__agent_id__graph_get, get_agent_v1_agents__agent_id__get]
+  binding: rest
+  confidence: medium
+  note: Reading a draft definition maps onto the agent and its graph.
+mcp_only:
+- tool: whoami
+  reason: >-
+    Session-scoped identity and entitlement introspection. No public REST
+    operation returns the caller principal.
+- tool: start_agent_build_session
+  reason: >-
+    Server-side build-session orchestration that traces a multi-call agent build
+    attempt. No REST operation creates or returns a build session.
+- tool: validate_agent_definition
+  reason: >-
+    Structural pre-check exposed only through MCP. The REST surface validates on
+    publish; there is no standalone validate operation.
+- tool: list_agent_definition_templates
+  reason: >-
+    Pre-built Agent templates are not exposed by any published REST operation.
+rest_only:
+- capability: Knowledge bases
+  operations:
+  - list_knowledge_bases_v1_knowledge_bases_get
+  - search_knowledge_base_v1_knowledge_bases__knowledge_base_id__search_post
+  - add_document_v1_knowledge_bases__knowledge_base_id__documents_post
+  - update_document_v1_knowledge_bases__knowledge_base_id__documents_put
+  - delete_document_v1_knowledge_bases__knowledge_base_id__documents_delete
+  - add_folder_v1_knowledge_bases__knowledge_base_id__folders_post
+  - delete_folder_v1_knowledge_bases__knowledge_base_id__folders_delete
+  note: >-
+    The agent card and the published Agent Skill both advertise knowledge-base
+    management, but the MCP capability pages list no knowledge-base tools.
+- capability: Projects and tasks
+  operations:
+  - list_projects_v1_projects_get
+  - create_project_v1_projects_post
+  - get_project_v1_projects__project_id__get
+  - delete_project_v1_projects__project_id__delete
+  - get_project_status_v1_projects__project_id__status_get
+  - archive_project_v1_projects__project_id__archive_post
+  - unarchive_project_v1_projects__project_id__unarchive_post
+  - list_project_generations_v1_projects_generations_get
+  - get_project_generation_status_v1_projects_generations__run_id__get
+  - list_project_tasks_v1_projects__project_id__tasks_get
+  - create_project_task_v1_projects__project_id__tasks_post
+  - get_project_task_v1_projects__project_id__tasks__task_id__get
+  - update_project_task_v1_projects__project_id__tasks__task_id__patch
+  - delete_project_task_v1_projects__project_id__tasks__task_id__delete
+  - update_project_task_status_v1_projects__project_id__tasks__task_id__status_post
+- capability: Documents
+  operations:
+  - list_documents_v1_documents_get
+  - create_document_v1_documents_post
+  - read_document_v1_documents__document_id__get
+  - patch_document_v1_documents__document_id__patch
+  - delete_document_v1_documents__document_id__delete
+  - replace_document_content_v1_documents__document_id__content_post
+- capability: Shopping visibility
+  operations:
+  - query_shopping_brands_v2_v2_reports_shopping_brands_post
+  - query_shopping_products_v2_v2_reports_shopping_products_post
+  - query_shopping_merchants_v2_v2_reports_shopping_merchants_post
+  - query_shopping_trigger_rate_v2_v2_reports_shopping_trigger_rate_post
+  - shopping_visibility_v1_reports_shopping_visibility_post
+  - shopping_item_visibility_v1_reports_shopping_item_visibility_post
+  - shopping_merchant_distribution_v1_reports_shopping_merchant_distribution_post
+  - shopping_merchant_visibility_by_brand_v1_reports_shopping_merchant_visibility_by_brand_post
+  - shopping_merchant_by_items_v1_reports_shopping_merchant_by_items_post
+  - shopping_all_items_with_merchants_v1_reports_shopping_all_items_with_merchants_post
+  - shopping_trigger_rate_v1_reports_shopping_trigger_rate_post
+  - shopping_triggered_prompts_v1_reports_shopping_triggered_prompts_post
+  - shopping_triggered_topics_v1_reports_shopping_triggered_topics_post
+  - shopping_merchant_share_v1_reports_shopping_merchant_share_post
+  - shopping_product_merchant_urls_v1_reports_shopping_product_merchant_urls_post
+  - shopping_executions_v1_reports_shopping_executions_post
+  note: The entire Shopping product line is REST-only — no MCP tool exposes it.
+- capability: Accuracy / FactCheck detail
+  operations:
+  - accuracy_overview_v1_reports_accuracy_overview_post
+  - accuracy_breakdown_v1_reports_accuracy_breakdown_post
+  - accuracy_citation_analysis_v1_reports_accuracy_citation_analysis_post
+  - accuracy_topic_ids_v1_reports_accuracy_topic_ids_post
+  - accuracy_inaccurate_themes_v1_reports_accuracy_inaccurate_themes_post
+  - accuracy_inaccurate_clusters_v1_reports_accuracy_inaccurate_clusters_post
+  - accuracy_inaccuracy_drivers_v1_reports_accuracy_inaccuracy_drivers_post
+  - accuracy_top_inaccurate_claims_v1_reports_accuracy_top_inaccurate_claims_post
+  - accuracy_claim_breakdown_v1_reports_accuracy_claim_breakdown_post
+  - accuracy_claim_citations_v1_reports_accuracy_claim_citations_post
+  - accuracy_cluster_example_runs_v1_reports_accuracy_cluster_example_runs_post
+  - accuracy_cluster_verification_pairs_v1_reports_accuracy_cluster_verification_pairs_post
+  - accuracy_factcheck_setup_status_v1_reports_accuracy_factcheck_setup_status_post
+  note: >-
+    MCP exposes summary FactCheck scores and claims only; the 13 v1 accuracy
+    drill-down operations have no tool.
+- capability: Social (YouTube) reports
+  operations:
+  - query_youtube_channels_v2_reports_social_youtube_channels_post
+  - query_youtube_videos_v2_reports_social_youtube_videos_post
+  - query_youtube_summary_v2_reports_social_youtube_summary_post
+  note: Added to REST in August 2026; not yet surfaced as MCP tools.
+- capability: Content optimization
+  operations:
+  - optimization_list_v1_content__asset_id__optimization_get
+  - optimization_analysis_v1_content__asset_id__optimization__content_id__get
+- capability: OpenAI Ads
+  operations:
+  - get_account_insights_v1_ads_openai_ads_ad_account_insights_get
+- capability: Web search results
+  operations:
+  - query_web_search_results_v1_reports_web_search_results_post
+- capability: Integrations
+  operations:
+  - list_integrations_v1_integrations_get
+- capability: Organization reference data not surfaced as tools
+  operations:
+  - get_assets_v1_org_assets_get
+  - get_personas_v1_org_personas_get
+  - get_category_assets_v1_org_categories__category_id__assets_get
+  - get_category_personas_v1_org_categories__category_id__personas_get
+  - get_category_citation_categories_v1_org_categories__category_id__citation_categories_get
+  - get_category_citation_tags_v1_org_categories__category_id__citation_tags_get
+  - create_category_prompts_v1_org_categories__category_id__prompts_post
+  - update_category_prompts_v1_org_categories__category_id__prompts_patch
+  - update_category_prompt_status_v1_org_categories__category_id__prompts_status_patch
+  note: >-
+    Prompt creation and mutation are deliberately absent from MCP, consistent
+    with the documented read-only posture of the analytics tool set.
+- capability: SSE stream variants
+  note: >-
+    All 15 /stream operations are REST-only. MCP tools return complete result
+    sets rather than server-sent event streams.
+coverage:
+  tools_named: 30
+  tools_bound_to_rest: 26
+  mcp_only: 4
+  rest_operations_total: 125
+  rest_operations_with_a_tool: 30
+  rest_operations_without_a_tool: 95
+  note: >-
+    Tool count is 30 across the analytics and agents capability pages. Bound
+    operation count (30) counts distinct operations named in crosswalk[].rest;
+    several tools bind to both a v1 and a v2 operation, and roughly three
+    quarters of the REST surface — Shopping, Projects, Documents, accuracy
+    drill-downs, YouTube and content optimization — has no MCP tool at all.

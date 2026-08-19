@@ -1,0 +1,66 @@
+generated: '2026-08-13'
+method: searched
+source: https://www.tryprofound.com/pricing
+currency: USD
+billing_period: month
+billing_note: >-
+  Prices shown are the annual-commitment monthly rate; the pricing page markets
+  yearly billing as "2 months free".
+plan_count: 3
+api_access_note: >-
+  API access is Enterprise-only. Neither Starter nor Growth includes the REST
+  API, and even on Enterprise a customer must request API access from support
+  before keys can be created. This is the single most consequential fact about
+  Profound's developer surface: the OpenAPI is public and anonymously readable,
+  but calling it is gated behind a sales conversation.
+plans:
+- name: Starter
+  price: 99
+  currency: USD
+  period: month
+  public: true
+  included:
+    answer_engines: ChatGPT only
+    prompts_tracked: 50
+    agents_credits_per_month: 100
+    seats: 1
+    support: Email support
+  api_access: false
+- name: Growth
+  price: 399
+  currency: USD
+  period: month
+  public: true
+  popular: true
+  included:
+    answer_engines: 3 tracked
+    prompts_tracked: 100
+    agents_credits_per_month: 400
+    seats: 3
+    support: Email support
+  api_access: false
+- name: Enterprise
+  price: null
+  price_model: custom
+  currency: USD
+  period: month
+  public: false
+  contact: https://www.tryprofound.com/enterprise
+  included:
+    answer_engines: Up to 9 tracked
+    companies_tracked: Multiple
+    prompts_tracked: Tailored prompt tracking plan
+    seats: Custom
+    support: Dedicated Slack support
+    compliance: SSO/SAML + SOC 2
+  api_access: true
+  api_note: >-
+    Includes the Profound External API and the hosted MCP server. Access must
+    still be requested through support@tryprofound.com.
+overage:
+  published: false
+  note: No overage or metered pricing is published for any tier.
+x-evidence:
+  fetched: '2026-08-13'
+  url: https://www.tryprofound.com/pricing
+  http_status: 200

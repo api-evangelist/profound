@@ -1,0 +1,61 @@
+generated: '2026-08-13'
+method: searched
+source: https://docs.tryprofound.com/rest-api/changelog
+also: https://product.tryprofound.com/changelog
+scheme: dated-entries
+note: >-
+  Profound runs two changelogs: a dated API changelog in the developer docs
+  (captured here) and a separate product changelog at product.tryprofound.com.
+  The API changelog classifies entries as Added / Changed / Deprecated /
+  Removed / Fixed / Security / Breaking.
+current_version: v2
+versions_active: [v1, v2]
+categories: [Added, Changed, Deprecated, Removed, Fixed, Security, Breaking]
+entries:
+- date: '2026-08'
+  label: August 2026
+  type: Added
+  breaking: false
+  highlights:
+  - Beta YouTube social reports — Query YouTube Channels and Query YouTube Videos, with channel rollups, cited video rankings and attribution modes.
+  - New endpoint Get Citation Tags — custom citation tags for a category as {value, name} per tag.
+  - New citation_tag filter on POST /v2/reports/citations, narrowing a citations report to URLs carrying custom tags (is/in; values in one in leaf are OR'd).
+- date: '2026-07'
+  label: July 2026
+  type: Added
+  breaking: false
+  highlights:
+  - New endpoint Get Citation Categories — the citation-category filter options for a category, covering the built-in buckets (Owned, Competition, Earned Media, Institution, PR Wire, Social, Other) plus custom categories.
+- date: '2026-06'
+  label: June 2026
+  type: Beta
+  breaking: false
+  highlights:
+  - 'New beta /v2/reports endpoints with a unified {info, data} request/response shape, names or UUIDs in filters, cursor pagination and a /stream SSE variant: visibility, citations, sentiment, query-fanouts, factcheck, factcheck/claims.'
+  - New beta POST /v2/prompts/answers returning raw per-execution rows (mentions, citations, search queries) with a /stream SSE variant.
+  deprecations:
+  - The v1 report endpoints (POST /v1/reports/visibility, /citations, /sentiment, /sentiment-v2, /query-fanouts) are being phased out in favour of the v2 equivalents. They remain active; a sunset date will be announced before removal.
+- date: '2026-04'
+  label: April 2026
+  version: v1.5.0
+  type: Added
+  breaking: false
+  highlights:
+  - New endpoint List Agents — list agents available to your organization.
+  - New endpoint Get an Agent — retrieve an agent and its schema details.
+  - New endpoint Run an Agent — start a new run for an agent.
+  - New endpoint Get an Agent Run — retrieve status and result details for a run.
+- date: '2026-04'
+  label: April 2026
+  type: Deprecated
+  breaking: false
+  highlights:
+  - 'Deprecated raw Agent Analytics endpoints: POST /v1/logs/raw (Get Logs) and POST /v1/logs/raw/bots (Get Bots).'
+window:
+  note: >-
+    Recent window only, captured 2026-08-13. The live changelog is the source of
+    truth; earlier entries were not transcribed.
+x-evidence:
+  fetched: '2026-08-13'
+  url: https://docs.tryprofound.com/rest-api/changelog
+  http_status: 200

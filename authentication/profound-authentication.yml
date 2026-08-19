@@ -1,0 +1,88 @@
+generated: '2026-08-13'
+method: searched
+source: openapi/profound-external-api-openapi.json
+docs: https://docs.tryprofound.com/rest-api/authentication
+note: >-
+  Derived mechanically from the OpenAPI securitySchemes, then upgraded from the
+  docs. Profound runs two distinct authentication models: the REST API is
+  API-key only, while the hosted MCP server is OAuth 2.1 with an API-key bearer
+  fallback. The spec alone shows only the first of the two.
+summary:
+  types:
+  - apiKey
+  - http
+  - oauth2
+  api_key_in:
+  - header
+  oauth2_flows:
+  - authorizationCode
+  - deviceCode
+  - refreshToken
+  oauth2_applies_to: mcp
+schemes:
+- name: APIKeyHeader
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  applied_to_operations: 125
+  recommended: true
+  sources:
+  - openapi/profound-external-api-openapi.json
+  docs: https://docs.tryprofound.com/rest-api/authentication
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  applied_to_operations: 125
+  sources:
+  - openapi/profound-external-api-openapi.json
+  note: >-
+    The same API key presented as Authorization Bearer. Also the fallback
+    authentication method for the hosted MCP server, for service accounts that
+    cannot complete a per-user OAuth flow.
+- name: MCP OAuth 2.1
+  type: oauth2
+  applies_to: https://mcp.tryprofound.com/mcp
+  issuer: https://auth.tryprofound.com
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://auth.tryprofound.com/oauth2/authorize
+    tokenUrl: https://auth.tryprofound.com/oauth2/token
+    pkce: [S256]
+  - flow: deviceCode
+    deviceAuthorizationUrl: https://auth.tryprofound.com/oauth2/device_authorization
+  - flow: refreshToken
+    tokenUrl: https://auth.tryprofound.com/oauth2/token
+  scopes: [openid, profile, email, offline_access]
+  dynamic_client_registration: https://auth.tryprofound.com/oauth2/register
+  sources:
+  - https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+  - https://docs.tryprofound.com/mcp/authentication
+  see: scopes/profound-scopes.yml
+key_management:
+  location: Platform → Settings → API Keys
+  creation_requires: name (min 3 characters) and an expiration date
+  expiration_required: true
+  shown_once: true
+  revocable: true
+  env_var: PROFOUND_API_KEY
+  note: >-
+    Mandatory expiry on every key is a genuinely good default — most catalog
+    providers issue non-expiring keys. Keys cannot be retrieved after creation.
+access_gate:
+  plan: Enterprise
+  request_required: true
+  contact: mailto:support@tryprofound.com
+  note: >-
+    API access is not self-serve on any plan. Enterprise customers must request
+    it from support before the API Keys tab appears in the platform.
+scoping:
+  granularity: organization
+  note: >-
+    A key grants access to all data belonging to its organization — categories,
+    regions and category reports. There are no per-resource scopes or read/write
+    separation on the REST API.
+sso:
+  supported: true
+  protocols: [SAML, OIDC]
+  docs: https://docs.tryprofound.com/platform-config/authentication/sso-overview
+  note: Platform sign-in for customer users; unrelated to API authentication.

@@ -1,0 +1,114 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/_original/profound-openapi.json
+enriched_from:
+- https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+- https://mcp.tryprofound.com/.well-known/oauth-protected-resource
+- https://docs.tryprofound.com/mcp/authentication
+- https://trust.tryprofound.com
+- https://docs.tryprofound.com/platform-config/authentication/sso-overview
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: openapi/_original/profound-openapi.json declares openapi 3.1.0 with 110 paths and 125 operations
+- id: oauth2
+  conforms: true
+  evidence: >-
+    MCP server implements OAuth 2.1 with an RFC 8414 authorization server at
+    auth.tryprofound.com. Note the REST API itself does NOT use OAuth — it is
+    API-key only.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: https://mcp.tryprofound.com/.well-known/oauth-authorization-server returns 200
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: true
+  evidence: >-
+    https://mcp.tryprofound.com/.well-known/oauth-protected-resource returns 200
+    with resource, authorization_servers and bearer_methods_supported; the 401
+    challenge advertises resource_metadata per the spec.
+- id: rfc7636-pkce
+  conforms: true
+  evidence: code_challenge_methods_supported [S256] in the authorization server metadata
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: registration_endpoint published at https://auth.tryprofound.com/oauth2/register
+- id: rfc8628-device-authorization-grant
+  conforms: true
+  evidence: device_authorization_endpoint and urn:ietf:params:oauth:grant-type:device_code in grant_types_supported
+- id: oidc
+  conforms: partial
+  evidence: >-
+    The MCP authorization server advertises openid, profile and email scopes and
+    a jwks_uri, but no /.well-known/openid-configuration document is served on
+    any Profound host. Separately, Profound supports OIDC and SAML for customer
+    SSO into the platform (docs.tryprofound.com/platform-config/authentication).
+- id: mcp
+  conforms: true
+  evidence: >-
+    Hosted remote MCP server at https://mcp.tryprofound.com/mcp; tools/list
+    answers with a spec-compliant 401 Bearer challenge. Publishes readOnlyHint
+    and idempotentHint tool annotations.
+- id: a2a
+  conforms: true
+  evidence: >-
+    Agent card served at https://docs.tryprofound.com/.well-known/agent-card.json,
+    protocolVersion 0.3, graded conformant. See a2a/profound-a2a.yml.
+- id: rfc9116-security-txt
+  conforms: true
+  evidence: well-known/profound-security.txt harvested from https://www.tryprofound.com/.well-known/security.txt
+- id: rfc8615-well-known-uris
+  conforms: true
+  evidence: security.txt, agent-card.json and both OAuth metadata documents served under /.well-known/
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    No application/problem+json responses anywhere in the spec; errors use the
+    FastAPI {"detail": [...]} shape.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: >-
+    v1 report endpoints are documented as deprecated but no Sunset or Deprecation
+    header support is published and no sunset date has been announced.
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returns 404 on both www and api hosts
+- id: ietf-ratelimit-headers
+  conforms: false
+  evidence: >-
+    Rate limiting uses vendor-prefixed X-RateLimit-Limit/Remaining/Reset rather
+    than the IETF RateLimit-* draft header field names. Retry-After is standard.
+- id: idempotency-key
+  conforms: false
+  evidence: No Idempotency-Key header or parameter in any of the 125 operations
+- id: sse
+  conforms: true
+  evidence: 15 /stream operations returning server-sent events
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No event surface. No webhooks key in the OpenAPI, no callbacks, no webhook
+    documentation. Not applicable rather than a failure.
+- id: graphql
+  conforms: false
+  evidence: /graphql returns 404 on the API host
+- id: grpc
+  conforms: false
+  evidence: No .proto published in the GitHub org or docs
+- id: json-api
+  conforms: false
+  evidence: Report responses use a bespoke positional {info, data} envelope
+- id: iso8601
+  conforms: true
+  evidence: All date parameters documented and validated as ISO 8601 YYYY-MM-DD
+compliance_programs:
+- name: SOC 2
+  published: true
+  source: https://trust.tryprofound.com
+- name: HIPAA
+  published: true
+  source: https://trust.tryprofound.com
+- name: SSO/SAML
+  published: true
+  source: https://www.tryprofound.com/pricing
+  note: Listed as an Enterprise-plan entitlement.
+see: security/profound-trust-center.yml

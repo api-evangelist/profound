@@ -1,35 +1,162 @@
 # Profound
 
-> Profound is a marketing platform for the AI era and a leading platform for Answer Engine Optimization (AEO). It helps brands measure and improve how they appear across AI answer engines and assistants — ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, and Grok — through answer-engine insights, agent analytics, prompt volumes, and content optimization. Operated by Cooper Square Technologies Inc. (dba Profound), New York, NY. A programmatic "Profound External API" and an "Agent Analytics Ingestion API" are available (API access is included on the Enterprise plan).
+## Docs
 
-## Company
-- Website: https://www.tryprofound.com
-- Pricing: https://www.tryprofound.com/pricing
-- Enterprise: https://www.tryprofound.com/enterprise
-- Integrations: https://www.tryprofound.com/integrations
-- Blog: https://www.tryprofound.com/blog
-- Engineering Blog: https://www.tryprofound.com/engineering
-- AI Instructions (canonical guidance for AI assistants): https://www.tryprofound.com/ai-instructions
+- [Introduction](https://docs.tryprofound.com/introduction.md): Welcome to Profound developer documentation
+- [About Agent Analytics](https://docs.tryprofound.com/agent-analytics/overview.md): Gain unprecedented visibility into how AI systems interact with your website
+- [Crawler Verification](https://docs.tryprofound.com/agent-analytics/crawler-verification.md): How we verify AI and search engine crawlers
+- [Page type methodology](https://docs.tryprofound.com/agent-analytics/page-type-methodology.md): How Profound classifies website pages for Agent Analytics and benchmarking.
+- [Getting Started](https://docs.tryprofound.com/agent-analytics/self-serve-onboarding.md): Set up Agent Analytics in just a few clicks
+- [Frequently Asked Questions](https://docs.tryprofound.com/agent-analytics/faq.md)
+- [Google Analytics (GA4) Extension](https://docs.tryprofound.com/agent-analytics/extensions/google-analytics.md): Connect AI visibility with human engagement metrics to create a complete picture of your digital performance and revenue impact
+- [Adobe Analytics Extension](https://docs.tryprofound.com/agent-analytics/extensions/adobe-analytics.md): Connect Adobe Analytics with Profound Agent Analytics to correlate AI-referred traffic with human engagement, orders, and revenue
+- [Amazon CloudFront Integration (Data Firehose)](https://docs.tryprofound.com/agent-analytics/aws_firehose_cloudfront.md): This documentation explains how to set up Amazon CloudFront real-time logs delivery to Profound Agent Analytics platform using Amazon Data Firehose.
+- [Cloudflare Integration (Worker)](https://docs.tryprofound.com/agent-analytics/cloudflare_worker.md): This documentation explains how to set up and deploy a Cloudflare Worker that captures HTTP request data and forwards it to Profound Agent Analytics platform using Cloudflare Worker.
+- [Cloudflare Integration (Logpush)](https://docs.tryprofound.com/agent-analytics/cloudflare_logpush.md): This documentation explains how to set up and deploy a Cloudflare Worker that captures HTTP request data and forwards it to Profound Agent Analytics platform using Cloudflare Logpush.
+- [Vercel Integration (Connectable Account)](https://docs.tryprofound.com/agent-analytics/vercel_native.md): This guide explains how to set up a Vercel Log Drain via the Profound Agent Analytics Integration
+- [Fastly HTTPS Endpoint](https://docs.tryprofound.com/agent-analytics/fastly.md): This documentation explains how to set up Fastly real-time logs delivery to Profound Agent Analytics platform using Fastly custom HTTPS Endpoint
+- [Netlify Integration](https://docs.tryprofound.com/agent-analytics/netlify.md): This guide explains how to configure Netlify Log Drains to forward your application logs to Profound Agent Analytics platform for comprehensive monitoring and analysis.
+- [Akamai Datastream2 Integration](https://docs.tryprofound.com/agent-analytics/akamai.md): This documentation explains how to set up Akamai Datastream2 to forward your CDN logs to the Profound Agent Analytics platform.
+- [Google Cloud CDN](https://docs.tryprofound.com/agent-analytics/gcp_log_sink.md): This documentation explains how to set up Google Cloud CDN log delivery to Profound Agent Analytics platform using a log sink.
+- [Custom Log Integration](https://docs.tryprofound.com/agent-analytics/custom.md): This documentation explains how to send your application logs directly to Profound's analytics platform using our Custom Log Integration API.
+- [Shopify](https://docs.tryprofound.com/agent-analytics/shopify.md): This documentation details 3 potential Shopify log drain integrations for Profound Agent Analytics platform.
+- [Adobe Experience Manager](https://docs.tryprofound.com/agent-analytics/adobe_experience_manager.md): This documentation explains how to set up Adobe Experience Manager as a Cloud Service (AEMaaCS) Log Forwarding to deliver CDN logs to the Profound Agent Analytics platform.
+- [Introduction](https://docs.tryprofound.com/agent-analytics/wordpress/introduction.md): Send request logs from your WordPress site to Agent Analytics for advanced traffic analysis
+- [WordPress Plugin Installation](https://docs.tryprofound.com/agent-analytics/wordpress/installation.md): This guide explains how to install and configure the Agent Analytics plugin for WordPress to send HTTP request logs to the Profound platform
+- [CDN Caching Limitations](https://docs.tryprofound.com/agent-analytics/wordpress/limitations.md): Understand the limitations of the WordPress plugin when used with a CDN for caching
+- [Security & Privacy Configuration](https://docs.tryprofound.com/agent-analytics/wordpress/security.md): Configure data collection, filtering, and privacy settings for the WordPress plugin
+- [Introduction](https://docs.tryprofound.com/bots/introduction.md): An overview of Profound bots
+- [ProfoundBot](https://docs.tryprofound.com/bots/profoundbot.md)
+- [Profound Sheets Sitemap Importer](https://docs.tryprofound.com/bots/sitemap-importer.md)
+- [Enterprise Single Sign-On (SSO) overview](https://docs.tryprofound.com/platform-config/authentication/sso-overview.md): Supported protocols, scope, and how to get started with SSO configuration
+- [Configure SSO](https://docs.tryprofound.com/platform-config/authentication/configure-sso.md): Set up Single Sign-On with Profound over SAML or OIDC
+- [Add and manage team members](https://docs.tryprofound.com/platform-config/people/add-and-manage-team-members.md): Invite team members to your Profound organization and manage their roles and access
+- [Roles and permissions](https://docs.tryprofound.com/platform-config/people/roles-and-permissions.md): Learn about roles and permissions for team members in Profound
+- [Introduction](https://docs.tryprofound.com/rest-api/introduction.md): An overview of the REST API and its capabilities
+- [Authentication](https://docs.tryprofound.com/rest-api/authentication.md): Learn how to authenticate API requests securely
+- [Date Ranges & Timezones](https://docs.tryprofound.com/rest-api/date-ranges.md): Understanding how to work with dates and timezones in the API
+- [Response Format](https://docs.tryprofound.com/rest-api/response-format.md): Understanding report response structures and data interpretation
+- [Changelog](https://docs.tryprofound.com/rest-api/changelog.md): Track API changes, version history, and release notes
+- [SDKs](https://docs.tryprofound.com/sdks/overview.md): Official Python and JavaScript SDKs for the Profound API
+- [Python Package](https://docs.tryprofound.com/sdks/python-package.md)
+- [JavaScript Package](https://docs.tryprofound.com/sdks/javascript-package.md)
+- [Usage](https://docs.tryprofound.com/rest-api/integrations/tableau/usage.md): Import data into Tableau using Web Data Connector 3.0
+- [Releases](https://docs.tryprofound.com/rest-api/integrations/tableau/releases.md): Download the latest version of Tableau (WDC 3.0) for data import
+- [WDC 2.0](https://docs.tryprofound.com/rest-api/integrations/tableau/wdc-2.md): Import data into Tableau using Web Data Connector 2.0
+- [Example Requests](https://docs.tryprofound.com/rest-api/examples/example.md): Sample API requests and responses to help you get started
+- [Answer Engine Insights](https://docs.tryprofound.com/rest-api/examples/answer-engine-insights.md): Sample requests for Answer Engine Insights endpoints.
+- [Agent Analytics](https://docs.tryprofound.com/rest-api/examples/agent-analytics.md): Sample requests for Agent Analytics endpoints.
+- [Agents](https://docs.tryprofound.com/rest-api/examples/agents.md): Sample requests for Agent endpoints.
+- [Knowledge Bases](https://docs.tryprofound.com/rest-api/examples/knowledge-bases.md): Sync documents into a Profound knowledge base and search them.
+- [OpenAI Ads](https://docs.tryprofound.com/rest-api/examples/openai-ads.md): Sample requests for OpenAI Ads Partner API endpoints
+- [List agents](https://docs.tryprofound.com/api-reference/agents/list-agents.md): List agents available to your organization.
+- [Get an agent](https://docs.tryprofound.com/api-reference/agents/get-an-agent.md): Retrieve an agent and its schema details.
+- [Run an agent](https://docs.tryprofound.com/api-reference/agents/run-an-agent.md): Start a new run for an agent.
+- [Get an agent run](https://docs.tryprofound.com/api-reference/agents/get-an-agent-run.md): Retrieve the current status and result details for an agent run.
+- [Get Regions](https://docs.tryprofound.com/api-reference/organization/get-regions.md): Get the organization regions.
+- [Get Models](https://docs.tryprofound.com/api-reference/organization/get-models.md): Get the organization models.
+- [Get Domains](https://docs.tryprofound.com/api-reference/organization/get-domains.md): Get the organization domains.
+- [Get Assets](https://docs.tryprofound.com/api-reference/organization/get-assets.md): Get the organization assets, one row per (asset, organization) pair.
+- [Get Personas](https://docs.tryprofound.com/api-reference/organization/get-personas.md): Get the organization personas, one row per (persona, organization) pair.
+- [Get Categories](https://docs.tryprofound.com/api-reference/organization/get-categories.md): Get the organization categories, one row per (category, organization) pair.
+- [Get Category Topics](https://docs.tryprofound.com/api-reference/organization/get-category-topics.md): Get the topics for a specific category.
+- [Get Category Tags](https://docs.tryprofound.com/api-reference/organization/get-category-tags.md): Get the tags for a specific category.
+- [Get Category Regions](https://docs.tryprofound.com/api-reference/organization/get-category-regions.md): Get the regions for a specific category.
+- [Get Category Assets](https://docs.tryprofound.com/api-reference/organization/get-category-assets.md)
+- [Get Category Personas](https://docs.tryprofound.com/api-reference/organization/get-category-personas.md)
+- [Get Category Citation Categories](https://docs.tryprofound.com/api-reference/organization/get-category-citation-categories.md): Get the citation categories for a category: the built-in buckets plus any custom categories.
+- [Get Category Citation Tags](https://docs.tryprofound.com/api-reference/organization/get-category-citation-tags.md): Get the custom citation tags defined for a category.
+- [List prompts](https://docs.tryprofound.com/api-reference/organization/list-prompts.md): Retrieve prompts in a category with optional filtering by type, topic, tag, region, platform, or persona. Supports cursor-based pagination.
+- [Create prompts](https://docs.tryprofound.com/api-reference/organization/create-prompts.md): Create one or more prompts in a category. Topics and tags are auto-created if referenced by name and not yet existing. Use dry_run to preview without persisting.
+- [Update prompts](https://docs.tryprofound.com/api-reference/organization/update-prompts.md): Update one or more existing prompts. Only provided fields are changed. Dimension fields (regions, platforms, personas, tags) replace the full set when provided. Use dry_run to preview without persisting.
+- [Update prompt status](https://docs.tryprofound.com/api-reference/organization/update-prompt-status.md): Bulk-update the status of one or more prompts. Prompts already in the target status are skipped. Use dry_run to preview without persisting.
+- [List Knowledge Bases](https://docs.tryprofound.com/api-reference/knowledge-bases/list-knowledge-bases.md): List knowledge bases accessible to the API key.
+- [Search Knowledge Base](https://docs.tryprofound.com/api-reference/knowledge-bases/search-knowledge-base.md): Search a knowledge base and return matching snippets or pages.
+- [Add Document](https://docs.tryprofound.com/api-reference/knowledge-bases/add-document.md): Add a document to a knowledge base using JSON text or multipart file upload.
+- [Update Document](https://docs.tryprofound.com/api-reference/knowledge-bases/update-document.md): Overwrite a knowledge base document using JSON text or multipart file upload.
+- [Delete Document](https://docs.tryprofound.com/api-reference/knowledge-bases/delete-document.md): Delete an existing document from a knowledge base.
+- [Add Folder](https://docs.tryprofound.com/api-reference/knowledge-bases/add-folder.md): Create an empty folder at the requested knowledge base path.
+- [Delete Folder](https://docs.tryprofound.com/api-reference/knowledge-bases/delete-folder.md): Delete a folder. With recursive=false, non-empty folders return 409 and no contents are deleted.
+- [Get Account Insights](https://docs.tryprofound.com/api-reference/openai-ads/get-account-insights.md): Get ad account insights for the organization's OpenAI Ads partner brand.
+- [Get Answers](https://docs.tryprofound.com/rest-api/reports/query-answers-v2.md)
+- [Get Answers](https://docs.tryprofound.com/api-reference/prompts/get-answers.md)
+- [Filtering & concepts](https://docs.tryprofound.com/rest-api/reports/reports-v2-overview.md): How the v2 report endpoints work: the shared request shape, the filter tree, grouping, scope, pagination, and streaming.
+- [Citations](https://docs.tryprofound.com/rest-api/reports/query-citations-v2.md)
+- [Visibility](https://docs.tryprofound.com/rest-api/reports/query-visibility-v2.md)
+- [Sentiment](https://docs.tryprofound.com/rest-api/reports/query-sentiment-v2.md)
+- [Query Fanouts](https://docs.tryprofound.com/rest-api/reports/query-fanouts-v2.md)
+- [FactCheck](https://docs.tryprofound.com/rest-api/reports/query-factcheck-v2.md)
+- [FactCheck Claims](https://docs.tryprofound.com/rest-api/reports/query-factcheck-claims-v2.md)
+- [Brands](https://docs.tryprofound.com/rest-api/reports/query-shopping-brands-v2.md)
+- [Products](https://docs.tryprofound.com/rest-api/reports/query-shopping-products-v2.md)
+- [Merchants](https://docs.tryprofound.com/rest-api/reports/query-shopping-merchants-v2.md)
+- [Trigger Rate](https://docs.tryprofound.com/rest-api/reports/query-shopping-trigger-rate-v2.md)
+- [Channels](https://docs.tryprofound.com/rest-api/reports/query-youtube-channels-v2.md): Rank the YouTube channels cited in a category, or the video categories they publish in.
+- [Videos](https://docs.tryprofound.com/rest-api/reports/query-youtube-videos-v2.md): Rank cited YouTube videos, for one channel or across all of them.
+- [Query Citations](https://docs.tryprofound.com/api-reference/reports/query-citations.md): Get citations for a given category.
+- [Query Visibility](https://docs.tryprofound.com/api-reference/reports/query-visibility.md): Query visibility report.
+- [Query Sentiment](https://docs.tryprofound.com/api-reference/reports/query-sentiment.md): Get citations for a given category.
+- [Query Fanouts](https://docs.tryprofound.com/api-reference/reports/query-fanouts.md)
+- [Get Referrals Report V1](https://docs.tryprofound.com/api-reference/reports/get-referrals-report-v1.md): Get referral traffic report from the daily aggregated materialized view.
+- [Get Referrals Report V2](https://docs.tryprofound.com/api-reference/reports/get-referrals-report-v2.md): Get referral traffic report from the hourly aggregated materialized view (UTC-based).
+- [Get Bots Report V1](https://docs.tryprofound.com/api-reference/reports/get-bots-report-v1.md): Get bot traffic report from the daily aggregated materialized view.
+- [Get Bots Report V2](https://docs.tryprofound.com/api-reference/reports/get-bots-report-v2.md): Get bot traffic report from the hourly aggregated materialized view (UTC-based).
+- [Optimization List](https://docs.tryprofound.com/api-reference/content/optimization-list.md)
+- [Optimization Analysis](https://docs.tryprofound.com/api-reference/content/optimization-analysis.md)
+- [AEM Integration Setup Guide](https://docs.tryprofound.com/integrations/adobe-experience-manager/setup/aem-setup-guide.md)
+- [Troubleshooting AEM Integration Setup](https://docs.tryprofound.com/integrations/adobe-experience-manager/setup/aem-setup-troubleshooting.md)
+- [Using Adobe Experience Manager in Agents](https://docs.tryprofound.com/integrations/adobe-experience-manager/using-adobe-experience-manager-in-agents.md)
+- [Connect Contentful to Profound](https://docs.tryprofound.com/integrations/contentful/connect-contentful-to-profound.md)
+- [Using Contentful in Agents](https://docs.tryprofound.com/integrations/contentful/using-contentful-in-agents.md)
+- [Connect Drupal to Profound](https://docs.tryprofound.com/integrations/drupal/connect-drupal-to-profound.md)
+- [Using Drupal in Agents](https://docs.tryprofound.com/integrations/drupal/using-drupal-in-agents.md)
+- [Connect Framer to Profound](https://docs.tryprofound.com/integrations/framer/connect-framer-to-profound.md)
+- [Using Framer in Agents](https://docs.tryprofound.com/integrations/framer/using-framer-in-agents.md)
+- [Connect G2 to Profound](https://docs.tryprofound.com/integrations/g2/connect-g2-to-profound.md)
+- [Using G2 in Agents](https://docs.tryprofound.com/integrations/g2/using-g2-in-agents.md)
+- [Connect Gamma to Profound](https://docs.tryprofound.com/integrations/gamma/connect-gamma-to-profound.md)
+- [Using Gamma in Agents](https://docs.tryprofound.com/integrations/gamma/using-gamma-in-agents.md)
+- [Connect Gong to Profound](https://docs.tryprofound.com/integrations/gong/connect-gong-to-profound.md)
+- [Using Gong in Agents](https://docs.tryprofound.com/integrations/gong/using-gong-in-agents.md)
+- [Connect Looker to Profound](https://docs.tryprofound.com/integrations/looker/connect-looker-to-profound.md)
+- [Using Looker in Agents](https://docs.tryprofound.com/integrations/looker/using-looker-in-agents.md)
+- [Connect Sanity to Profound](https://docs.tryprofound.com/integrations/sanity/sanity.md)
+- [Using Sanity in Agents](https://docs.tryprofound.com/integrations/sanity/using-sanity-in-agents.md)
+- [Connect Wordpress to Profound](https://docs.tryprofound.com/integrations/wordpress/connect-wordpress-to-profound.md)
+- [Create an Application Password in WordPress](https://docs.tryprofound.com/integrations/wordpress/create-an-application-password-in-word-press.md)
+- [Tips & Troubleshooting](https://docs.tryprofound.com/integrations/wordpress/tips-and-troublshooting.md)
+- [Using WordPress in Agents](https://docs.tryprofound.com/integrations/wordpress/setup-and-authentication.md)
+- [Overview](https://docs.tryprofound.com/mcp/overview.md): Learn how to connect AI agents to Profound
+- [Analytics capabilities](https://docs.tryprofound.com/mcp/capabilities/analytics-capabilities.md): Understand the analytics tools and resources available through Profound MCP
+- [Agents capabilities](https://docs.tryprofound.com/mcp/capabilities/agents-capabilities.md): Understand the Agent tools available through Profound MCP
+- [Authentication](https://docs.tryprofound.com/mcp/authentication.md): Learn how to authenticate with the hosted Profound MCP server
+- [Connection guides](https://docs.tryprofound.com/mcp/common-mcp-clients.md): Connect your AI tool to Profound MCP
+- [Connect AI coding tools to Profound MCP](https://docs.tryprofound.com/mcp/connection-tutorials/connect-ai-coding-tools.md)
+- [Connect ChatGPT to Profound MCP](https://docs.tryprofound.com/mcp/connection-tutorials/connect-chatgpt.md)
+- [Connect Gemini CLI to Profound MCP](https://docs.tryprofound.com/mcp/connection-tutorials/connect-gemini-cli.md)
+- [Connect Microsoft Copilot Studio agent to Profound MCP](https://docs.tryprofound.com/mcp/connection-tutorials/connect-ms-copilot.md)
+- [Connect WRITER AI Studio to Profound MCP](https://docs.tryprofound.com/mcp/connection-tutorials/connect-writer.md)
+- [Introduction](https://docs.tryprofound.com/cookbook/introduction.md): End-to-end recipes for recreating the Profound dashboards with the public API.
+- [Conventions & gotchas](https://docs.tryprofound.com/cookbook/setup/conventions.md): Read once, paste into your AI assistant, and skip the most common day-one mistakes.
+- [Data model](https://docs.tryprofound.com/cookbook/setup/data-model.md): How everything in Profound nests together — from your Organization down to the slice dimensions on every report.
+- [Endpoints at a glance](https://docs.tryprofound.com/cookbook/setup/endpoints-at-a-glance.md): Every Profound API endpoint, its key metrics/dimensions/filters, and what it's for — one scannable page.
+- [Find your category ID](https://docs.tryprofound.com/cookbook/setup/find-your-category-id.md): Every report call requires a category_id. Here's how to look one up programmatically.
+- [List your owned assets and domains](https://docs.tryprofound.com/cookbook/setup/list-owned-assets.md): Get every asset in a category, with the is_owned flag and any associated domains.
+- [Visibility Score for one asset](https://docs.tryprofound.com/cookbook/visibility/asset-visibility-score.md): Get an asset's traffic-weighted Visibility Score for a window and the change vs the prior window.
+- [Visibility over time](https://docs.tryprofound.com/cookbook/visibility/visibility-over-time.md): Build the daily, weekly, or monthly Visibility line chart for one asset.
+- [Headline score and the daily series, together](https://docs.tryprofound.com/cookbook/visibility/headline-and-daily.md): Fetch both the period score and the daily line for one asset, and understand why they're different calls.
+- [Top-N leaderboard](https://docs.tryprofound.com/cookbook/visibility/leaderboard.md): Rank every asset in a category by any visibility metric.
+- [Compare your asset to competitors over time](https://docs.tryprofound.com/cookbook/visibility/compare-competitors.md): Build a multi-line chart of Visibility Score for any list of assets.
+- [Segment Visibility by model, region, or persona](https://docs.tryprofound.com/cookbook/visibility/segment-by-model.md): Break a single asset's Visibility Score down by which AI model, region, or persona generated the answer.
+- [Citation Share for your owned domains](https://docs.tryprofound.com/cookbook/citations/citation-share.md): Compute the headline owned-domain citation share plus the period-over-period delta — what the Profound Citation Share tile shows.
+- [Citation Share and volume over time](https://docs.tryprofound.com/cookbook/citations/citation-share-over-time.md): Build the daily owned-domain Citation Share line and the daily total citation volume — both from a single API call.
+- [Citation Rank by domain (with deltas)](https://docs.tryprofound.com/cookbook/citations/top-citing-domains.md): Build the Citation Rank leaderboard — domains sorted by share, with the per-row pp change vs the previous period.
 
-## Product
-- Answer Engine Insights: https://www.tryprofound.com/features/answer-engine-insights
-- Agents: https://www.tryprofound.com/features/agents
-- Agent Analytics: https://www.tryprofound.com/features/agent-analytics
-- Prompt Volumes: https://www.tryprofound.com/features/prompt-volumes
-- Shopping: https://www.tryprofound.com/features/shopping
+## OpenAPI Specs
 
-## Developers
-- Developer Docs: https://docs.tryprofound.com
-- Agent Analytics integration guides: https://docs.tryprofound.com
-- Platform / Login: https://platform.tryprofound.com/welcome
+- [openapi.documented](https://app.stainless.com/api/spec/documented/profound/openapi.documented.yml)
 
-## Support
-- Help Center / Knowledge Base: https://help.tryprofound.com
-- Status: https://status.tryprofound.com
+## Optional
 
-## Security & Trust
-- Vulnerability Reporting Policy: https://www.tryprofound.com/vulnerability-reporting
-- security.txt: https://www.tryprofound.com/.well-known/security.txt
-- Trust Center (SOC 2, HIPAA): https://trust.tryprofound.com
-- Privacy Policy: https://www.tryprofound.com/legal/privacy-policy
-- Cookie Policy: https://www.tryprofound.com/legal/cookie-policy
+- [Changelog](https://product.tryprofound.com/changelog)
+- [Status](https://status.tryprofound.com)

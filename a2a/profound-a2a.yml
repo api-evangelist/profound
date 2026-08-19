@@ -1,0 +1,60 @@
+generated: '2026-08-13'
+method: probed
+source: https://docs.tryprofound.com/.well-known/agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: docs.tryprofound.com
+  note: >-
+    Served from the documentation host, not the apex or the API host.
+    www.tryprofound.com and api.tryprofound.com both return 404 for
+    /.well-known/agent-card.json and /.well-known/agent.json; only the
+    Mintlify-hosted docs host publishes the card.
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: '0.3'
+  preferred_transport: HTTP+JSON
+  deviations:
+  - supportedInterfaces-instead-of-additionalInterfaces
+  notes: >-
+    Passes all three hard checks — capabilities is an object, protocolVersion is
+    present, skills is an array — and carries the optional preferredTransport,
+    defaultInputModes and defaultOutputModes. The single deviation is the
+    interface array key: the card uses supportedInterfaces where A2A 1.0.0 names
+    the field additionalInterfaces. Interface URL points at the docs site rather
+    than an executable A2A endpoint, so the card is a discovery manifest for the
+    documentation and MCP surface rather than an addressable A2A agent.
+card:
+  name: Profound
+  url: https://docs.tryprofound.com/
+  version: 1.0.0
+  organization: Profound
+  documentation_url: https://docs.tryprofound.com/
+  skills: 1
+  skill_ids:
+  - profound
+  capabilities:
+    streaming: false
+    push_notifications: false
+  file: profound-agent-card.json
+related:
+  agent_skill: https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+  agent_skill_file: skills/profound-profound-skill.md
+  note: >-
+    The card's single skill links out to a provider-published Agent Skill
+    markdown file, harvested verbatim into skills/.
+x-evidence:
+  fetched: '2026-08-13'
+  url: https://docs.tryprofound.com/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  negative_probes:
+  - url: https://www.tryprofound.com/.well-known/agent-card.json
+    http_status: 404
+  - url: https://www.tryprofound.com/.well-known/agent.json
+    http_status: 404
+  - url: https://api.tryprofound.com/.well-known/agent-card.json
+    http_status: 404
+  - url: https://api.tryprofound.com/.well-known/agent.json
+    http_status: 404

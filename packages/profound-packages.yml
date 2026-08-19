@@ -1,0 +1,65 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://docs.tryprofound.com/sdks/overview + registry.npmjs.org +
+  pypi.org/pypi/profound/json + api.github.com/orgs/cooper-square-technologies
+note: >-
+  Both SDKs are first-party: the docs page titles them "Official Python and
+  JavaScript SDKs for the Profound API", and both repositories sit in the
+  cooper-square-technologies GitHub org — Cooper Square Technologies Inc. is the
+  legal entity operating as Profound.
+packages:
+- language: python
+  registry: pypi
+  name: profound
+  url: https://pypi.org/project/profound/
+  install: pip install profound
+  official: true
+  version: 0.57.0
+  published: '2026-08-05'
+  repository: https://github.com/cooper-square-technologies/profound-python-sdk
+  docs: https://docs.tryprofound.com/sdks/python-package
+  description: The official Python library for the profound API
+  note: >-
+    Reads the API key from the PROFOUND_API_KEY environment variable when
+    api_key is not passed explicitly.
+- language: javascript
+  registry: npm
+  name: "@profoundai/client"
+  url: https://www.npmjs.com/package/@profoundai/client
+  install: npm install @profoundai/client
+  official: true
+  version: 0.47.0
+  published: '2026-06-30'
+  repository: https://github.com/cooper-square-technologies/profound-typescript-sdk
+  docs: https://docs.tryprofound.com/sdks/javascript-package
+  description: The official TypeScript library for the Profound API
+  note: >-
+    TypeScript-first; also installable with yarn, pnpm and bun per the SDK docs.
+    Reads PROFOUND_API_KEY from the environment.
+currency:
+  checked: '2026-08-13'
+  note: >-
+    Both SDKs are current against the API. The Python package shipped 0.57.0 on
+    2026-08-05, inside the same month as the August 2026 API changelog entry
+    (YouTube social reports, citation_tag filter). The TypeScript package last
+    published 0.47.0 on 2026-06-30 and therefore predates the July and August
+    2026 endpoint additions; both repositories still show commit activity on
+    2026-08-13, so the JS lag is a release-cadence gap rather than abandonment.
+registries_checked:
+- registry: pypi
+  found: true
+- registry: npm
+  found: true
+- registry: rubygems
+  found: false
+- registry: crates.io
+  found: false
+- registry: packagist
+  found: false
+- registry: nuget
+  found: false
+- registry: maven-central
+  found: false
+- registry: pkg.go.dev
+  found: false

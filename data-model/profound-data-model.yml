@@ -1,0 +1,162 @@
+generated: '2026-08-13'
+method: searched
+source: https://docs.tryprofound.com/cookbook/setup/data-model
+derived_from: openapi/_original/profound-openapi.json
+note: >-
+  Profound publishes its own entity model page, so the graph below is the
+  provider's rather than one inferred from $refs; endpoint bindings were then
+  verified against the OpenAPI operationIds.
+root: Organization
+entities:
+- name: Organization
+  description: A Profound account. Holds many Categories.
+  id_field: organization_id
+  list_endpoint: list_organizations_v1_org_get
+  relationships:
+  - has_many: Category
+    via: organization_id
+  - has_many: Domain
+    via: organization_id
+  - has_many: Region
+    via: organization_id
+  - has_many: Model
+    via: organization_id
+- name: Category
+  description: >-
+    A workspace, typically one brand and its competitive set. Every Answer
+    Engine Insights report query is scoped to exactly one Category.
+  id_field: category_id
+  list_endpoint: get_categories_v1_org_categories_get
+  relationships:
+  - belongs_to: Organization
+    via: organization_id
+  - has_many: Asset
+    via: category_id
+  - has_many: Topic
+    via: category_id
+  - has_many: Prompt
+    via: category_id
+  - has_many: Tag
+    via: category_id
+  - has_many: Persona
+    via: category_id
+  - has_many: Region
+    via: category_id
+- name: Asset
+  description: >-
+    A brand, company or product tracked in a Category. Carries is_owned,
+    website and alternate_domains.
+  list_endpoint: get_category_assets_v1_org_categories__category_id__assets_get
+  org_endpoint: get_assets_v1_org_assets_get
+  relationships:
+  - belongs_to: Category
+    via: category_id
+- name: Topic
+  description: A grouping of related prompts, for example "Pricing" or "Integrations".
+  id_field: topic_id
+  list_endpoint: get_category_topics_v1_org_categories__category_id__topics_get
+  relationships:
+  - belongs_to: Category
+    via: category_id
+  - has_many: Prompt
+    via: topic_id
+- name: Prompt
+  description: A question collected against AI models, for example "Best CRM for startups?".
+  list_endpoint: get_category_prompts_v1_org_categories__category_id__prompts_get
+  write_endpoints:
+  - create_category_prompts_v1_org_categories__category_id__prompts_post
+  - update_category_prompts_v1_org_categories__category_id__prompts_patch
+  - update_category_prompt_status_v1_org_categories__category_id__prompts_status_patch
+  relationships:
+  - belongs_to: Category
+    via: category_id
+  - belongs_to: Topic
+    via: topic_id
+  - has_many: Tag
+    via: tag_id
+  fans_out_across: [Platform, Region, Persona, Tag]
+- name: Platform
+  description: >-
+    The AI surface that answered — ChatGPT, Claude, Perplexity, Gemini, Google
+    AI Overviews. Called `model` in API parameters.
+  list_endpoint: get_models_v1_org_models_get
+  relationships:
+  - belongs_to: Organization
+    via: organization_id
+- name: Region
+  description: The country an answer is scoped to.
+  list_endpoint: get_regions_v1_org_regions_get
+  category_endpoint: get_category_regions_v1_org_categories__category_id__regions_get
+  relationships:
+  - belongs_to: Organization
+    via: organization_id
+- name: Persona
+  description: An audience profile, for example "small business owner".
+  list_endpoint: get_personas_v1_org_personas_get
+  category_endpoint: get_category_personas_v1_org_categories__category_id__personas_get
+  relationships:
+  - belongs_to: Category
+    via: category_id
+- name: Tag
+  description: A free-form label applied to a Prompt.
+  id_field: tag_id
+  list_endpoint: get_category_tags_v1_org_categories__category_id__tags_get
+  relationships:
+  - belongs_to: Category
+    via: category_id
+- name: Domain
+  description: A tracked web domain. Traffic reports (bots, referrals) are domain-scoped.
+  list_endpoint: get_domains_v1_org_domains_get
+  relationships:
+  - belongs_to: Organization
+    via: organization_id
+- name: KnowledgeBase
+  description: A searchable document store with folders and documents.
+  id_field: knowledge_base_id
+  list_endpoint: list_knowledge_bases_v1_knowledge_bases_get
+  relationships:
+  - has_many: Document
+    via: knowledge_base_id
+- name: Agent
+  description: A workflow graph of typed nodes that can be published and run.
+  id_field: agent_id
+  list_endpoint: list_agents_v1_agents_get
+  relationships:
+  - has_many: AgentRun
+    via: agent_id
+  - has_one: AgentGraph
+    via: agent_id
+- name: AgentRun
+  description: One execution of an Agent, polled to a terminal state.
+  id_field: run_id
+  get_endpoint: get_agent_run_v1_agents__agent_id__runs__run_id__get
+  relationships:
+  - belongs_to: Agent
+    via: agent_id
+- name: Project
+  description: A unit of content work holding Tasks and generation runs.
+  id_field: project_id
+  list_endpoint: list_projects_v1_projects_get
+  relationships:
+  - has_many: Task
+    via: project_id
+- name: Task
+  description: A work item within a Project, with its own status transitions.
+  id_field: task_id
+  list_endpoint: list_project_tasks_v1_projects__project_id__tasks_get
+  relationships:
+  - belongs_to: Project
+    via: project_id
+- name: Document
+  description: A stored content document, separately addressable and shareable.
+  id_field: document_id
+  list_endpoint: list_documents_v1_documents_get
+query_semantics:
+  scoping: Every report call is scoped to one category_id; no cross-category queries.
+  filters: filters narrow which prompts contribute (asset_name, topic_id, tag_id).
+  dimensions: dimensions break results out by slice (model, region, persona, tag).
+spec_stats:
+  schemas: 348
+  paths: 110
+  operations: 125
+render: null

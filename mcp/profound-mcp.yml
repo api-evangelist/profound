@@ -1,0 +1,147 @@
+generated: '2026-08-13'
+method: searched
+status: published
+source: https://docs.tryprofound.com/mcp/overview
+deployment:
+  mode: remote
+  endpoint: https://mcp.tryprofound.com/mcp
+  auth: oauth
+  verified: probed
+  note: >-
+    Remote-only. Profound ships no stdio package — there is no npx/pip MCP
+    server to install; clients connect directly to the hosted URL. Confirmed by
+    POSTing tools/list to the endpoint: it answered HTTP 401 with a
+    WWW-Authenticate Bearer challenge and a resource_metadata pointer, which
+    proves a live MCP server is listening and that the tool schemas are
+    auth-gated.
+server:
+  name: profound_mcp
+  transport: http
+  url: https://mcp.tryprofound.com/mcp
+  docs: https://docs.tryprofound.com/mcp/overview
+authentication:
+  primary: oauth2.1
+  docs: https://docs.tryprofound.com/mcp/authentication
+  authorization_server: https://auth.tryprofound.com
+  protected_resource_metadata: https://mcp.tryprofound.com/.well-known/oauth-protected-resource
+  authorization_server_metadata: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+  dynamic_client_registration: true
+  pkce: [S256]
+  scopes_supported: [email, offline_access, openid, profile]
+  alternative:
+    method: bearer-api-key
+    note: >-
+      Long-lived Bearer token using a Profound API key, for service accounts and
+      internal tools that cannot complete a per-user OAuth flow. Requires the
+      Enterprise plan and API access granted by Profound support.
+behavior:
+  analytics_tools_read_only: true
+  hints:
+    readOnlyHint: true
+    idempotentHint: true
+  note: >-
+    Read-only hints apply to the analytics/report tools. The Agents tools do
+    create, update and publish agent definitions and start runs; they default to
+    preview: true so a client reviews a plan before it is applied.
+tools:
+  discovery:
+  - name: whoami
+    description: Confirm the authenticated principal, organizations, regions, and entitlements
+  - name: list_organizations
+    description: List organizations the user can access
+  - name: list_regions
+    description: List geographic regions, optionally scoped to an organization
+  - name: list_models
+    description: List tracked AI models such as ChatGPT, Perplexity, Google AI Overviews, and Gemini
+  - name: list_categories
+    description: List tracked categories for an organization
+  - name: list_domains
+    description: List tracked domains for an organization
+  - name: list_tags
+    description: List tags in a category
+  - name: list_topics
+    description: List topics in a category
+  - name: list_prompts
+    description: List configured prompts in a category, with optional status, tag, and topic filters
+  brand_visibility_reports:
+  - name: get_visibility_report
+    description: How visible a brand is in AI answers, by model, topic, region, prompt, tag or persona
+  - name: get_sentiment_report
+    description: What sentiment AI answers express about a brand or competitor, and which themes are positive or negative
+  - name: get_citations_report
+    description: Which domains, pages or URLs AI engines cite for a category
+  - name: get_prompt_answers
+    description: The raw AI answers observed behind the metrics
+  - name: get_factcheck_report
+    description: FactCheck scores for a category over a date range
+  - name: get_factcheck_claims
+    description: Inaccurate claims identified in a category over a date range
+  traffic_reports:
+  - name: get_referrals_report
+    description: How many visits a domain received from AI engines, and which referrers drove them
+  - name: get_bots_report
+    description: Which AI crawlers are visiting a domain, and how often
+  agents:
+  - name: list_agents
+    description: Browse Agents in the organization
+  - name: get_agent
+    description: Read an Agent and its input_schema before running it
+  - name: run_agent
+    description: Start a run with inputs matching the Agent's input_schema
+  - name: get_agent_run
+    description: Poll a run by agent_id and run_id until it reaches a terminal state
+  - name: list_agent_definition_templates
+    description: List pre-built Agent templates
+  - name: list_agent_node_types
+    description: List workflow node types available for building an Agent graph
+  - name: get_agent_node_schema
+    description: Get the schema for one Agent node type
+  - name: start_agent_build_session
+    description: Open a traced build session from a plain-language intent
+  - name: get_agent_definition
+    description: Read an Agent definition draft
+  - name: create_agent_definition
+    description: Create an Agent definition draft (preview by default)
+  - name: update_agent_definition
+    description: Update an Agent definition draft (preview by default)
+  - name: validate_agent_definition
+    description: Pre-check an Agent definition for structural issues
+  - name: publish_agent_definition
+    description: Publish an Agent definition to make it live (preview by default)
+resources:
+- uri: file:///profound/glossary
+  audience: assistant
+  description: Compact index of Profound-specific terms to load once per session
+- uri: file:///profound/glossary/full
+  audience: user
+  description: Full glossary with definitions and examples
+- uri: file:///profound/glossary/{term}
+  audience: assistant
+  description: Full definition of one glossary term, addressed by slug
+clients_documented:
+- Claude Code
+- Claude Desktop
+- ChatGPT
+- Cursor
+- Gemini CLI
+- Microsoft Copilot Studio
+- OpenCode
+- VS Code
+- Windsurf
+- WRITER AI Studio
+x-evidence:
+  fetched: '2026-08-13'
+  probes:
+  - url: https://mcp.tryprofound.com/mcp
+    method: POST tools/list
+    http_status: 401
+    note: WWW-Authenticate Bearer error="invalid_token"; live server, schemas auth-gated
+  - url: https://mcp.tryprofound.com/.well-known/oauth-protected-resource
+    http_status: 200
+  - url: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+    http_status: 200
+  tool_catalog_source: >-
+    Tool names and descriptions are taken from the published capability pages
+    (docs.tryprofound.com/mcp/capabilities/*), not from a live tools/list — the
+    live manifest requires authentication. Input schemas therefore require
+    authenticated introspection and are not recorded here.

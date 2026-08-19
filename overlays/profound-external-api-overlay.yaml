@@ -1,0 +1,123 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Profound External API
+  version: 1.0.0
+extends: openapi/profound-external-api-openapi.json
+x-generated: '2026-08-13'
+x-method: generated
+x-source: >-
+  Derived from the artifacts in this repo — conventions/, errors/,
+  rate-limits/, lifecycle/, authentication/ — against the spec harvested
+  verbatim from https://api.tryprofound.com/openapi.json. The original is never
+  mutated; these are our additions.
+actions:
+- target: $.info
+  update:
+    description: >-
+      The Profound External API exposes Answer Engine Optimization analytics
+      programmatically: brand visibility, citations, sentiment, query fan-outs,
+      FactCheck accuracy, shopping visibility, AI crawler and referral traffic,
+      plus knowledge bases, documents, projects and runnable Profound Agents.
+      Access is Enterprise-plan only and must be requested from support.
+    contact:
+      name: Profound Support
+      email: support@tryprofound.com
+      url: https://docs.tryprofound.com
+    x-apievangelist-base-url: https://api.tryprofound.com
+    x-apievangelist-docs: https://docs.tryprofound.com/rest-api/introduction
+    x-apievangelist-access: enterprise-only-on-request
+    x-apievangelist-version-note: >-
+      info.version is a git commit SHA rather than a semantic version, so the
+      contract carries no human-readable release identifier.
+- target: $.info
+  update:
+    x-apievangelist-rate-limits:
+      limit: 600
+      window: 1h
+      scope: per-api-key
+      headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset]
+      exhausted_status: 429
+      retry_after: true
+      source: rate-limits/profound-rate-limits.yml
+- target: $.info
+  update:
+    x-apievangelist-conventions:
+      pagination:
+        style: offset
+        envelope: pagination
+        default_limit: 100
+        max_limit: 50000
+        total_field: info.total_rows
+      response_envelope: >-
+        Report rows pack metrics and dimensions as POSITIONAL ARRAYS; column
+        order comes from info.query.metrics and info.query.dimensions in the
+        response, not from the request order.
+      end_date_exclusive: true
+      timezone: >-
+        Dates without a Z suffix are interpreted in Eastern Time; end_date is
+        parsed at the start of that day and is therefore excluded.
+      idempotency: not-supported
+      source: conventions/profound-conventions.yml
+- target: $.info
+  update:
+    x-apievangelist-undeclared-errors:
+      note: >-
+        The spec declares only 422 on every operation. These statuses are real
+        documented runtime behaviour but are absent from the contract, so a
+        generated client will not handle them.
+      statuses:
+      - status: 401
+        title: Unauthorized — invalid or missing API key
+      - status: 403
+        title: Forbidden — insufficient permissions or entitlement
+      - status: 429
+        title: Too Many Requests — rate limit exceeded
+      source: errors/profound-problem-types.yml
+- target: $.info
+  update:
+    x-apievangelist-deprecations:
+      note: >-
+        Five v1 report operations are announced as deprecated in the changelog
+        but none carries deprecated: true in the spec, so the deprecation is
+        invisible to tooling.
+      operations:
+      - query_visibility_v1_reports_visibility_post
+      - query_citations_v1_reports_citations_post
+      - query_sentiment_v1_reports_sentiment_post
+      - query_sentiment_v2_v1_reports_sentiment_v2_post
+      - query_fanouts_v1_reports_query_fanouts_post
+      source: lifecycle/profound-lifecycle.yml
+- target: $.info
+  update:
+    x-apievangelist-agent-surface:
+      mcp:
+        url: https://mcp.tryprofound.com/mcp
+        mode: remote
+        auth: oauth2.1
+        tools: 30
+        source: mcp/profound-mcp.yml
+      agent_card:
+        url: https://docs.tryprofound.com/.well-known/agent-card.json
+        grade: conformant
+        source: a2a/profound-a2a.yml
+      agent_skill:
+        url: https://docs.tryprofound.com/.well-known/agent-skills/profound/skill.md
+        source: skills/_index.yml
+      crosswalk: mcp/profound-tool-crosswalk.yml
+- target: $.components.securitySchemes.APIKeyHeader
+  update:
+    description: >-
+      Enterprise API key sent in the X-API-Key header. Created in
+      Settings → API Keys with a mandatory expiration date and shown once only.
+      Scoped to a single organization; grants access to all of that
+      organization's analytics data. Also readable from the PROFOUND_API_KEY
+      environment variable by both official SDKs.
+- target: $.components.securitySchemes.BearerAuth
+  update:
+    description: >-
+      The same Enterprise API key presented as an Authorization Bearer token.
+      This is also the fallback authentication method for the hosted MCP server
+      when a per-user OAuth 2.1 flow is not possible.
+- target: $.servers
+  update:
+    description: Production Server — the only published server for this API.

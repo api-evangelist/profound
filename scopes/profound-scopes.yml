@@ -1,0 +1,68 @@
+generated: '2026-08-13'
+method: probed
+source: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+docs: https://docs.tryprofound.com/mcp/authentication
+note: >-
+  The REST API declares NO oauth2 security scheme — it is API-key only
+  (X-API-Key or Bearer), so derive-oauth-scopes.py correctly found zero scopes
+  in the OpenAPI. The OAuth surface belongs to the hosted MCP server, whose
+  authorization server metadata is anonymously readable. The scopes below are
+  the identity scopes that server advertises; Profound publishes no
+  resource-permission scope vocabulary — MCP authorization is coarse-grained,
+  with every tool call executing as the signed-in user and returning only the
+  data that user can already access.
+applies_to: mcp
+issuer: https://auth.tryprofound.com
+schemes:
+- name: MCP OAuth 2.1
+  source: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://auth.tryprofound.com/oauth2/authorize
+    tokenUrl: https://auth.tryprofound.com/oauth2/token
+    pkce: [S256]
+  - flow: deviceCode
+    deviceAuthorizationUrl: https://auth.tryprofound.com/oauth2/device_authorization
+    grantType: urn:ietf:params:oauth:grant-type:device_code
+  - flow: refreshToken
+    tokenUrl: https://auth.tryprofound.com/oauth2/token
+  endpoints:
+    registration: https://auth.tryprofound.com/oauth2/register
+    introspection: https://auth.tryprofound.com/oauth2/introspection
+    jwks: https://auth.tryprofound.com/oauth2/jwks
+  dynamic_client_registration: true
+  client_id_metadata_document_supported: true
+  response_types_supported: [code]
+  response_modes_supported: [query]
+scopes:
+- scope: openid
+  description: OIDC identity — issue an ID token for the signed-in Profound user.
+  flows: [authorizationCode]
+  sources: [https://mcp.tryprofound.com/.well-known/oauth-authorization-server]
+- scope: profile
+  description: Basic profile claims for the signed-in Profound user.
+  flows: [authorizationCode]
+  sources: [https://mcp.tryprofound.com/.well-known/oauth-authorization-server]
+- scope: email
+  description: Email address claim for the signed-in Profound user.
+  flows: [authorizationCode]
+  sources: [https://mcp.tryprofound.com/.well-known/oauth-authorization-server]
+- scope: offline_access
+  description: Issue a refresh token so the MCP client can maintain a long-lived session.
+  flows: [authorizationCode, refreshToken]
+  sources: [https://mcp.tryprofound.com/.well-known/oauth-authorization-server]
+protected_resource:
+  resource: https://mcp.tryprofound.com/mcp
+  resource_name: profound_mcp
+  authorization_servers: [https://auth.tryprofound.com]
+  bearer_methods_supported: [header]
+gaps:
+- No resource/permission scopes (e.g. reports:read, agents:write) are published.
+- The REST API has no OAuth surface at all; API keys carry all of an organization's read access with no scoping.
+x-evidence:
+  fetched: '2026-08-13'
+  probes:
+  - url: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
+    http_status: 200
+  - url: https://mcp.tryprofound.com/.well-known/oauth-protected-resource
+    http_status: 200

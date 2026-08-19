@@ -1,0 +1,1 @@
+{"resource":"https://mcp.tryprofound.com/mcp","authorization_servers":["https://auth.tryprofound.com"],"bearer_methods_supported":["header"],"resource_name":"profound_mcp"}
