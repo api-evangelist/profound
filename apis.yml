@@ -36,7 +36,7 @@ x-type: company
 x-source: kleiner-perkins-portfolio
 x-tier: profiled
 x-tier-reason: published-openapi-and-mcp-server
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-07-17'
 modified: '2026-08-13'
 tags:
