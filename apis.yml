@@ -66,49 +66,15 @@ tags_raw:
 - Citations
 - MCP
 apis:
-- aid: profound-external-api
-  name: Profound External API
-  description: >-
-    The programmatic interface to Profound's Answer Engine Optimization data:
-    brand visibility, citations, sentiment, query fan-outs, FactCheck accuracy,
-    shopping visibility, YouTube social reports, AI crawler (bot) and human
-    referral traffic, plus knowledge bases, documents, projects, content
-    optimization and runnable Profound Agents. 125 operations across v1 and v2,
-    with server-sent-event /stream variants on every v2 query endpoint.
-    Authentication is an X-API-Key header; access is Enterprise-only on request.
-  humanURL: https://docs.tryprofound.com/rest-api/introduction
-  baseURL: https://api.tryprofound.com
-  tags:
-  - Analytics
-  - Answer Engine Optimization
-  - Brand Visibility
-  - Citations
-  - Agents
-  properties:
-  - type: OpenAPI
-    url: openapi/profound-external-api-openapi.json
-  - type: OpenAPI Source
-    url: https://api.tryprofound.com/openapi.json
-  - type: Overlay
-    url: overlays/profound-external-api-overlay.yaml
-  - type: Documentation
-    url: https://docs.tryprofound.com/rest-api/introduction
-  - type: APIReference
-    url: https://docs.tryprofound.com/api-reference/organization/get-categories
-  - type: Authentication
-    url: https://docs.tryprofound.com/rest-api/authentication
-  - type: ChangeLog
-    url: https://docs.tryprofound.com/rest-api/changelog
 - aid: profound-agent-analytics-ingestion-api
   name: Profound Agent Analytics Ingestion API
   description: >-
-    The inbound log-ingestion endpoint for Profound Agent Analytics. Customers
-    POST batches of up to 1,000 web-request log entries as JSON (timestamp,
-    method, host, path, status_code, ip, user_agent, plus optional query_params,
-    referer, bytes_sent and duration_ms) so Profound can attribute AI crawler
-    and human referral traffic. Authenticated with a Profound Log Ingestion
-    Token in the x-api-key header. Listed as a separately monitored component on
-    the Profound status page. No OpenAPI is published for this surface.
+    The inbound log-ingestion endpoint for Profound Agent Analytics. Customers POST batches of up to 1,000
+    web-request log entries as JSON (timestamp, method, host, path, status_code, ip, user_agent, plus
+    optional query_params, referer, bytes_sent and duration_ms) so Profound can attribute AI crawler and
+    human referral traffic. Authenticated with a Profound Log Ingestion Token in the x-api-key header.
+    Listed as a separately monitored component on the Profound status page. No OpenAPI is published for
+    this surface.
   humanURL: https://docs.tryprofound.com/agent-analytics/custom
   baseURL: https://artemis.api.tryprofound.com
   tags:
@@ -120,6 +86,306 @@ apis:
     url: https://docs.tryprofound.com/agent-analytics/custom
   - type: GettingStarted
     url: https://docs.tryprofound.com/agent-analytics/overview
+- aid: profound:profound-agents-api
+  name: Profound Agents API
+  description: The Agents API from Profound — 8 operation(s) for agents.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-agents-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-beta-api
+  name: Profound Beta API
+  description: The beta API from Profound — 2 operation(s) for beta.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - beta
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-beta-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-bot-traffic-reports-api
+  name: Profound Bot Traffic Reports API
+  description: The Bot Traffic Reports API from Profound — 2 operation(s) for bot traffic reports.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Bot Traffic Reports
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-bot-traffic-reports-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-categories-api
+  name: Profound Categories API
+  description: The Categories API from Profound — 10 operation(s) for categories.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-categories-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-content-api
+  name: Profound Content API
+  description: The Content API from Profound — 2 operation(s) for content.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Content
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-content-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-content-optimization-api
+  name: Profound Content optimization API
+  description: The Content optimization API from Profound — 2 operation(s) for content optimization.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Content optimization
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-content-optimization-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-documents-api
+  name: Profound Documents API
+  description: The Documents API from Profound — 3 operation(s) for documents.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Documents
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-documents-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-human-referrals-api
+  name: Profound Human Referrals API
+  description: The Human Referrals API from Profound — 2 operation(s) for human referrals.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Human Referrals
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-human-referrals-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-integrations-api
+  name: Profound Integrations API
+  description: The Integrations API from Profound — 1 operation(s) for integrations.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Integrations
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-integrations-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-knowledge-bases-api
+  name: Profound Knowledge bases API
+  description: The Knowledge bases API from Profound — 4 operation(s) for knowledge bases.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Knowledge bases
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-knowledge-bases-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-openai-ads-api
+  name: Profound OpenAI Ads API
+  description: The OpenAI Ads API from Profound — 1 operation(s) for openai ads.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - OpenAI Ads
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-openai-ads-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-organization-api
+  name: Profound Organization API
+  description: The Organization API from Profound — 16 operation(s) for organization.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Organization
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-organization-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-projects-api
+  name: Profound Projects API
+  description: The Projects API from Profound — 10 operation(s) for projects.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Projects
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-projects-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-prompts-api
+  name: Profound Prompts API
+  description: The Prompts API from Profound — 3 operation(s) for prompts.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Prompts
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-prompts-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
+- aid: profound:profound-reports-api
+  name: Profound Reports API
+  description: The Reports API from Profound — 62 operation(s) for reports.
+  humanURL: https://docs.tryprofound.com/rest-api/introduction
+  baseURL: https://api.tryprofound.com
+  tags:
+  - Reports
+  properties:
+  - type: OpenAPI
+    url: openapi/profound-reports-api-openapi.yml
+  - type: OpenAPI Source
+    url: https://api.tryprofound.com/openapi.json
+  - type: Documentation
+    url: https://docs.tryprofound.com/rest-api/introduction
+  - type: APIReference
+    url: https://docs.tryprofound.com/api-reference/organization/get-categories
+  - type: Authentication
+    url: https://docs.tryprofound.com/rest-api/authentication
+  - type: ChangeLog
+    url: https://docs.tryprofound.com/rest-api/changelog
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
