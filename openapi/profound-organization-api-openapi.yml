@@ -1,0 +1,1840 @@
+openapi: 3.2.0
+info:
+  title: External Organization API
+  version: 6551bd49db665ffb7f80780b3e150b8e8b780cc3
+servers:
+- url: https://api.tryprofound.com
+  description: Production Server
+tags:
+- name: Organization
+paths:
+  /v1/org:
+    get:
+      tags:
+      - Organization
+      summary: List organizations
+      description: Return every organization the caller's API key grants access to. Use this to discover organization IDs before calling endpoints that accept an `organization_id` filter.
+      operationId: list_organizations_v1_org_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Organization'
+                type: array
+                title: Response List Organizations V1 Org Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+  /v1/org/regions:
+    get:
+      tags:
+      - Organization
+      summary: Get Regions
+      description: Get the organization regions.
+      operationId: get_regions_v1_org_regions_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_ids
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uuid
+          - type: 'null'
+          description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+          title: Organization Ids
+        description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NamedResource'
+                title: Response Get Regions V1 Org Regions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/models:
+    get:
+      tags:
+      - Organization
+      summary: Get Models
+      description: Get the organization models.
+      operationId: get_models_v1_org_models_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NamedResource'
+                type: array
+                title: Response Get Models V1 Org Models Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+  /v1/org/domains:
+    get:
+      tags:
+      - Organization
+      summary: Get Domains
+      description: Get the organization domains.
+      operationId: get_domains_v1_org_domains_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_ids
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uuid
+          - type: 'null'
+          description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+          title: Organization Ids
+        description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DomainWithOrganization'
+                title: Response Get Domains V1 Org Domains Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/assets:
+    get:
+      tags:
+      - Organization
+      summary: Get Assets
+      description: 'Get the organization assets, one row per (asset, organization) pair.
+
+
+        An asset''s category can belong to multiple organizations; one asset row is
+
+        emitted per owning org so no association is silently dropped.'
+      operationId: get_assets_v1_org_assets_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_ids
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uuid
+          - type: 'null'
+          description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+          title: Organization Ids
+        description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationAssetsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/personas:
+    get:
+      tags:
+      - Organization
+      summary: Get Personas
+      description: 'Get the organization personas, one row per (persona, organization) pair.
+
+
+        Same (item, org) fan-out as ``get_assets``: a persona''s category can be
+
+        owned by multiple orgs, and each owning org gets its own row so no
+
+        association is silently dropped.'
+      operationId: get_personas_v1_org_personas_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_ids
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uuid
+          - type: 'null'
+          description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+          title: Organization Ids
+        description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationPersonasWithCategoryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories:
+    get:
+      tags:
+      - Organization
+      summary: Get Categories
+      description: Get the organization categories, one row per (category, organization) pair.
+      operationId: get_categories_v1_org_categories_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_ids
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uuid
+          - type: 'null'
+          description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+          title: Organization Ids
+        description: Restrict results to one or more organizations the caller belongs to. Repeat the parameter to target multiple orgs (e.g. `?organization_ids=<id1>&organization_ids=<id2>`). Omit to return data from every organization the caller has access to.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryWithOrganization'
+                title: Response Get Categories V1 Org Categories Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/topics:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Topics
+      description: Get the topics for a specific category.
+      operationId: get_category_topics_v1_org_categories__category_id__topics_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Topic'
+                title: Response Get Category Topics V1 Org Categories  Category Id  Topics Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/tags:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Tags
+      description: Get the tags for a specific category.
+      operationId: get_category_tags_v1_org_categories__category_id__tags_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+                title: Response Get Category Tags V1 Org Categories  Category Id  Tags Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/regions:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Regions
+      description: Get the regions for a specific category.
+      operationId: get_category_regions_v1_org_categories__category_id__regions_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NamedResource'
+                title: Response Get Category Regions V1 Org Categories  Category Id  Regions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/citation-categories:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Citation Categories
+      description: 'Get the citation categories for a category: the built-in buckets plus any custom categories.'
+      operationId: get_category_citation_categories_v1_org_categories__category_id__citation_categories_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitationCategoriesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/citation-tags:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Citation Tags
+      description: Get the custom citation tags defined for a category.
+      operationId: get_category_citation_tags_v1_org_categories__category_id__citation_tags_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitationTagsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/prompts:
+    get:
+      tags:
+      - Organization
+      summary: List prompts
+      description: Retrieve prompts in a category with optional filtering by type, topic, tag, region, platform, or persona. Supports cursor-based pagination.
+      operationId: get_category_prompts_v1_org_categories__category_id__prompts_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 10000
+          exclusiveMinimum: 0
+          description: Maximum number of prompts to return.
+          default: 10000
+          title: Limit
+        description: Maximum number of prompts to return.
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Pagination cursor from a previous response.
+          title: Cursor
+        description: Pagination cursor from a previous response.
+      - name: order_by
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/PromptOrderBy'
+          description: Field used to order prompts.
+          default: created_at
+        description: Field used to order prompts.
+      - name: order_dir
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/OrderByDirection'
+          description: Sort direction for the selected order field.
+          default: desc
+        description: Sort direction for the selected order field.
+      - name: analysis_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalysisType'
+          description: Filter by analysis type (visibility, sentiment, accuracy).
+          default: []
+          title: Analysis Type
+        description: Filter by analysis type (visibility, sentiment, accuracy).
+      - name: prompt_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromptType'
+          description: Deprecated. Use analysis_type instead.
+          deprecated: true
+          default: []
+          title: Prompt Type
+        description: Deprecated. Use analysis_type instead.
+        deprecated: true
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            enum:
+            - active
+            - disabled
+            type: string
+          description: Filter by prompt status. Defaults to `active` only.
+          default:
+          - active
+          title: Status
+        description: Filter by prompt status. Defaults to `active` only.
+      - name: topic_id
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Filter by topic IDs.
+          default: []
+          title: Topic Id
+        description: Filter by topic IDs.
+      - name: tag_id
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Filter by tag IDs.
+          default: []
+          title: Tag Id
+        description: Filter by tag IDs.
+      - name: region_id
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Filter by region IDs.
+          default: []
+          title: Region Id
+        description: Filter by region IDs.
+      - name: platform_id
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Filter by platform IDs.
+          default: []
+          title: Platform Id
+        description: Filter by platform IDs.
+      - name: persona_id
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Filter by persona IDs.
+          default: []
+          title: Persona Id
+        description: Filter by persona IDs.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryPromptsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Organization
+      summary: Create prompts
+      description: Create one or more prompts in a category. Topics and tags are auto-created if referenced by name and not yet existing. Use dry_run to preview without persisting.
+      operationId: create_category_prompts_v1_org_categories__category_id__prompts_post
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePromptsBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePromptsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - Organization
+      summary: Update prompts
+      description: Update one or more existing prompts. Only provided fields are changed. Dimension fields (regions, platforms, personas, tags) replace the full set when provided. Use dry_run to preview without persisting.
+      operationId: update_category_prompts_v1_org_categories__category_id__prompts_patch
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePromptsBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePromptsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/prompts/status:
+    patch:
+      tags:
+      - Organization
+      summary: Update prompt status
+      description: 'Bulk-update the status of one or more prompts. Prompts already in the target status are skipped. Use dry_run to preview without persisting.
+
+
+        Status options:
+
+        - ''active'': Prompts will run daily.
+
+        - ''disabled'': Prompts will not run moving forward, but historical data is preserved.
+
+        - ''deleted'': Prompts are deleted along with historical data'
+      operationId: update_category_prompt_status_v1_org_categories__category_id__prompts_status_patch
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePromptStatusBody'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePromptStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/assets:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Assets
+      operationId: get_category_assets_v1_org_categories__category_id__assets_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryAsset'
+                title: Response Get Category Assets V1 Org Categories  Category Id  Assets Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/org/categories/{category_id}/personas:
+    get:
+      tags:
+      - Organization
+      summary: Get Category Personas
+      operationId: get_category_personas_v1_org_categories__category_id__personas_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryPersonasResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NamedResource:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: NamedResource
+      description: Generic id+name reference used across domain boundaries.
+    PromptType:
+      type: string
+      enum:
+      - visibility
+      - sentiment
+      title: PromptType
+    CategoryPersonasResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CategoryPersona'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CategoryPersonasResponse
+    PersonaProfileEmployment:
+      properties:
+        industry:
+          items:
+            type: string
+          type: array
+          title: Industry
+        jobTitle:
+          items:
+            type: string
+          type: array
+          title: Jobtitle
+        companySize:
+          items:
+            type: string
+          type: array
+          title: Companysize
+        roleSeniority:
+          items:
+            type: string
+          type: array
+          title: Roleseniority
+      type: object
+      title: PersonaProfileEmployment
+    CitationTag:
+      properties:
+        value:
+          type: string
+          title: Value
+          description: Value to pass to the v2 citations `citation_tag` filter.
+        name:
+          type: string
+          title: Name
+          description: Display name.
+      type: object
+      required:
+      - value
+      - name
+      title: CitationTag
+    CreatePromptsResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        created:
+          type: integer
+          title: Created
+          description: Number of prompts created.
+          default: 0
+        topics_created:
+          type: integer
+          title: Topics Created
+          description: Number of new topics created.
+          default: 0
+        tags_created:
+          type: integer
+          title: Tags Created
+          description: Number of new tags created.
+          default: 0
+        prompts:
+          items:
+            $ref: '#/components/schemas/PromptPreview'
+          type: array
+          title: Prompts
+          description: List of created (or previewed) prompts with resolved references.
+          default: []
+      type: object
+      required:
+      - dry_run
+      title: CreatePromptsResponse
+      description: Response from creating prompts.
+    IdOrName:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: UUID of the resource.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Display name of the resource.
+      type: object
+      title: IdOrName
+      description: 'Reference by id, name, or both. Plain strings work too:
+
+        UUIDs become id lookups, other strings become name lookups.'
+    DomainWithOrganization:
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        organization:
+          $ref: '#/components/schemas/Organization'
+      type: object
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      title: DomainWithOrganization
+      description: A domain paired with the organization edge it belongs to.
+    UpdatePromptStatusBody:
+      properties:
+        prompt_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Prompt Ids
+          description: IDs of the prompts to update.
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          - deleted
+          title: Status
+          description: 'Target status: ''active'', ''disabled'', or ''deleted''.'
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompt_ids
+      - status
+      title: UpdatePromptStatusBody
+    UpdatePromptsResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        updated:
+          type: integer
+          title: Updated
+          description: Number of prompts that had changes.
+          default: 0
+        topics_created:
+          type: integer
+          title: Topics Created
+          description: Number of new topics created.
+          default: 0
+        tags_created:
+          type: integer
+          title: Tags Created
+          description: Number of new tags created.
+          default: 0
+        prompts:
+          items:
+            $ref: '#/components/schemas/PromptUpdatePreview'
+          type: array
+          title: Prompts
+          description: List of prompts with their change diffs.
+          default: []
+      type: object
+      required:
+      - dry_run
+      title: UpdatePromptsResponse
+      description: Response from updating prompts.
+    CreatePromptsBody:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/CreatePromptInput'
+          type: array
+          title: Prompts
+          description: List of prompts to create.
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompts
+      title: CreatePromptsBody
+    AnalysisType:
+      type: string
+      enum:
+      - visibility
+      - sentiment
+      - sentiment_v2
+      - accuracy
+      title: AnalysisType
+    PaginationInfo:
+      properties:
+        total_rows:
+          type: integer
+          title: Total Rows
+        limit:
+          type: integer
+          title: Limit
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+      type: object
+      required:
+      - total_rows
+      - limit
+      - next_cursor
+      title: PaginationInfo
+    CategoryAsset:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        website:
+          type: string
+          title: Website
+        alternate_domains:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Alternate Domains
+        is_owned:
+          type: boolean
+          title: Is Owned
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        logo_url:
+          type: string
+          title: Logo Url
+      type: object
+      required:
+      - id
+      - name
+      - website
+      - is_owned
+      - created_at
+      - logo_url
+      title: CategoryAsset
+    CategoryWithOrganization:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        internal_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Name
+        organization:
+          $ref: '#/components/schemas/Organization'
+      type: object
+      required:
+      - id
+      - name
+      - organization
+      title: CategoryWithOrganization
+      description: A category annotated with the organization that owns it.
+    Category:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        internal_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Name
+      type: object
+      required:
+      - id
+      - name
+      title: Category
+    Topic:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          title: Status
+      type: object
+      required:
+      - id
+      - name
+      - status
+      title: Topic
+    UpdatePromptInput:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: ID of the prompt to update.
+        prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt
+          description: New prompt text.
+        topic:
+          anyOf:
+          - $ref: '#/components/schemas/IdOrName'
+          - type: 'null'
+          description: New topic. A new topic is created if the name doesn't exist.
+        language:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Language
+          description: New language code. Must be enabled for the organization.
+        tags:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/IdOrName'
+            type: array
+          - type: 'null'
+          title: Tags
+          description: New tag set. Replaces all existing tags on the prompt.
+        regions:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/IdOrName'
+            type: array
+          - type: 'null'
+          title: Regions
+          description: New region set. Replaces all existing regions.
+        platforms:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/IdOrName'
+            type: array
+          - type: 'null'
+          title: Platforms
+          description: New platform set. Replaces all existing platforms.
+        personas:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/IdOrName'
+            type: array
+          - type: 'null'
+          title: Personas
+          description: New persona set. Replaces all existing personas.
+        analysis_types:
+          anyOf:
+          - items:
+              type: string
+              enum:
+              - visibility
+              - sentiment
+              - sentiment_v2
+              - accuracy
+            type: array
+          - type: 'null'
+          title: Analysis Types
+          description: New analysis types. Replaces all existing analysis types on the prompt.
+        prompt_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Type
+          description: Deprecated. Use analysis_types instead.
+          deprecated: true
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/IdOrName'
+          - type: 'null'
+          description: Asset reference. Required when analysis_types includes 'sentiment'.
+      type: object
+      required:
+      - id
+      title: UpdatePromptInput
+      description: Fields to update on an existing prompt. Only provided fields are changed; omitted fields are left unchanged.
+    CategoryAssetWithCategory:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        website:
+          type: string
+          title: Website
+        alternate_domains:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Alternate Domains
+        is_owned:
+          type: boolean
+          title: Is Owned
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        logo_url:
+          type: string
+          title: Logo Url
+        category:
+          $ref: '#/components/schemas/Category'
+        organization:
+          $ref: '#/components/schemas/Organization'
+      type: object
+      required:
+      - id
+      - name
+      - website
+      - is_owned
+      - created_at
+      - logo_url
+      - category
+      - organization
+      title: CategoryAssetWithCategory
+    Tag:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: Tag
+    CategoryPersona:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        persona:
+          $ref: '#/components/schemas/PersonaProfile'
+      type: object
+      required:
+      - id
+      - name
+      - persona
+      title: CategoryPersona
+    OrganizationAssetsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CategoryAssetWithCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: OrganizationAssetsResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CreatePromptInput:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: 'Optional client-generated UUID for the prompt. When provided, creation is idempotent: retrying a request with the same id will not create a duplicate prompt. Omit to have the server generate one (non-idempotent).'
+        prompt:
+          type: string
+          minLength: 1
+          title: Prompt
+          description: The prompt text to be sent to AI platforms.
+        topic:
+          $ref: '#/components/schemas/IdOrName'
+          description: Topic to assign. A new topic is created if the name doesn't exist.
+        language:
+          type: string
+          title: Language
+          description: Language code (e.g. 'en-US')
+        tags:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          title: Tags
+          description: Tags to assign. New tags are created if names don't exist.
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          minItems: 1
+          title: Regions
+          description: Regions where the prompt will be collected.
+        platforms:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          minItems: 1
+          title: Platforms
+          description: AI platforms where the prompt will be collected.
+        personas:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          title: Personas
+          description: Personas to use when collecting. Omit for default (no persona).
+          default: []
+        analysis_types:
+          anyOf:
+          - items:
+              type: string
+              enum:
+              - visibility
+              - sentiment
+              - sentiment_v2
+              - accuracy
+            type: array
+          - type: 'null'
+          title: Analysis Types
+          description: 'Analysis types: ''visibility'', ''sentiment'', ''accuracy''. Defaults to [''visibility''].'
+        prompt_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Type
+          description: Deprecated. Use analysis_types instead. 'Visibility' or 'Sentiment'.
+          deprecated: true
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/IdOrName'
+          - type: 'null'
+          description: Required for Sentiment prompts. The brand asset to evaluate.
+      type: object
+      required:
+      - prompt
+      - topic
+      - language
+      - regions
+      - platforms
+      title: CreatePromptInput
+      description: A single prompt to create within a category.
+    OrganizationPersonasWithCategory:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        persona:
+          $ref: '#/components/schemas/PersonaProfile'
+        category:
+          $ref: '#/components/schemas/Category'
+        organization:
+          $ref: '#/components/schemas/Organization'
+      type: object
+      required:
+      - id
+      - name
+      - persona
+      - category
+      - organization
+      title: OrganizationPersonasWithCategory
+    CitationCategory:
+      properties:
+        value:
+          type: string
+          title: Value
+          description: Value to pass to the v2 citations `citation_category` filter.
+        name:
+          type: string
+          title: Name
+          description: Display name.
+      type: object
+      required:
+      - value
+      - name
+      title: CitationCategory
+    PromptPreview:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Generated prompt ID.
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt text.
+        topic:
+          $ref: '#/components/schemas/NamedResource'
+          description: Resolved topic.
+        language:
+          type: string
+          title: Language
+          description: Language code.
+        tags:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Tags
+          description: Resolved tags.
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Regions
+          description: Resolved regions.
+          default: []
+        platforms:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Platforms
+          description: Resolved platforms.
+          default: []
+        personas:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Personas
+          description: Resolved personas.
+          default: []
+        analysis_types:
+          items:
+            type: string
+            enum:
+            - visibility
+            - sentiment
+            - sentiment_v2
+            - accuracy
+          type: array
+          title: Analysis Types
+          description: Analysis types assigned to this prompt.
+          default: []
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResource'
+          - type: 'null'
+          description: Resolved asset, if applicable.
+      type: object
+      required:
+      - id
+      - prompt
+      - topic
+      - language
+      title: PromptPreview
+      description: Preview of a prompt that was (or would be) created.
+    NamedResourceDiffList:
+      properties:
+        added:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Added
+          description: Resources that were added.
+          default: []
+        removed:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Removed
+          description: Resources that were removed.
+          default: []
+      type: object
+      title: NamedResourceDiffList
+      description: Shows which resources were added or removed.
+    Organization:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: Organization
+    CitationCategoriesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CitationCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CitationCategoriesResponse
+    FieldDiff:
+      properties:
+        old:
+          title: Old
+          description: Previous value.
+        new:
+          title: New
+          description: New value.
+      type: object
+      title: FieldDiff
+      description: Shows the old and new value for a changed field.
+    PromptOrderBy:
+      type: string
+      enum:
+      - created_at
+      - prompt
+      title: PromptOrderBy
+    CategoryPromptsResponse:
+      properties:
+        info:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          items:
+            $ref: '#/components/schemas/Prompt'
+          type: array
+          title: Data
+      type: object
+      required:
+      - info
+      - data
+      title: CategoryPromptsResponse
+    Prompt:
+      properties:
+        id:
+          type: string
+          title: Id
+        analysis_types:
+          items:
+            type: string
+            enum:
+            - visibility
+            - sentiment
+            - sentiment_v2
+            - accuracy
+          type: array
+          title: Analysis Types
+          default: []
+        prompt_type:
+          type: string
+          title: Prompt Type
+          default: ''
+          deprecated: true
+        prompt:
+          type: string
+          title: Prompt
+        language:
+          type: string
+          title: Language
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          title: Status
+        topic:
+          $ref: '#/components/schemas/NamedResource'
+        tags:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Tags
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Regions
+        platforms:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Platforms
+        personas:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Personas
+          default: []
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - prompt
+      - language
+      - status
+      - topic
+      - regions
+      - platforms
+      - created_at
+      - updated_at
+      title: Prompt
+    PersonaProfile:
+      properties:
+        behavior:
+          $ref: '#/components/schemas/PersonaProfileBehavior'
+        employment:
+          $ref: '#/components/schemas/PersonaProfileEmployment'
+        demographics:
+          $ref: '#/components/schemas/PersonaProfileDemographics'
+      type: object
+      required:
+      - behavior
+      - employment
+      - demographics
+      title: PersonaProfile
+    UpdatePromptsBody:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/UpdatePromptInput'
+          type: array
+          title: Prompts
+          description: List of prompt updates. Each entry must include an `id` and at least one field to change.
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompts
+      title: UpdatePromptsBody
+    UpdatePromptStatusResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        updated_prompts:
+          type: integer
+          title: Updated Prompts
+          description: Number of prompts whose status was changed.
+          default: 0
+      type: object
+      required:
+      - dry_run
+      title: UpdatePromptStatusResponse
+      description: Response from updating prompt statuses.
+    CitationTagsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CitationTag'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CitationTagsResponse
+    PersonaProfileBehavior:
+      properties:
+        painPoints:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Painpoints
+        motivations:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Motivations
+      type: object
+      title: PersonaProfileBehavior
+    PromptUpdatePreview:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: ID of the updated prompt.
+        prompt:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Prompt text diff.
+        topic:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Topic diff.
+        language:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Language diff.
+        tags:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Tags added and removed.
+        regions:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Regions added and removed.
+        platforms:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Platforms added and removed.
+        personas:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Personas added and removed.
+        analysis_types:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Analysis types diff.
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Asset diff.
+      type: object
+      required:
+      - id
+      title: PromptUpdatePreview
+      description: Preview of changes applied (or to be applied) to a single prompt. Only changed fields are included.
+    OrderByDirection:
+      type: string
+      enum:
+      - asc
+      - desc
+      title: OrderByDirection
+    OrganizationPersonasWithCategoryResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/OrganizationPersonasWithCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: OrganizationPersonasWithCategoryResponse
+    PersonaProfileDemographics:
+      properties:
+        ageRange:
+          items:
+            type: string
+          type: array
+          title: Agerange
+      type: object
+      title: PersonaProfileDemographics
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer

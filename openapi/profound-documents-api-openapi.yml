@@ -1,0 +1,997 @@
+openapi: 3.2.0
+info:
+  title: External Documents API
+  version: 6551bd49db665ffb7f80780b3e150b8e8b780cc3
+servers:
+- url: https://api.tryprofound.com
+  description: Production Server
+tags:
+- name: Documents
+paths:
+  /v1/documents:
+    get:
+      tags:
+      - Documents
+      summary: List documents
+      description: 'List documents visible to your organization, newest-modified-first.
+
+
+        Documents are ordered by last-modified time, most recent first, with no other
+
+        sort option. This is a walk over a live, mutable collection: a document created
+
+        or modified while you are paging can shift which page it lands on, so a single
+
+        walk may show it to you twice or, rarely, skip it.
+
+
+        This response never includes a total count. Upstream counts totals before
+
+        applying your organization''s access filter, so a total, or treating a short
+
+        page as the last one, would misreport what you can actually see. Keep
+
+        following `pagination.next_cursor` until it comes back null — that, and not
+
+        a short or even an empty page, is the end of the walk. A page whose rows the
+
+        access filter removed entirely is empty while later pages still hold
+
+        documents, so the last page of a walk may legitimately be an empty one.'
+      operationId: list_documents_v1_documents_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the organization whose documents to list. Required. The caller must be a member of this organization.
+          title: Organization Id
+        description: ID of the organization whose documents to list. Required. The caller must be a member of this organization.
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter to documents whose name contains this text, case-insensitively. Matches only the document's name, never its content — a query that finds nothing does not mean the topic is unwritten, only that no title mentions it. Blank or omitted returns every document. Ignored when sent alongside `next_cursor`, which carries the filter the walk started with. Matching is name-only as of this release; broader matching may follow if upstream changes how it indexes the name column.
+          title: Q
+        description: Filter to documents whose name contains this text, case-insensitively. Matches only the document's name, never its content — a query that finds nothing does not mean the topic is unwritten, only that no title mentions it. Blank or omitted returns every document. Ignored when sent alongside `next_cursor`, which carries the filter the walk started with. Matching is name-only as of this release; broader matching may follow if upstream changes how it indexes the name column.
+      - name: sort
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Documents are always ordered newest-modified-first (`updated_at DESC`, then `created_at DESC`, then `id DESC`); there is no parameter that changes this. `recency` is the only accepted value, and passing it is a no-op that names the guarantee rather than altering it — any other value is rejected outright rather than silently ignored. Ordering is never re-applied to a returned page either: that would only be consistent within the page, not across a paginated walk.'
+          title: Sort
+        description: 'Documents are always ordered newest-modified-first (`updated_at DESC`, then `created_at DESC`, then `id DESC`); there is no parameter that changes this. `recency` is the only accepted value, and passing it is a no-op that names the guarantee rather than altering it — any other value is rejected outright rather than silently ignored. Ordering is never re-applied to a returned page either: that would only be consistent within the page, not across a paginated walk.'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          exclusiveMinimum: 0
+          default: 20
+          title: Limit
+      - name: next_cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDocumentsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Documents
+      summary: Create a document
+      description: 'Create a Profound document with markdown content.
+
+
+        `organization_id` is required and you must be a member of it. You choose the
+
+        document''s `id`, and creation is idempotent on it: repeating the request returns
+
+        the existing document rather than creating a second one.
+
+
+        New documents are visible only to their creator; share them from the Profound app,
+
+        or open one with the `url` in the response.
+
+
+        A `201` response does not confirm that a new document was created: it is also
+
+        returned when `id` already existed, in which case the existing document comes
+
+        back unchanged. Upstream gives no signal to tell the two apart, so this endpoint
+
+        does not claim to either — it is safe to retry with the same `id` either way.'
+      operationId: create_document_v1_documents_post
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDocumentRequest'
+              description: The document to create.
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDocumentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/documents/{document_id}:
+    get:
+      tags:
+      - Documents
+      summary: Read a document
+      description: 'Read a document: its metadata, its default tab''s body, its other tabs, its comments, and its version hash.
+
+
+        You can read any document you have access to in the Profound app, including ones
+
+        created there rather than through this API.
+
+
+        By default this is a preview: the body is truncated to save your context, and the
+
+        version hash is withheld so a preview alone can never be used to replace a document
+
+        blindly. Pass `preview=false` when you intend to write.'
+      operationId: read_document_v1_documents__document_id__get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the document.
+          title: Document Id
+        description: ID of the document.
+      - name: organization_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
+          title: Organization Id
+        description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
+      - name: include_tabs
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include the document's other tabs. On by default — a tab body is part of the document, not an aside. Off, `additional_tabs` is omitted from the response rather than returned as an empty list.
+          default: true
+          title: Include Tabs
+        description: Include the document's other tabs. On by default — a tab body is part of the document, not an aside. Off, `additional_tabs` is omitted from the response rather than returned as an empty list.
+      - name: include_comments
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include the document's review comments, each mapped to `{content, context}`. On by default — a comment is part of the document's review state, not an aside. Turn it off to skip the comment-thread walk upstream; off, `comments` is omitted from the response rather than returned as an empty list.
+          default: true
+          title: Include Comments
+        description: Include the document's review comments, each mapped to `{content, context}`. On by default — a comment is part of the document's review state, not an aside. Turn it off to skip the comment-thread walk upstream; off, `comments` is omitted from the response rather than returned as an empty list.
+      - name: preview
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: 'Bound every body in the response — `content_markdown` and each tab''s — and set `content_truncated` if any was cut. On by default. Upstream has no partial-read of its own — every read is a full round trip through the collaborative editor — so this saves your context, not upstream cost. A preview read also omits `version_hash`, on purpose: a hash returned next to a body you have not fully seen invites replacing content you never read. Pass `preview=false` before you intend to write, to get the whole body, `content_truncated: false`, and the hash.'
+          default: true
+          title: Preview
+        description: 'Bound every body in the response — `content_markdown` and each tab''s — and set `content_truncated` if any was cut. On by default. Upstream has no partial-read of its own — every read is a full round trip through the collaborative editor — so this saves your context, not upstream cost. A preview read also omits `version_hash`, on purpose: a hash returned next to a body you have not fully seen invites replacing content you never read. Pass `preview=false` before you intend to write, to get the whole body, `content_truncated: false`, and the hash.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadDocumentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - Documents
+      summary: Rename or reshare a document
+      description: 'Rename a document, change who can see it, or both in one call.
+
+
+        Renaming sets a permanent lock on the title, and changing visibility can silently
+
+        change who has access — see the `name` and `visibility` field descriptions for what
+
+        each one does before you use it.
+
+
+        Renaming needs edit access; changing visibility is creator-only, and upstream
+
+        enforces it. You can act on a document this API created, or one you created
+
+        yourself in the Profound app — not one merely shared with you.'
+      operationId: patch_document_v1_documents__document_id__patch
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the document.
+          title: Document Id
+        description: ID of the document.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDocumentRequest'
+              description: The fields to change.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Documents
+      summary: Delete a document
+      description: 'Delete a document created through this integration.
+
+
+        Only documents created through this integration can be deleted here. A document
+
+        created in the Profound app can never be deleted through this route, even by the
+
+        person who owns it — creation provenance is stamped once, at creation, and is never
+
+        backfilled onto documents made another way.
+
+
+        The delete is soft: the row is marked deleted at the storage layer rather than
+
+        destroyed. There is no restore through this API, or any other — treat a delete as
+
+        final even though the data itself is not gone.
+
+
+        A 404 means the document is not visible to you at all. It covers three cases the
+
+        response does not distinguish, on purpose: the document never existed, it was
+
+        already deleted by an earlier call to this same route, or it exists but your
+
+        credential resolves no role on it. Deleting the same document twice returns 404 on
+
+        the second call, not a second 204.
+
+
+        A 403 means the opposite: the document is visible to you but not deletable here,
+
+        and the message says which rule refused — it was not created through this
+
+        integration, or you are not its creator. Deleting is creator-only, so edit access
+
+        is not enough to remove a document out from under its owner.'
+      operationId: delete_document_v1_documents__document_id__delete
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the document.
+          title: Document Id
+        description: ID of the document.
+      - name: organization_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the organization that owns the document. You must be a member of it.
+          title: Organization Id
+        description: ID of the organization that owns the document. You must be a member of it.
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/documents/{document_id}/content:
+    post:
+      tags:
+      - Documents
+      summary: Replace a document's content
+      description: "Overwrite a document's entire body with new markdown, replacing what it held before.\n\nThis is a whole-body replace, not a patch: send the complete new text every time. An\nempty `content_markdown` is valid and clears the document.\n\nTwo destructive side effects apply on every call, regardless of what you send:\n\n- The document collapses to its default tab. Every non-default tab is deleted, and\n  the comments map is cleared for **all** tabs, including the default one — a\n  document with a live comment thread on any tab loses it.\n- `skip_title_sync` defaults to `false`, matching the Profound app: the title follows\n  the new content's first heading, so a replace silently renames the document unless\n  the heading matches the current title or `skip_title_sync` is set.\n\nThere is no compare-and-swap: this call does not accept a precondition, and nothing\nstops two concurrent replaces from silently overwriting each other last-writer-wins.\nUpstream's own `version_hash` documentation says as much — the token is \"still a\nchange detector rather than a precondition: a caller must not treat a matching token\nas licence to overwrite blindly, because it names the room at a moment cortex\nobserved and not the moment its own write lands.\" Sending a `working_version_hash`\n(or any spelling of it) is rejected with a `400` naming this rather than accepted\nand silently discarded, which is what happens on the upstream route this wraps.\n\nYou can replace a document this API created, or one you created yourself directly —\nnot merely one shared with you."
+      operationId: replace_document_content_v1_documents__document_id__content_post
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: ID of the document.
+          title: Document Id
+        description: ID of the document.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceDocumentContentRequest'
+              description: The content to write.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceDocumentContentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    UpdateDocumentRequest:
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
+        name:
+          anyOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+          title: Name
+          description: 'New title for the document. Renaming sets a permanent lock: once a document is renamed through this route, its title stops following the first heading of its content, for the rest of the document''s life, and no route can undo the lock. Omit to leave the title as it is.'
+        visibility:
+          anyOf:
+          - type: string
+            enum:
+            - invited_only
+            - organization
+          - type: 'null'
+          title: Visibility
+          description: 'New sharing scope: `invited_only` for only the people invited to the document, or `organization` for everyone in the owning organization. Only the document''s creator can change this; omit to leave sharing as it is. Three things worth knowing before you set it: `organization` visibility grants view only — there is no value here that grants the organization edit access. Setting `invited_only` removes the organization''s access entirely. And re-asserting `organization` on a document whose organization grant is already `edit` silently downgrades the whole organization to view — upstream replays the access sync whenever this field is sent, and that sync always upserts view, even when the value you sent matches the one already stored.'
+      additionalProperties: false
+      type: object
+      required:
+      - organization_id
+      title: UpdateDocumentRequest
+      description: Request body for renaming or resharing a document.
+    ReadDocumentResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: The document's ID.
+        name:
+          type: string
+          title: Name
+          description: The document's title.
+        url:
+          type: string
+          title: Url
+          description: Link to open the document in the Profound app.
+        visibility:
+          type: string
+          enum:
+          - invited_only
+          - organization
+          title: Visibility
+          description: General access scope. New documents are `invited_only`.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the document was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: When the document was last modified. Seeding the initial content counts, so a freshly created document is normally modified a moment after it was created.
+        owner_user_id:
+          type: string
+          format: uuid
+          title: Owner User Id
+          description: ID of the document's owner.
+        owner_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Owner Email
+          description: Email of the document's owner. `null` when the owning profile has been deleted or could not be resolved.
+        author_type:
+          type: string
+          enum:
+          - user
+          - agent
+          title: Author Type
+          description: Whether the document's owner is a person (`user`) or an agent (`agent`).
+        app_delegate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: App Delegate
+          description: Which integration created the document, derived server-side from the credential that authenticated the write. `null` for documents created outside any integration. An open-ended value, not a fixed set — known values today include `external-api` and `context-manager`, and more are added as new integrations ship.
+        category_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Name
+          description: Name of the brand category set on the document, if any. Paired with `company_name`; writable only on create.
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
+        content_markdown:
+          type: string
+          title: Content Markdown
+          description: The default tab's body as markdown. Empty string for a document with no content — never absent, so you can read it without a presence check.
+        additional_tabs:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/AdditionalTab'
+            type: array
+          - type: 'null'
+          title: Additional Tabs
+          description: 'Every tab beyond the default one, in document order, each as `{title, content_markdown}`. Upstream allows up to twenty. Omitted from the response entirely when `include_tabs=false`; an empty list is a real answer meaning this document has no other tabs, and the two are never confused. Tabs are readable through this API but not writable: create cannot make one, and replacing this document''s content does not preserve them.'
+        comments:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/Comment'
+            type: array
+          - type: 'null'
+          title: Comments
+          description: Review comments left on the document, each mapped to `{content, context}` — the comment's text and, if any, the text it was left on. Omitted from the response entirely when `include_comments=false`; an empty list is a real answer meaning this document has no comments. Mapped from upstream's own open, unvalidated shape — commenter identity, reply threads and resolution state are dropped, never relayed. A comment whose shape this mapping cannot read is dropped from the list rather than failing the read, so this list can be shorter than the document's real thread count.
+        version_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Hash
+          description: 'Opaque token that changes whenever the document''s content changes, sampled before this body was read — so it names this body or an older state, never a newer one. `null` when the collaboration service could not be asked for it; the read itself still succeeded, only the token is missing. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. It detects change; it is not a precondition, and a matching token is not licence to overwrite blindly. Omitted entirely — not `null` — on a `preview=true` read: a hash next to a body you have not fully seen invites replacing content you never read. Ask for `preview=false` before you intend to write.'
+        content_truncated:
+          type: boolean
+          title: Content Truncated
+          description: Whether any body in this response was cut short — `content_markdown` or any tab's. `true` only on a `preview=true` read where one of them exceeded the preview length; a short document, or a `preview=false` read, always gets `false` and every body whole. It does not say which one was cut. Preview truncation saves your context, not upstream cost — the full round trip through the collaborative editor happens either way.
+          default: false
+      type: object
+      required:
+      - id
+      - name
+      - url
+      - visibility
+      - created_at
+      - updated_at
+      - owner_user_id
+      - owner_email
+      - author_type
+      - app_delegate
+      - category_name
+      - company_name
+      - content_markdown
+      title: ReadDocumentResponse
+      description: 'A document''s metadata, its default tab''s body, its other tabs, its comments, and the
+
+        change-detection token for it.'
+    CreateDocumentRequest:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: 'ID for the new document, chosen by you. Creation is idempotent on this ID: repeating a request with the same ID returns the existing document instead of creating a second one, so a retry after a network error is safe.'
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+          description: ID of the organization that will own the document. Required — Profound API keys are user-scoped, so the owning organization must be chosen explicitly. The caller must be a member of this organization.
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Title for the document. Must be non-empty.
+        content_markdown:
+          type: string
+          minLength: 1
+          title: Content Markdown
+          description: Initial document body as markdown. Must be non-empty. Rendered into the collaborative editor, so the result is real editable content, not a stored blob.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - organization_id
+      - name
+      - content_markdown
+      title: CreateDocumentRequest
+      description: Request body for creating a document with markdown content.
+    ListDocumentsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Document'
+          type: array
+          title: Data
+          description: Documents on this page.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination state for fetching the next page.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      - pagination
+      title: ListDocumentsResponse
+      description: A page of documents.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CreateDocumentResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: The document's ID.
+        name:
+          type: string
+          title: Name
+          description: The document's title.
+        url:
+          type: string
+          title: Url
+          description: Link to open the document in the Profound app.
+        visibility:
+          type: string
+          enum:
+          - invited_only
+          - organization
+          title: Visibility
+          description: General access scope. New documents are `invited_only`.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the document was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: When the document was last modified. Seeding the initial content counts, so a freshly created document is normally modified a moment after it was created.
+        owner_user_id:
+          type: string
+          format: uuid
+          title: Owner User Id
+          description: ID of the document's owner.
+        owner_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Owner Email
+          description: Email of the document's owner. `null` when the owning profile has been deleted or could not be resolved.
+        author_type:
+          type: string
+          enum:
+          - user
+          - agent
+          title: Author Type
+          description: Whether the document's owner is a person (`user`) or an agent (`agent`).
+        app_delegate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: App Delegate
+          description: Which integration created the document, derived server-side from the credential that authenticated the write. `null` for documents created outside any integration. An open-ended value, not a fixed set — known values today include `external-api` and `context-manager`, and more are added as new integrations ship.
+        category_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Name
+          description: Name of the brand category set on the document, if any. Paired with `company_name`; writable only on create.
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
+        version_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Hash
+          description: Opaque token that changes whenever the document's content changes. `null` when this call found an existing document with the same id (idempotent create) rather than creating one, or when the token could not be minted. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. It detects change; it is not a precondition, and a matching token is not licence to overwrite blindly.
+      type: object
+      required:
+      - id
+      - name
+      - url
+      - visibility
+      - created_at
+      - updated_at
+      - owner_user_id
+      - owner_email
+      - author_type
+      - app_delegate
+      - category_name
+      - company_name
+      - version_hash
+      title: CreateDocumentResponse
+      description: The document that was created, plus the change-detection token minted for this write.
+    ReplaceDocumentContentResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: The document's ID.
+        name:
+          type: string
+          title: Name
+          description: The document's title.
+        url:
+          type: string
+          title: Url
+          description: Link to open the document in the Profound app.
+        visibility:
+          type: string
+          enum:
+          - invited_only
+          - organization
+          title: Visibility
+          description: General access scope. New documents are `invited_only`.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the document was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: When the document was last modified. Seeding the initial content counts, so a freshly created document is normally modified a moment after it was created.
+        owner_user_id:
+          type: string
+          format: uuid
+          title: Owner User Id
+          description: ID of the document's owner.
+        owner_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Owner Email
+          description: Email of the document's owner. `null` when the owning profile has been deleted or could not be resolved.
+        author_type:
+          type: string
+          enum:
+          - user
+          - agent
+          title: Author Type
+          description: Whether the document's owner is a person (`user`) or an agent (`agent`).
+        app_delegate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: App Delegate
+          description: Which integration created the document, derived server-side from the credential that authenticated the write. `null` for documents created outside any integration. An open-ended value, not a fixed set — known values today include `external-api` and `context-manager`, and more are added as new integrations ship.
+        category_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Name
+          description: Name of the brand category set on the document, if any. Paired with `company_name`; writable only on create.
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
+        version_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Hash
+          description: 'Opaque token that changes whenever the document''s collaborative-editing snapshot changes — a digest over that snapshot, not over the markdown. It moves on a comment reply, because a comment changes the snapshot, and it does not move on a rename, because metadata sits outside the snapshot. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. `null` when no token could be minted; never omitted. It is a change detector, not a precondition: a caller must not treat a matching token as licence to overwrite blindly, because it names the room at a moment cortex observed and not the moment its own write lands.'
+        content_chars:
+          type: integer
+          title: Content Chars
+          description: Character count of the markdown that landed — 0 when this call cleared the document. The only confirmation of how much was written, on the most destructive operation this surface exposes.
+      type: object
+      required:
+      - id
+      - name
+      - url
+      - visibility
+      - created_at
+      - updated_at
+      - owner_user_id
+      - owner_email
+      - author_type
+      - app_delegate
+      - category_name
+      - company_name
+      - version_hash
+      - content_chars
+      title: ReplaceDocumentContentResponse
+      description: The document after its content was replaced, plus the change-detection token and how much landed.
+    AdditionalTab:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: The tab's title as authored. Not unique within a document, and a placeholder when the tab was never titled.
+        content_markdown:
+          type: string
+          title: Content Markdown
+          description: This tab's body as markdown.
+      type: object
+      required:
+      - title
+      - content_markdown
+      title: AdditionalTab
+      description: One of a document's tabs beyond the default one.
+    ReplaceDocumentContentRequest:
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be chosen explicitly. The caller must be a member of this organization.
+        content_markdown:
+          type: string
+          title: Content Markdown
+          description: 'New markdown body for the document, replacing everything it held before. An empty string is valid and clears the document — nothing else warns you before that happens, so treat sending one as deliberate. Whole-body replace only: send the complete new text, not just the part that changed. Capped at 1,000,000 bytes; the upstream router separately caps the entire request at 2 MiB, so a body near this cap can still be refused in transit rather than by this field.'
+        skip_title_sync:
+          type: boolean
+          title: Skip Title Sync
+          description: 'Off by default, matching the Profound app: the document''s title follows the new content''s first heading, so a replace silently renames the document whenever that heading differs from the current title. Set true to keep the current title regardless of what the new content''s first heading says.'
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - organization_id
+      - content_markdown
+      title: ReplaceDocumentContentRequest
+      description: Request body for replacing a document's entire content.
+    Comment:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The comment's text.
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+          description: Text the comment was left on. `null` for a comment on no specific text, never an empty string.
+      type: object
+      required:
+      - content
+      title: Comment
+      description: 'One review comment, mapped from upstream''s open, unvalidated shape into a closed contract.
+
+
+        Upstream''s own comment schema — `body`, `quoted_text`, `author`, `replies`, `resolved` — is
+
+        documented as not a closed contract. Only `body` and `quoted_text` are mapped through, as
+
+        `content` and `context`; commenter identity, reply threads and resolution state are dropped
+
+        here, not relayed.'
+    CursorPagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Token for the next page, if more results are available.
+      additionalProperties: false
+      type: object
+      title: CursorPagination
+      description: Cursor-based pagination metadata.
+    Document:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: The document's ID.
+        name:
+          type: string
+          title: Name
+          description: The document's title.
+        url:
+          type: string
+          title: Url
+          description: Link to open the document in the Profound app.
+        visibility:
+          type: string
+          enum:
+          - invited_only
+          - organization
+          title: Visibility
+          description: General access scope. New documents are `invited_only`.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the document was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: When the document was last modified. Seeding the initial content counts, so a freshly created document is normally modified a moment after it was created.
+        owner_user_id:
+          type: string
+          format: uuid
+          title: Owner User Id
+          description: ID of the document's owner.
+        owner_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Owner Email
+          description: Email of the document's owner. `null` when the owning profile has been deleted or could not be resolved.
+        author_type:
+          type: string
+          enum:
+          - user
+          - agent
+          title: Author Type
+          description: Whether the document's owner is a person (`user`) or an agent (`agent`).
+        app_delegate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: App Delegate
+          description: Which integration created the document, derived server-side from the credential that authenticated the write. `null` for documents created outside any integration. An open-ended value, not a fixed set — known values today include `external-api` and `context-manager`, and more are added as new integrations ship.
+        category_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Name
+          description: Name of the brand category set on the document, if any. Paired with `company_name`; writable only on create.
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
+      type: object
+      required:
+      - id
+      - name
+      - url
+      - visibility
+      - created_at
+      - updated_at
+      - owner_user_id
+      - owner_email
+      - author_type
+      - app_delegate
+      - category_name
+      - company_name
+      title: Document
+      description: A Profound document.
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer

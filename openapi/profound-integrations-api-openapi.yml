@@ -1,0 +1,186 @@
+openapi: 3.2.0
+info:
+  title: External Integrations API
+  version: 6551bd49db665ffb7f80780b3e150b8e8b780cc3
+servers:
+- url: https://api.tryprofound.com
+  description: Production Server
+tags:
+- name: Integrations
+paths:
+  /v1/integrations:
+    get:
+      tags:
+      - Integrations
+      summary: List Integrations
+      description: 'List the organization''s connected integrations.
+
+
+        Returns every connected integration by default, each with its lifecycle
+
+        `status`; pass `status_filter` to narrow to one status (e.g. `needs_reauth`).
+
+        Each row''s `integration_id` is the value a hub-backed node needs bound to it.'
+      operationId: list_integrations_v1_integrations_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      - name: provider
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter to a single connector/provider id, e.g. `google_drive`.
+          title: Provider
+        description: Filter to a single connector/provider id, e.g. `google_drive`.
+      - name: status_filter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - active
+            - pending
+            - needs_reauth
+            - revoking
+            - revoked
+            type: string
+          - type: 'null'
+          description: Filter to one lifecycle status. Omitted returns all statuses.
+          title: Status Filter
+        description: Filter to one lifecycle status. Omitted returns all statuses.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    IntegrationsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Integration'
+          type: array
+          title: Data
+          description: Connected integrations.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: IntegrationsResponse
+      description: Connected integrations visible to the caller's org/user context.
+    Integration:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Installation id to bind to a hub-backed node's `integration_id`.
+        provider:
+          type: string
+          title: Provider
+          description: Canonical connector id, matching node contracts.
+          examples:
+          - google_drive
+        label:
+          type: string
+          title: Label
+          description: Human-readable account label for the connection.
+        account:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Account
+          description: Connected account identity as the provider reports it, e.g. the Google account email or the WordPress site URL. This is what tells two connections of the same provider apart; `label` often repeats across them. Null when the provider reports no identity.
+          examples:
+          - alice@acme.com
+        status:
+          type: string
+          title: Status
+          description: Connection lifecycle status.
+          examples:
+          - active
+          - needs_reauth
+        level:
+          type: string
+          enum:
+          - org
+          - user
+          title: Level
+          description: 'Installation scope: shared across the org, or user-owned.'
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - provider
+      - label
+      - account
+      - status
+      - level
+      title: Integration
+      description: One connected integration installation visible to the caller.
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer

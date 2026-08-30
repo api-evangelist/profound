@@ -1,0 +1,684 @@
+openapi: 3.2.0
+info:
+  title: External Bot Traffic Reports API
+  version: 6551bd49db665ffb7f80780b3e150b8e8b780cc3
+servers:
+- url: https://api.tryprofound.com
+  description: Production Server
+tags:
+- name: Bot Traffic Reports
+paths:
+  /v1/reports/bots:
+    post:
+      tags:
+      - Bot Traffic Reports
+      summary: Get Bots Report V1
+      description: 'Get bot traffic report from the daily aggregated materialized view.
+
+
+        This endpoint queries pre-aggregated daily bot data, making it efficient
+
+        for large date ranges and high-traffic sites.
+
+
+        Metrics:
+
+        - count: unique bot visits
+
+        - citations: unique citation events
+
+        - indexing: unique indexing events
+
+        - training: unique training events
+
+        - last_visit: most recent visit timestamp'
+      operationId: get_bots_report_v1_v1_reports_bots_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BotsReportQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+  /v2/reports/bots:
+    post:
+      tags:
+      - Bot Traffic Reports
+      summary: Get Bots Report V2
+      description: 'Get bot traffic report from the hourly aggregated materialized view (UTC-based).
+
+
+        Supports date_interval="hour", calendar intervals through "year", "quarter", and "relative_week".
+
+
+        Metrics:
+
+        - count: unique bot visits
+
+        - citations: unique citation events (ai_assistant bot type)
+
+        - indexing: unique indexing events (index bot type)
+
+        - training: unique training events (ai_training bot type)
+
+        - last_visit: most recent visit timestamp
+
+
+        Dimensions:
+
+        - date, path, bot_name, bot_provider, bot_type'
+      operationId: get_bots_report_v2_v2_reports_bots_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BotsReportQueryV2'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NumericMetricFilter:
+      properties:
+        field:
+          type: string
+          title: Field
+        operator:
+          type: string
+          enum:
+          - '>'
+          - '>='
+          - <
+          - <=
+          - '='
+          - ==
+          - '!='
+          title: Operator
+        value:
+          anyOf:
+          - type: integer
+          - type: number
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: NumericMetricFilter
+    BotTypeFilter:
+      properties:
+        field:
+          type: string
+          const: bot_type
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            enum:
+            - ai_assistant
+            - ai_training
+            - index
+            - ai_agent
+          - items:
+              type: string
+              enum:
+              - ai_assistant
+              - ai_training
+              - index
+              - ai_agent
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: BotTypeFilter
+      description: Filter by bot_type column (v2 hourly table only)
+    PathFilter:
+      properties:
+        field:
+          type: string
+          const: path
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: PathFilter
+      description: Filter by request path
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Response:
+      properties:
+        info:
+          $ref: '#/components/schemas/Info'
+        data:
+          items:
+            $ref: '#/components/schemas/Result'
+          type: array
+          title: Data
+      type: object
+      required:
+      - info
+      - data
+      title: Response
+      description: Base response model for reports.
+    Pagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        offset:
+          type: integer
+          minimum: 0.0
+          title: Offset
+          description: Offset for the results. Used for pagination.
+          default: 0
+      type: object
+      title: Pagination
+      description: Offset-based pagination parameters.
+    BotsReportQuery:
+      properties:
+        date_interval:
+          type: string
+          enum:
+          - hour
+          - day
+          - week
+          - month
+          - year
+          - relative_week
+          title: Date Interval
+          description: Date interval for the report. (only used with date dimension)
+          default: day
+        dimensions:
+          items:
+            type: string
+            enum:
+            - date
+            - host
+            - path
+            - bot_name
+            - bot_provider
+          type: array
+          title: Dimensions
+          description: Dimensions to group the report by.
+          default: []
+        metrics:
+          items:
+            type: string
+            enum:
+            - count
+            - citations
+            - indexing
+            - training
+            - last_visit
+          type: array
+          title: Metrics
+        order_by:
+          additionalProperties:
+            type: string
+            enum:
+            - asc
+            - desc
+          type: object
+          title: Order By
+          description: "\nCustom ordering of the report results.\n\nThe order is a record of key-value pairs where:\n- key is the field to order by, which can be a metric or dimension\n- value is the direction of the order, either 'asc' for ascending or 'desc' for descending.\n\nWhen not specified, the default order is the first metric in the query descending.\n        "
+          default: {}
+          examples:
+          - date: asc
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          description: Pagination settings for the report results.
+        domain:
+          type: string
+          title: Domain
+          description: Domain to query logs for.
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+          description: 'Start date for logs. Accepts: YYYY-MM-DD, YYYY-MM-DD HH:MM, YYYY-MM-DD HH:MM:SS, or full ISO timestamp.'
+        end_date:
+          type: string
+          format: date-time
+          title: End Date
+          description: End date for logs. Accepts same formats as start_date. Defaults to now if omitted.
+        organization_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Organization Id
+        metric_filters:
+          items:
+            $ref: '#/components/schemas/NumericMetricFilter'
+          type: array
+          title: Metric Filters
+          description: Numeric filters applied after report metrics are calculated.
+        filters:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/PathFilter'
+            - $ref: '#/components/schemas/BotNameFilter'
+            - $ref: '#/components/schemas/BotProviderFilter'
+            discriminator:
+              propertyName: field
+              mapping:
+                bot_name: '#/components/schemas/BotNameFilter'
+                bot_provider: '#/components/schemas/BotProviderFilter'
+                path: '#/components/schemas/PathFilter'
+          type: array
+          title: Filters
+          description: Filters for bots report.
+      type: object
+      required:
+      - metrics
+      - domain
+      - start_date
+      title: BotsReportQuery
+    Info:
+      properties:
+        total_rows:
+          type: integer
+          title: Total Rows
+        query:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Query
+      type: object
+      required:
+      - total_rows
+      title: Info
+      description: Base model for report information.
+    BotProviderFilter:
+      properties:
+        field:
+          type: string
+          const: bot_provider
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            enum:
+            - openai
+            - anthropic
+            - chatgpt
+            - deepseek
+            - google
+            - microsoft
+            - perplexity
+            - apple
+            - bytedance
+            - amazon
+            - meta
+            - duckduckgo
+            - you
+            - you.com
+            - xai
+            - grok
+            - gemini
+            - mistral
+            - huawei
+            - yandex
+            - baidu
+            - yahoo
+            - commoncrawl
+            - openclaw
+          - items:
+              type: string
+              enum:
+              - openai
+              - anthropic
+              - chatgpt
+              - deepseek
+              - google
+              - microsoft
+              - perplexity
+              - apple
+              - bytedance
+              - amazon
+              - meta
+              - duckduckgo
+              - you
+              - you.com
+              - xai
+              - grok
+              - gemini
+              - mistral
+              - huawei
+              - yandex
+              - baidu
+              - yahoo
+              - commoncrawl
+              - openclaw
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: BotProviderFilter
+      description: Filter by bot provider
+    BotsReportQueryV2:
+      properties:
+        date_interval:
+          type: string
+          enum:
+          - hour
+          - day
+          - week
+          - month
+          - quarter
+          - year
+          - relative_week
+          title: Date Interval
+          description: Date interval for the report. (only used with date dimension)
+          default: day
+        dimensions:
+          items:
+            type: string
+            enum:
+            - date
+            - hour
+            - host
+            - path
+            - bot_name
+            - bot_provider
+            - bot_type
+          type: array
+          title: Dimensions
+          description: Dimensions to group the report by.
+          default: []
+        metrics:
+          items:
+            anyOf:
+            - type: string
+              enum:
+              - count
+              - citations
+              - indexing
+              - training
+              - last_visit
+            - type: string
+              const: agents
+          type: array
+          title: Metrics
+        order_by:
+          additionalProperties:
+            type: string
+            enum:
+            - asc
+            - desc
+          propertyNames:
+            enum:
+            - date
+            - hour
+            - host
+            - path
+            - count
+            - citations
+            - indexing
+            - training
+            - agents
+            - last_visit
+            - bot_type
+          type: object
+          title: Order By
+          description: "\nCustom ordering of the report results.\n\nThe order is a record of key-value pairs where:\n- key is the field to order by, which can be a metric or dimension\n- value is the direction of the order, either 'asc' for ascending or 'desc' for descending.\n\nWhen not specified, the default order is the first metric in the query descending.\n        "
+          default: {}
+          examples:
+          - date: asc
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          description: Pagination settings for the report results.
+        domain:
+          type: string
+          title: Domain
+          description: Domain to query logs for.
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+          description: 'Start date for logs. Accepts: YYYY-MM-DD, YYYY-MM-DD HH:MM, YYYY-MM-DD HH:MM:SS, or full ISO timestamp.'
+        end_date:
+          type: string
+          format: date-time
+          title: End Date
+          description: End date in UTC. Accepts same formats as start_date. Defaults to now UTC if omitted.
+        organization_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Organization Id
+        timezone:
+          type: string
+          title: Timezone
+          description: IANA timezone name for date bucketing and filter boundaries.
+          default: UTC
+        metric_filters:
+          items:
+            $ref: '#/components/schemas/NumericMetricFilter'
+          type: array
+          title: Metric Filters
+          description: Numeric filters applied after report metrics are calculated.
+        filters:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/PathFilter'
+            - $ref: '#/components/schemas/BotNameFilter'
+            - $ref: '#/components/schemas/BotProviderFilter'
+            - $ref: '#/components/schemas/BotTypeFilter'
+            discriminator:
+              propertyName: field
+              mapping:
+                bot_name: '#/components/schemas/BotNameFilter'
+                bot_provider: '#/components/schemas/BotProviderFilter'
+                bot_type: '#/components/schemas/BotTypeFilter'
+                path: '#/components/schemas/PathFilter'
+          type: array
+          title: Filters
+          description: Filters for bots report.
+        domain_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Domain Id
+          description: Domain UUID used for tag lookups.
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+      type: object
+      required:
+      - metrics
+      - domain
+      - start_date
+      title: BotsReportQueryV2
+    BotNameFilter:
+      properties:
+        field:
+          type: string
+          const: bot_name
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: BotNameFilter
+      description: 'Filter by bot name (user agent). Values come from analytics data and should
+
+        not be enum-constrained because web-v2 may send newly cataloged user-agent names.'
+    Result:
+      properties:
+        metrics:
+          items:
+            anyOf:
+            - type: integer
+            - type: number
+            - type: string
+          type: array
+          title: Metrics
+        dimensions:
+          items:
+            anyOf:
+            - type: string
+            - type: string
+              format: uuid
+          type: array
+          title: Dimensions
+      type: object
+      required:
+      - metrics
+      - dimensions
+      title: Result
+      description: Base model for report results.
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer

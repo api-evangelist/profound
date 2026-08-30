@@ -1,0 +1,719 @@
+openapi: 3.2.0
+info:
+  title: External Knowledge bases API
+  version: 6551bd49db665ffb7f80780b3e150b8e8b780cc3
+servers:
+- url: https://api.tryprofound.com
+  description: Production Server
+tags:
+- name: Knowledge bases
+paths:
+  /v1/knowledge-bases:
+    get:
+      tags:
+      - Knowledge bases
+      summary: List Knowledge Bases
+      description: List knowledge bases accessible to the API key.
+      operationId: list_knowledge_bases_v1_knowledge_bases_get
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListKnowledgeBasesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/knowledge-bases/{knowledge_base_id}/search:
+    post:
+      tags:
+      - Knowledge bases
+      summary: Search Knowledge Base
+      description: Search a knowledge base and return matching snippets or pages.
+      operationId: search_knowledge_base_v1_knowledge_bases__knowledge_base_id__search_post
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: knowledge_base_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: Unique knowledge base ID.
+          title: Knowledge Base Id
+        description: Unique knowledge base ID.
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchKnowledgeBaseRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeBaseSearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/knowledge-bases/{knowledge_base_id}/documents:
+    post:
+      tags:
+      - Knowledge bases
+      summary: Add Document
+      description: Add a document to a knowledge base using JSON text or multipart file upload.
+      operationId: add_document_v1_knowledge_bases__knowledge_base_id__documents_post
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: knowledge_base_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: Unique knowledge base ID.
+          title: Knowledge Base Id
+        description: Unique knowledge base ID.
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentOperationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                name:
+                  description: Unique document name.
+                  minLength: 1
+                  title: Name
+                  type: string
+                text:
+                  description: Text content to add to the document.
+                  minLength: 1
+                  title: Text
+                  type: string
+                folder:
+                  anyOf:
+                  - minLength: 1
+                    type: string
+                  - type: 'null'
+                  description: Folder path to add the document under.
+                  title: Folder
+              required:
+              - name
+              - text
+              title: AddDocumentRequest
+              type: object
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - name
+              - file
+              properties:
+                name:
+                  type: string
+                  description: Document name or path.
+                folder:
+                  type: string
+                  description: Folder path containing the document.
+                file:
+                  type: string
+                  format: binary
+                  description: Document file to upload.
+    put:
+      tags:
+      - Knowledge bases
+      summary: Update Document
+      description: Overwrite a knowledge base document using JSON text or multipart file upload.
+      operationId: update_document_v1_knowledge_bases__knowledge_base_id__documents_put
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: knowledge_base_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: Unique knowledge base ID.
+          title: Knowledge Base Id
+        description: Unique knowledge base ID.
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentOperationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                name:
+                  description: Document name or path to update.
+                  minLength: 1
+                  title: Name
+                  type: string
+                text:
+                  description: Replacement text content for the document.
+                  minLength: 1
+                  title: Text
+                  type: string
+                folder:
+                  anyOf:
+                  - minLength: 1
+                    type: string
+                  - type: 'null'
+                  description: Folder path containing the document.
+                  title: Folder
+              required:
+              - name
+              - text
+              title: UpdateDocumentRequest
+              type: object
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - name
+              - file
+              properties:
+                name:
+                  type: string
+                  description: Document name or path.
+                folder:
+                  type: string
+                  description: Folder path containing the document.
+                file:
+                  type: string
+                  format: binary
+                  description: Document file to upload.
+    delete:
+      tags:
+      - Knowledge bases
+      summary: Delete Document
+      description: Delete an existing document from a knowledge base.
+      operationId: delete_document_v1_knowledge_bases__knowledge_base_id__documents_delete
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: knowledge_base_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: Unique knowledge base ID.
+          title: Knowledge Base Id
+        description: Unique knowledge base ID.
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteDocumentRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentOperationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/knowledge-bases/{knowledge_base_id}/folders:
+    post:
+      tags:
+      - Knowledge bases
+      summary: Add Folder
+      description: Create an empty folder at the requested knowledge base path.
+      operationId: add_folder_v1_knowledge_bases__knowledge_base_id__folders_post
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: knowledge_base_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: Unique knowledge base ID.
+          title: Knowledge Base Id
+        description: Unique knowledge base ID.
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFolderRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderOperationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Knowledge bases
+      summary: Delete Folder
+      description: Delete a folder. With recursive=false, non-empty folders return 409 and no contents are deleted.
+      operationId: delete_folder_v1_knowledge_bases__knowledge_base_id__folders_delete
+      security:
+      - APIKeyHeader: []
+      - BearerAuth: []
+      parameters:
+      - name: knowledge_base_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: Unique knowledge base ID.
+          title: Knowledge Base Id
+        description: Unique knowledge base ID.
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Organization scope for API keys that can access multiple organizations.
+          title: Organization Id
+        description: Organization scope for API keys that can access multiple organizations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFolderRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderOperationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    KnowledgeBaseSearchResult:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Document or chunk path.
+        score:
+          type: number
+          title: Score
+          description: Relevance score.
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Result metadata, including folder path.
+        content:
+          type: string
+          title: Content
+          description: Matched content.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - score
+      - metadata
+      - content
+      title: KnowledgeBaseSearchResult
+    AddFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to create.
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: AddFolderRequest
+    DeleteDocumentRequest:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Document path to delete.
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      title: DeleteDocumentRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    KnowledgeBaseItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Unique knowledge base ID.
+        name:
+          type: string
+          title: Name
+          description: Knowledge base name.
+        slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Slug
+          description: Knowledge base slug.
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Knowledge base description.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Creation timestamp.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - name
+      - created_at
+      title: KnowledgeBaseItem
+    DeleteFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to delete.
+        recursive:
+          type: boolean
+          title: Recursive
+          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: DeleteFolderRequest
+    SearchKnowledgeBaseFilters:
+      properties:
+        tags:
+          anyOf:
+          - items:
+              type: string
+              minLength: 1
+            type: array
+            minItems: 1
+          - type: 'null'
+          title: Tags
+          description: Optional tags to match. Documents with any matching tag are included.
+        folders:
+          anyOf:
+          - items:
+              type: string
+              minLength: 1
+            type: array
+            maxItems: 1
+            minItems: 1
+          - type: 'null'
+          title: Folders
+          description: Optional folder paths to search within. Currently limited to one folder.
+      additionalProperties: false
+      type: object
+      title: SearchKnowledgeBaseFilters
+    ListKnowledgeBasesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseItem'
+          type: array
+          title: Data
+          description: Knowledge bases accessible to the API key.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ListKnowledgeBasesResponse
+    KnowledgeBaseSearchResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseSearchResult'
+          type: array
+          title: Data
+          description: Knowledge base search results.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: KnowledgeBaseSearchResponse
+    FolderOperationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Operation result message.
+        path:
+          type: string
+          title: Path
+          description: Folder path.
+      additionalProperties: false
+      type: object
+      required:
+      - message
+      - path
+      title: FolderOperationResponse
+    DocumentOperationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Operation result message.
+        name:
+          type: string
+          title: Name
+          description: Document name.
+        path:
+          type: string
+          title: Path
+          description: Document path.
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+          description: Document folder path.
+      additionalProperties: false
+      type: object
+      required:
+      - message
+      - name
+      - path
+      title: DocumentOperationResponse
+    CursorPagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Token for the next page, if more results are available.
+      additionalProperties: false
+      type: object
+      title: CursorPagination
+      description: Cursor-based pagination metadata.
+    SearchKnowledgeBaseRequest:
+      properties:
+        query:
+          type: string
+          minLength: 1
+          title: Query
+          description: Search query.
+        top_k:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Top K
+          description: Maximum number of results to return.
+        return_full_page:
+          type: boolean
+          title: Return Full Page
+          description: Return full page content instead of snippets.
+          default: false
+        filters:
+          anyOf:
+          - $ref: '#/components/schemas/SearchKnowledgeBaseFilters'
+          - type: 'null'
+          description: Optional search filters.
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      - top_k
+      title: SearchKnowledgeBaseRequest
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
