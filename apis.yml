@@ -123,6 +123,8 @@ apis:
   humanURL: https://docs.tryprofound.com/rest-api/introduction
   baseURL: https://api.tryprofound.com
   tags:
+  - Beta
+  tags_raw:
   - beta
   properties:
   - type: OpenAPI
@@ -203,6 +205,8 @@ apis:
   humanURL: https://docs.tryprofound.com/rest-api/introduction
   baseURL: https://api.tryprofound.com
   tags:
+  - Content Optimization
+  tags_raw:
   - Content optimization
   properties:
   - type: OpenAPI
@@ -263,6 +267,8 @@ apis:
   humanURL: https://docs.tryprofound.com/rest-api/introduction
   baseURL: https://api.tryprofound.com
   tags:
+  - Integration
+  tags_raw:
   - Integrations
   properties:
   - type: OpenAPI
@@ -283,6 +289,8 @@ apis:
   humanURL: https://docs.tryprofound.com/rest-api/introduction
   baseURL: https://api.tryprofound.com
   tags:
+  - Knowledge Bases
+  tags_raw:
   - Knowledge bases
   properties:
   - type: OpenAPI
@@ -343,6 +351,8 @@ apis:
   humanURL: https://docs.tryprofound.com/rest-api/introduction
   baseURL: https://api.tryprofound.com
   tags:
+  - Project
+  tags_raw:
   - Projects
   properties:
   - type: OpenAPI
