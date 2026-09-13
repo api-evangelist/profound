@@ -7,13 +7,15 @@ deployment:
   endpoint: https://mcp.tryprofound.com/mcp
   auth: oauth
   verified: probed
-  note: >-
-    Remote-only. Profound ships no stdio package — there is no npx/pip MCP
-    server to install; clients connect directly to the hosted URL. Confirmed by
-    POSTing tools/list to the endpoint: it answered HTTP 401 with a
-    WWW-Authenticate Bearer challenge and a resource_metadata pointer, which
-    proves a live MCP server is listening and that the tool schemas are
-    auth-gated.
+  note: 'Remote-only. Profound ships no stdio package — there is no npx/pip MCP server to install; clients
+    connect directly to the hosted URL. Confirmed by POSTing tools/list to the endpoint: it answered HTTP
+    401 with a WWW-Authenticate Bearer challenge and a resource_metadata pointer, which proves a live
+    MCP server is listening and that the tool schemas are auth-gated.'
+  probe_prior: (never probed)
+  probe: gated
+  probe_why: RFC 9728 challenge on the MCP path only
+  checked: '2026-09-11'
+  source: claimed-backlog re-probe 2026-09-11
 server:
   name: profound_mcp
   transport: http
@@ -26,23 +28,26 @@ authentication:
   protected_resource_metadata: https://mcp.tryprofound.com/.well-known/oauth-protected-resource
   authorization_server_metadata: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
   dynamic_client_registration: true
-  pkce: [S256]
-  scopes_supported: [email, offline_access, openid, profile]
+  pkce:
+  - S256
+  scopes_supported:
+  - email
+  - offline_access
+  - openid
+  - profile
   alternative:
     method: bearer-api-key
-    note: >-
-      Long-lived Bearer token using a Profound API key, for service accounts and
-      internal tools that cannot complete a per-user OAuth flow. Requires the
-      Enterprise plan and API access granted by Profound support.
+    note: Long-lived Bearer token using a Profound API key, for service accounts and internal tools that
+      cannot complete a per-user OAuth flow. Requires the Enterprise plan and API access granted by Profound
+      support.
 behavior:
   analytics_tools_read_only: true
   hints:
     readOnlyHint: true
     idempotentHint: true
-  note: >-
-    Read-only hints apply to the analytics/report tools. The Agents tools do
-    create, update and publish agent definitions and start runs; they default to
-    preview: true so a client reviews a plan before it is applied.
+  note: 'Read-only hints apply to the analytics/report tools. The Agents tools do create, update and publish
+    agent definitions and start runs; they default to preview: true so a client reviews a plan before
+    it is applied.'
 tools:
   discovery:
   - name: whoami
@@ -67,7 +72,8 @@ tools:
   - name: get_visibility_report
     description: How visible a brand is in AI answers, by model, topic, region, prompt, tag or persona
   - name: get_sentiment_report
-    description: What sentiment AI answers express about a brand or competitor, and which themes are positive or negative
+    description: What sentiment AI answers express about a brand or competitor, and which themes are positive
+      or negative
   - name: get_citations_report
     description: Which domains, pages or URLs AI engines cite for a category
   - name: get_prompt_answers
@@ -140,8 +146,6 @@ x-evidence:
     http_status: 200
   - url: https://mcp.tryprofound.com/.well-known/oauth-authorization-server
     http_status: 200
-  tool_catalog_source: >-
-    Tool names and descriptions are taken from the published capability pages
-    (docs.tryprofound.com/mcp/capabilities/*), not from a live tools/list — the
-    live manifest requires authentication. Input schemas therefore require
+  tool_catalog_source: Tool names and descriptions are taken from the published capability pages (docs.tryprofound.com/mcp/capabilities/*),
+    not from a live tools/list — the live manifest requires authentication. Input schemas therefore require
     authenticated introspection and are not recorded here.
