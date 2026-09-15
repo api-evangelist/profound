@@ -23,25 +23,21 @@ accessModel:
   - https://docs.tryprofound.com/rest-api/introduction
   generated: '2026-08-13'
   method: searched
-  note: >-
-    The OpenAPI is anonymously readable at https://api.tryprofound.com/openapi.json,
-    but calling the API requires an Enterprise plan plus an access request to
-    support. Neither the Starter ($99/mo) nor Growth ($399/mo) tier includes API
-    access.
+  note: The OpenAPI is anonymously readable at https://api.tryprofound.com/openapi.json, but calling the
+    API requires an Enterprise plan plus an access request to support. Neither the Starter ($99/mo) nor
+    Growth ($399/mo) tier includes API access.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/profound.png
 name: Profound
-description: 'Profound is a marketing platform for the AI era and a leading platform
-  for Answer Engine Optimization (AEO). Operated by Cooper Square Technologies Inc.
-  (dba Profound) in New York, it helps brands measure and improve how they are represented
-  across AI answer engines and assistants — ChatGPT, Perplexity, Claude, Gemini, Google
-  AI Overviews and AI Mode, Copilot, and Grok — through answer-engine insights, agent
-  analytics, prompt volumes, shopping visibility, and content optimization. Profound
-  publishes a 125-operation OpenAPI 3.1 for its External API at api.tryprofound.com,
-  runs a separate Agent Analytics Ingestion API, ships official Python and TypeScript
-  SDKs, and operates a hosted remote MCP server at mcp.tryprofound.com with OAuth 2.1
-  and a conformant A2A agent card. API access is included on the Enterprise plan on
-  request. Profound is SOC 2 and HIPAA aligned and publishes a responsible-disclosure
-  policy. Backed by Kleiner Perkins.'
+description: Profound is a marketing platform for the AI era and a leading platform for Answer Engine
+  Optimization (AEO). Operated by Cooper Square Technologies Inc. (dba Profound) in New York, it helps
+  brands measure and improve how they are represented across AI answer engines and assistants — ChatGPT,
+  Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, and Grok — through answer-engine
+  insights, agent analytics, prompt volumes, shopping visibility, and content optimization. Profound publishes
+  a 125-operation OpenAPI 3.1 for its External API at api.tryprofound.com, runs a separate Agent Analytics
+  Ingestion API, ships official Python and TypeScript SDKs, and operates a hosted remote MCP server at
+  mcp.tryprofound.com with OAuth 2.1 and a conformant A2A agent card. API access is included on the Enterprise
+  plan on request. Profound is SOC 2 and HIPAA aligned and publishes a responsible-disclosure policy.
+  Backed by Kleiner Perkins.
 url: https://raw.githubusercontent.com/api-evangelist/profound/refs/heads/main/apis.yml
 x-type: company
 x-source: kleiner-perkins-portfolio
@@ -77,13 +73,12 @@ tags_raw:
 - Citations
 - MCP
 apis:
-- aid: profound-agent-analytics-ingestion-api
+- aid: profound:profound-agent-analytics-ingestion-api
   name: Profound Agent Analytics Ingestion API
-  description: >-
-    The inbound log-ingestion endpoint for Profound Agent Analytics. Customers POST batches of up to 1,000
-    web-request log entries as JSON (timestamp, method, host, path, status_code, ip, user_agent, plus
-    optional query_params, referer, bytes_sent and duration_ms) so Profound can attribute AI crawler and
-    human referral traffic. Authenticated with a Profound Log Ingestion Token in the x-api-key header.
+  description: The inbound log-ingestion endpoint for Profound Agent Analytics. Customers POST batches
+    of up to 1,000 web-request log entries as JSON (timestamp, method, host, path, status_code, ip, user_agent,
+    plus optional query_params, referer, bytes_sent and duration_ms) so Profound can attribute AI crawler
+    and human referral traffic. Authenticated with a Profound Log Ingestion Token in the x-api-key header.
     Listed as a separately monitored component on the Profound status page. No OpenAPI is published for
     this surface.
   humanURL: https://docs.tryprofound.com/agent-analytics/custom
