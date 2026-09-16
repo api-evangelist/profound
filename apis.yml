@@ -45,7 +45,7 @@ x-tier: profiled
 x-tier-reason: published-openapi-and-mcp-server
 specificationVersion: '0.23'
 created: '2026-07-17'
-modified: '2026-08-13'
+modified: '2026-09-16'
 tags:
 - Company
 - Artificial Intelligence
@@ -441,7 +441,7 @@ common:
 - type: Integrations
   url: https://www.tryprofound.com/integrations
 - type: OpenAPI
-  url: openapi/profound-external-api-openapi.json
+  url: openapi/_original/profound-external-api-openapi.json
 - type: Overlay
   url: overlays/profound-external-api-overlay.yaml
 - type: Packages
