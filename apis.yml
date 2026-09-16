@@ -496,6 +496,8 @@ common:
   url: security/profound-trust-center.yml
 - type: Compliance
   url: https://trust.tryprofound.com
+- type: Contact
+  url: mailto:team@tryprofound.com
 x-enrichment:
   date: '2026-08-13'
   status: enriched
