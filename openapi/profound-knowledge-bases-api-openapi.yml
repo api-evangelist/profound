@@ -6,12 +6,12 @@ servers:
 - url: https://api.tryprofound.com
   description: Production Server
 tags:
-- name: Knowledge bases
+- name: Knowledge Bases
 paths:
   /v1/knowledge-bases:
     get:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: List Knowledge Bases
       description: List knowledge bases accessible to the API key.
       operationId: list_knowledge_bases_v1_knowledge_bases_get
@@ -46,7 +46,7 @@ paths:
   /v1/knowledge-bases/{knowledge_base_id}/search:
     post:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: Search Knowledge Base
       description: Search a knowledge base and return matching snippets or pages.
       operationId: search_knowledge_base_v1_knowledge_bases__knowledge_base_id__search_post
@@ -96,7 +96,7 @@ paths:
   /v1/knowledge-bases/{knowledge_base_id}/documents:
     post:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: Add Document
       description: Add a document to a knowledge base using JSON text or multipart file upload.
       operationId: add_document_v1_knowledge_bases__knowledge_base_id__documents_post
@@ -185,7 +185,7 @@ paths:
                   description: Document file to upload.
     put:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: Update Document
       description: Overwrite a knowledge base document using JSON text or multipart file upload.
       operationId: update_document_v1_knowledge_bases__knowledge_base_id__documents_put
@@ -274,7 +274,7 @@ paths:
                   description: Document file to upload.
     delete:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: Delete Document
       description: Delete an existing document from a knowledge base.
       operationId: delete_document_v1_knowledge_bases__knowledge_base_id__documents_delete
@@ -324,7 +324,7 @@ paths:
   /v1/knowledge-bases/{knowledge_base_id}/folders:
     post:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: Add Folder
       description: Create an empty folder at the requested knowledge base path.
       operationId: add_folder_v1_knowledge_bases__knowledge_base_id__folders_post
@@ -373,7 +373,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     delete:
       tags:
-      - Knowledge bases
+      - Knowledge Bases
       summary: Delete Folder
       description: Delete a folder. With recursive=false, non-empty folders return 409 and no contents are deleted.
       operationId: delete_folder_v1_knowledge_bases__knowledge_base_id__folders_delete
@@ -422,6 +422,52 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    SearchKnowledgeBaseRequest:
+      properties:
+        query:
+          type: string
+          minLength: 1
+          title: Query
+          description: Search query.
+        top_k:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Top K
+          description: Maximum number of results to return.
+        return_full_page:
+          type: boolean
+          title: Return Full Page
+          description: Return full page content instead of snippets.
+          default: false
+        filters:
+          anyOf:
+          - $ref: '#/components/schemas/SearchKnowledgeBaseFilters'
+          - type: 'null'
+          description: Optional search filters.
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      - top_k
+      title: SearchKnowledgeBaseRequest
+    DeleteFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to delete.
+        recursive:
+          type: boolean
+          title: Recursive
+          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: DeleteFolderRequest
     HTTPValidationError:
       properties:
         detail:
@@ -458,30 +504,33 @@ components:
       - metadata
       - content
       title: KnowledgeBaseSearchResult
-    AddFolderRequest:
+    DocumentOperationResponse:
       properties:
-        path:
+        message:
           type: string
-          minLength: 1
-          title: Path
-          description: Folder path to create.
-      additionalProperties: false
-      type: object
-      required:
-      - path
-      title: AddFolderRequest
-    DeleteDocumentRequest:
-      properties:
+          title: Message
+          description: Operation result message.
         name:
           type: string
-          minLength: 1
           title: Name
-          description: Document path to delete.
+          description: Document name.
+        path:
+          type: string
+          title: Path
+          description: Document path.
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+          description: Document folder path.
       additionalProperties: false
       type: object
       required:
+      - message
       - name
-      title: DeleteDocumentRequest
+      - path
+      title: DocumentOperationResponse
     ValidationError:
       properties:
         loc:
@@ -543,23 +592,62 @@ components:
       - name
       - created_at
       title: KnowledgeBaseItem
-    DeleteFolderRequest:
+    DeleteDocumentRequest:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Document path to delete.
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      title: DeleteDocumentRequest
+    FolderOperationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Operation result message.
+        path:
+          type: string
+          title: Path
+          description: Folder path.
+      additionalProperties: false
+      type: object
+      required:
+      - message
+      - path
+      title: FolderOperationResponse
+    ListKnowledgeBasesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseItem'
+          type: array
+          title: Data
+          description: Knowledge bases accessible to the API key.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ListKnowledgeBasesResponse
+    AddFolderRequest:
       properties:
         path:
           type: string
           minLength: 1
           title: Path
-          description: Folder path to delete.
-        recursive:
-          type: boolean
-          title: Recursive
-          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
-          default: false
+          description: Folder path to create.
       additionalProperties: false
       type: object
       required:
       - path
-      title: DeleteFolderRequest
+      title: AddFolderRequest
     SearchKnowledgeBaseFilters:
       properties:
         tags:
@@ -586,22 +674,6 @@ components:
       additionalProperties: false
       type: object
       title: SearchKnowledgeBaseFilters
-    ListKnowledgeBasesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/KnowledgeBaseItem'
-          type: array
-          title: Data
-          description: Knowledge bases accessible to the API key.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination metadata.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListKnowledgeBasesResponse
     KnowledgeBaseSearchResponse:
       properties:
         data:
@@ -618,49 +690,6 @@ components:
       required:
       - data
       title: KnowledgeBaseSearchResponse
-    FolderOperationResponse:
-      properties:
-        message:
-          type: string
-          title: Message
-          description: Operation result message.
-        path:
-          type: string
-          title: Path
-          description: Folder path.
-      additionalProperties: false
-      type: object
-      required:
-      - message
-      - path
-      title: FolderOperationResponse
-    DocumentOperationResponse:
-      properties:
-        message:
-          type: string
-          title: Message
-          description: Operation result message.
-        name:
-          type: string
-          title: Name
-          description: Document name.
-        path:
-          type: string
-          title: Path
-          description: Document path.
-        folder:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder
-          description: Document folder path.
-      additionalProperties: false
-      type: object
-      required:
-      - message
-      - name
-      - path
-      title: DocumentOperationResponse
     CursorPagination:
       properties:
         limit:
@@ -680,35 +709,6 @@ components:
       type: object
       title: CursorPagination
       description: Cursor-based pagination metadata.
-    SearchKnowledgeBaseRequest:
-      properties:
-        query:
-          type: string
-          minLength: 1
-          title: Query
-          description: Search query.
-        top_k:
-          type: integer
-          maximum: 100.0
-          minimum: 1.0
-          title: Top K
-          description: Maximum number of results to return.
-        return_full_page:
-          type: boolean
-          title: Return Full Page
-          description: Return full page content instead of snippets.
-          default: false
-        filters:
-          anyOf:
-          - $ref: '#/components/schemas/SearchKnowledgeBaseFilters'
-          - type: 'null'
-          description: Optional search filters.
-      additionalProperties: false
-      type: object
-      required:
-      - query
-      - top_k
-      title: SearchKnowledgeBaseRequest
   securitySchemes:
     APIKeyHeader:
       type: apiKey

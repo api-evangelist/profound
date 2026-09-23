@@ -562,15 +562,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     NamedResource:
       properties:
         id:
@@ -585,218 +576,25 @@ components:
       - name
       title: NamedResource
       description: Generic id+name reference used across domain boundaries.
-    PromptType:
-      type: string
-      enum:
-      - visibility
-      - sentiment
-      title: PromptType
-    CategoryPersonasResponse:
+    NamedResourceDiffList:
       properties:
-        data:
+        added:
           items:
-            $ref: '#/components/schemas/CategoryPersona'
+            $ref: '#/components/schemas/NamedResource'
           type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: CategoryPersonasResponse
-    PersonaProfileEmployment:
-      properties:
-        industry:
+          title: Added
+          description: Resources that were added.
+          default: []
+        removed:
           items:
-            type: string
+            $ref: '#/components/schemas/NamedResource'
           type: array
-          title: Industry
-        jobTitle:
-          items:
-            type: string
-          type: array
-          title: Jobtitle
-        companySize:
-          items:
-            type: string
-          type: array
-          title: Companysize
-        roleSeniority:
-          items:
-            type: string
-          type: array
-          title: Roleseniority
-      type: object
-      title: PersonaProfileEmployment
-    CitationTag:
-      properties:
-        value:
-          type: string
-          title: Value
-          description: Value to pass to the v2 citations `citation_tag` filter.
-        name:
-          type: string
-          title: Name
-          description: Display name.
-      type: object
-      required:
-      - value
-      - name
-      title: CitationTag
-    CreatePromptsResponse:
-      properties:
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: Whether this was a dry run (no changes persisted).
-        created:
-          type: integer
-          title: Created
-          description: Number of prompts created.
-          default: 0
-        topics_created:
-          type: integer
-          title: Topics Created
-          description: Number of new topics created.
-          default: 0
-        tags_created:
-          type: integer
-          title: Tags Created
-          description: Number of new tags created.
-          default: 0
-        prompts:
-          items:
-            $ref: '#/components/schemas/PromptPreview'
-          type: array
-          title: Prompts
-          description: List of created (or previewed) prompts with resolved references.
+          title: Removed
+          description: Resources that were removed.
           default: []
       type: object
-      required:
-      - dry_run
-      title: CreatePromptsResponse
-      description: Response from creating prompts.
-    IdOrName:
-      properties:
-        id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Id
-          description: UUID of the resource.
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Display name of the resource.
-      type: object
-      title: IdOrName
-      description: 'Reference by id, name, or both. Plain strings work too:
-
-        UUIDs become id lookups, other strings become name lookups.'
-    UpdatePromptStatusBody:
-      properties:
-        prompt_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Prompt Ids
-          description: IDs of the prompts to update.
-        status:
-          type: string
-          enum:
-          - active
-          - disabled
-          - deleted
-          title: Status
-          description: 'Target status: ''active'', ''disabled'', or ''deleted''.'
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: When true, validate and preview changes without persisting them.
-          default: false
-      type: object
-      required:
-      - prompt_ids
-      - status
-      title: UpdatePromptStatusBody
-    UpdatePromptsResponse:
-      properties:
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: Whether this was a dry run (no changes persisted).
-        updated:
-          type: integer
-          title: Updated
-          description: Number of prompts that had changes.
-          default: 0
-        topics_created:
-          type: integer
-          title: Topics Created
-          description: Number of new topics created.
-          default: 0
-        tags_created:
-          type: integer
-          title: Tags Created
-          description: Number of new tags created.
-          default: 0
-        prompts:
-          items:
-            $ref: '#/components/schemas/PromptUpdatePreview'
-          type: array
-          title: Prompts
-          description: List of prompts with their change diffs.
-          default: []
-      type: object
-      required:
-      - dry_run
-      title: UpdatePromptsResponse
-      description: Response from updating prompts.
-    CreatePromptsBody:
-      properties:
-        prompts:
-          items:
-            $ref: '#/components/schemas/CreatePromptInput'
-          type: array
-          title: Prompts
-          description: List of prompts to create.
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: When true, validate and preview changes without persisting them.
-          default: false
-      type: object
-      required:
-      - prompts
-      title: CreatePromptsBody
-    AnalysisType:
-      type: string
-      enum:
-      - visibility
-      - sentiment
-      - sentiment_v2
-      - accuracy
-      title: AnalysisType
-    PaginationInfo:
-      properties:
-        total_rows:
-          type: integer
-          title: Total Rows
-        limit:
-          type: integer
-          title: Limit
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Next Cursor
-      type: object
-      required:
-      - total_rows
-      - limit
-      - next_cursor
-      title: PaginationInfo
+      title: NamedResourceDiffList
+      description: Shows which resources were added or removed.
     CategoryAsset:
       properties:
         id:
@@ -858,6 +656,553 @@ components:
       - organization
       title: CategoryWithOrganization
       description: A category annotated with the organization that owns it.
+    IdOrName:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: UUID of the resource.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Display name of the resource.
+      type: object
+      title: IdOrName
+      description: 'Reference by id, name, or both. Plain strings work too:
+
+        UUIDs become id lookups, other strings become name lookups.'
+    Prompt:
+      properties:
+        id:
+          type: string
+          title: Id
+        analysis_types:
+          items:
+            type: string
+            enum:
+            - visibility
+            - sentiment
+            - sentiment_v2
+            - accuracy
+          type: array
+          title: Analysis Types
+          default: []
+        prompt_type:
+          type: string
+          title: Prompt Type
+          default: ''
+          deprecated: true
+        prompt:
+          type: string
+          title: Prompt
+        language:
+          type: string
+          title: Language
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          title: Status
+        topic:
+          $ref: '#/components/schemas/NamedResource'
+        tags:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Tags
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Regions
+        platforms:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Platforms
+        personas:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Personas
+          default: []
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - prompt
+      - language
+      - status
+      - topic
+      - regions
+      - platforms
+      - created_at
+      - updated_at
+      title: Prompt
+    UpdatePromptStatusBody:
+      properties:
+        prompt_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Prompt Ids
+          description: IDs of the prompts to update.
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          - deleted
+          title: Status
+          description: 'Target status: ''active'', ''disabled'', or ''deleted''.'
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompt_ids
+      - status
+      title: UpdatePromptStatusBody
+    CategoryPromptsResponse:
+      properties:
+        info:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          items:
+            $ref: '#/components/schemas/Prompt'
+          type: array
+          title: Data
+      type: object
+      required:
+      - info
+      - data
+      title: CategoryPromptsResponse
+    PromptUpdatePreview:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: ID of the updated prompt.
+        prompt:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Prompt text diff.
+        topic:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Topic diff.
+        language:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Language diff.
+        tags:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Tags added and removed.
+        regions:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Regions added and removed.
+        platforms:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Platforms added and removed.
+        personas:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Personas added and removed.
+        analysis_types:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Analysis types diff.
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Asset diff.
+      type: object
+      required:
+      - id
+      title: PromptUpdatePreview
+      description: Preview of changes applied (or to be applied) to a single prompt. Only changed fields are included.
+    FieldDiff:
+      properties:
+        old:
+          title: Old
+          description: Previous value.
+        new:
+          title: New
+          description: New value.
+      type: object
+      title: FieldDiff
+      description: Shows the old and new value for a changed field.
+    PersonaProfile:
+      properties:
+        behavior:
+          $ref: '#/components/schemas/PersonaProfileBehavior'
+        employment:
+          $ref: '#/components/schemas/PersonaProfileEmployment'
+        demographics:
+          $ref: '#/components/schemas/PersonaProfileDemographics'
+      type: object
+      required:
+      - behavior
+      - employment
+      - demographics
+      title: PersonaProfile
+    CitationCategory:
+      properties:
+        value:
+          type: string
+          title: Value
+          description: Value to pass to the v2 citations `citation_category` filter.
+        name:
+          type: string
+          title: Name
+          description: Display name.
+      type: object
+      required:
+      - value
+      - name
+      title: CitationCategory
+    PromptOrderBy:
+      type: string
+      enum:
+      - created_at
+      - prompt
+      title: PromptOrderBy
+    Organization:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: Organization
+    PersonaProfileDemographics:
+      properties:
+        ageRange:
+          items:
+            type: string
+          type: array
+          title: Agerange
+      type: object
+      title: PersonaProfileDemographics
+    PersonaProfileBehavior:
+      properties:
+        painPoints:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Painpoints
+        motivations:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Motivations
+      type: object
+      title: PersonaProfileBehavior
+    UpdatePromptStatusResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        updated_prompts:
+          type: integer
+          title: Updated Prompts
+          description: Number of prompts whose status was changed.
+          default: 0
+      type: object
+      required:
+      - dry_run
+      title: UpdatePromptStatusResponse
+      description: Response from updating prompt statuses.
+    CategoryPersonasResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CategoryPersona'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CategoryPersonasResponse
+    AnalysisType:
+      type: string
+      enum:
+      - visibility
+      - sentiment
+      - sentiment_v2
+      - accuracy
+      title: AnalysisType
+    OrderByDirection:
+      type: string
+      enum:
+      - asc
+      - desc
+      title: OrderByDirection
+    PromptType:
+      type: string
+      enum:
+      - visibility
+      - sentiment
+      title: PromptType
+    CitationTag:
+      properties:
+        value:
+          type: string
+          title: Value
+          description: Value to pass to the v2 citations `citation_tag` filter.
+        name:
+          type: string
+          title: Name
+          description: Display name.
+      type: object
+      required:
+      - value
+      - name
+      title: CitationTag
+    CreatePromptsBody:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/CreatePromptInput'
+          type: array
+          title: Prompts
+          description: List of prompts to create.
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompts
+      title: CreatePromptsBody
+    CategoryPersona:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        persona:
+          $ref: '#/components/schemas/PersonaProfile'
+      type: object
+      required:
+      - id
+      - name
+      - persona
+      title: CategoryPersona
+    UpdatePromptsBody:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/UpdatePromptInput'
+          type: array
+          title: Prompts
+          description: List of prompt updates. Each entry must include an `id` and at least one field to change.
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompts
+      title: UpdatePromptsBody
+    UpdatePromptsResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        updated:
+          type: integer
+          title: Updated
+          description: Number of prompts that had changes.
+          default: 0
+        topics_created:
+          type: integer
+          title: Topics Created
+          description: Number of new topics created.
+          default: 0
+        tags_created:
+          type: integer
+          title: Tags Created
+          description: Number of new tags created.
+          default: 0
+        prompts:
+          items:
+            $ref: '#/components/schemas/PromptUpdatePreview'
+          type: array
+          title: Prompts
+          description: List of prompts with their change diffs.
+          default: []
+      type: object
+      required:
+      - dry_run
+      title: UpdatePromptsResponse
+      description: Response from updating prompts.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PromptPreview:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Generated prompt ID.
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt text.
+        topic:
+          $ref: '#/components/schemas/NamedResource'
+          description: Resolved topic.
+        language:
+          type: string
+          title: Language
+          description: Language code.
+        tags:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Tags
+          description: Resolved tags.
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Regions
+          description: Resolved regions.
+          default: []
+        platforms:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Platforms
+          description: Resolved platforms.
+          default: []
+        personas:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Personas
+          description: Resolved personas.
+          default: []
+        analysis_types:
+          items:
+            type: string
+            enum:
+            - visibility
+            - sentiment
+            - sentiment_v2
+            - accuracy
+          type: array
+          title: Analysis Types
+          description: Analysis types assigned to this prompt.
+          default: []
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResource'
+          - type: 'null'
+          description: Resolved asset, if applicable.
+      type: object
+      required:
+      - id
+      - prompt
+      - topic
+      - language
+      title: PromptPreview
+      description: Preview of a prompt that was (or would be) created.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PaginationInfo:
+      properties:
+        total_rows:
+          type: integer
+          title: Total Rows
+        limit:
+          type: integer
+          title: Limit
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+      type: object
+      required:
+      - total_rows
+      - limit
+      - next_cursor
+      title: PaginationInfo
     Topic:
       properties:
         id:
@@ -878,6 +1223,110 @@ components:
       - name
       - status
       title: Topic
+    CitationCategoriesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CitationCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CitationCategoriesResponse
+    CreatePromptInput:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: 'Optional client-generated UUID for the prompt. When provided, creation is idempotent: retrying a request with the same id will not create a duplicate prompt. Omit to have the server generate one (non-idempotent).'
+        prompt:
+          type: string
+          minLength: 1
+          title: Prompt
+          description: The prompt text to be sent to AI platforms.
+        topic:
+          $ref: '#/components/schemas/IdOrName'
+          description: Topic to assign. A new topic is created if the name doesn't exist.
+        language:
+          type: string
+          title: Language
+          description: Language code (e.g. 'en-US')
+        tags:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          title: Tags
+          description: Tags to assign. New tags are created if names don't exist.
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          minItems: 1
+          title: Regions
+          description: Regions where the prompt will be collected.
+        platforms:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          minItems: 1
+          title: Platforms
+          description: AI platforms where the prompt will be collected.
+        personas:
+          items:
+            $ref: '#/components/schemas/IdOrName'
+          type: array
+          title: Personas
+          description: Personas to use when collecting. Omit for default (no persona).
+          default: []
+        analysis_types:
+          anyOf:
+          - items:
+              type: string
+              enum:
+              - visibility
+              - sentiment
+              - sentiment_v2
+              - accuracy
+            type: array
+          - type: 'null'
+          title: Analysis Types
+          description: 'Analysis types: ''visibility'', ''sentiment'', ''accuracy''. Defaults to [''visibility''].'
+        prompt_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Type
+          description: Deprecated. Use analysis_types instead. 'Visibility' or 'Sentiment'.
+          deprecated: true
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/IdOrName'
+          - type: 'null'
+          description: Required for Sentiment prompts. The brand asset to evaluate.
+      type: object
+      required:
+      - prompt
+      - topic
+      - language
+      - regions
+      - platforms
+      title: CreatePromptInput
+      description: A single prompt to create within a category.
+    CitationTagsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CitationTag'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CitationTagsResponse
     UpdatePromptInput:
       properties:
         id:
@@ -963,6 +1412,63 @@ components:
       - id
       title: UpdatePromptInput
       description: Fields to update on an existing prompt. Only provided fields are changed; omitted fields are left unchanged.
+    CreatePromptsResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        created:
+          type: integer
+          title: Created
+          description: Number of prompts created.
+          default: 0
+        topics_created:
+          type: integer
+          title: Topics Created
+          description: Number of new topics created.
+          default: 0
+        tags_created:
+          type: integer
+          title: Tags Created
+          description: Number of new tags created.
+          default: 0
+        prompts:
+          items:
+            $ref: '#/components/schemas/PromptPreview'
+          type: array
+          title: Prompts
+          description: List of created (or previewed) prompts with resolved references.
+          default: []
+      type: object
+      required:
+      - dry_run
+      title: CreatePromptsResponse
+      description: Response from creating prompts.
+    PersonaProfileEmployment:
+      properties:
+        industry:
+          items:
+            type: string
+          type: array
+          title: Industry
+        jobTitle:
+          items:
+            type: string
+          type: array
+          title: Jobtitle
+        companySize:
+          items:
+            type: string
+          type: array
+          title: Companysize
+        roleSeniority:
+          items:
+            type: string
+          type: array
+          title: Roleseniority
+      type: object
+      title: PersonaProfileEmployment
     Tag:
       properties:
         id:
@@ -976,512 +1482,6 @@ components:
       - id
       - name
       title: Tag
-    CategoryPersona:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        persona:
-          $ref: '#/components/schemas/PersonaProfile'
-      type: object
-      required:
-      - id
-      - name
-      - persona
-      title: CategoryPersona
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CreatePromptInput:
-      properties:
-        id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Id
-          description: 'Optional client-generated UUID for the prompt. When provided, creation is idempotent: retrying a request with the same id will not create a duplicate prompt. Omit to have the server generate one (non-idempotent).'
-        prompt:
-          type: string
-          minLength: 1
-          title: Prompt
-          description: The prompt text to be sent to AI platforms.
-        topic:
-          $ref: '#/components/schemas/IdOrName'
-          description: Topic to assign. A new topic is created if the name doesn't exist.
-        language:
-          type: string
-          title: Language
-          description: Language code (e.g. 'en-US')
-        tags:
-          items:
-            $ref: '#/components/schemas/IdOrName'
-          type: array
-          title: Tags
-          description: Tags to assign. New tags are created if names don't exist.
-          default: []
-        regions:
-          items:
-            $ref: '#/components/schemas/IdOrName'
-          type: array
-          minItems: 1
-          title: Regions
-          description: Regions where the prompt will be collected.
-        platforms:
-          items:
-            $ref: '#/components/schemas/IdOrName'
-          type: array
-          minItems: 1
-          title: Platforms
-          description: AI platforms where the prompt will be collected.
-        personas:
-          items:
-            $ref: '#/components/schemas/IdOrName'
-          type: array
-          title: Personas
-          description: Personas to use when collecting. Omit for default (no persona).
-          default: []
-        analysis_types:
-          anyOf:
-          - items:
-              type: string
-              enum:
-              - visibility
-              - sentiment
-              - sentiment_v2
-              - accuracy
-            type: array
-          - type: 'null'
-          title: Analysis Types
-          description: 'Analysis types: ''visibility'', ''sentiment'', ''accuracy''. Defaults to [''visibility''].'
-        prompt_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Prompt Type
-          description: Deprecated. Use analysis_types instead. 'Visibility' or 'Sentiment'.
-          deprecated: true
-        asset:
-          anyOf:
-          - $ref: '#/components/schemas/IdOrName'
-          - type: 'null'
-          description: Required for Sentiment prompts. The brand asset to evaluate.
-      type: object
-      required:
-      - prompt
-      - topic
-      - language
-      - regions
-      - platforms
-      title: CreatePromptInput
-      description: A single prompt to create within a category.
-    CitationCategory:
-      properties:
-        value:
-          type: string
-          title: Value
-          description: Value to pass to the v2 citations `citation_category` filter.
-        name:
-          type: string
-          title: Name
-          description: Display name.
-      type: object
-      required:
-      - value
-      - name
-      title: CitationCategory
-    PromptPreview:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Generated prompt ID.
-        prompt:
-          type: string
-          title: Prompt
-          description: The prompt text.
-        topic:
-          $ref: '#/components/schemas/NamedResource'
-          description: Resolved topic.
-        language:
-          type: string
-          title: Language
-          description: Language code.
-        tags:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Tags
-          description: Resolved tags.
-          default: []
-        regions:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Regions
-          description: Resolved regions.
-          default: []
-        platforms:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Platforms
-          description: Resolved platforms.
-          default: []
-        personas:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Personas
-          description: Resolved personas.
-          default: []
-        analysis_types:
-          items:
-            type: string
-            enum:
-            - visibility
-            - sentiment
-            - sentiment_v2
-            - accuracy
-          type: array
-          title: Analysis Types
-          description: Analysis types assigned to this prompt.
-          default: []
-        asset:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResource'
-          - type: 'null'
-          description: Resolved asset, if applicable.
-      type: object
-      required:
-      - id
-      - prompt
-      - topic
-      - language
-      title: PromptPreview
-      description: Preview of a prompt that was (or would be) created.
-    NamedResourceDiffList:
-      properties:
-        added:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Added
-          description: Resources that were added.
-          default: []
-        removed:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Removed
-          description: Resources that were removed.
-          default: []
-      type: object
-      title: NamedResourceDiffList
-      description: Shows which resources were added or removed.
-    Organization:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-      type: object
-      required:
-      - id
-      - name
-      title: Organization
-    CitationCategoriesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/CitationCategory'
-          type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: CitationCategoriesResponse
-    FieldDiff:
-      properties:
-        old:
-          title: Old
-          description: Previous value.
-        new:
-          title: New
-          description: New value.
-      type: object
-      title: FieldDiff
-      description: Shows the old and new value for a changed field.
-    PromptOrderBy:
-      type: string
-      enum:
-      - created_at
-      - prompt
-      title: PromptOrderBy
-    CategoryPromptsResponse:
-      properties:
-        info:
-          $ref: '#/components/schemas/PaginationInfo'
-        data:
-          items:
-            $ref: '#/components/schemas/Prompt'
-          type: array
-          title: Data
-      type: object
-      required:
-      - info
-      - data
-      title: CategoryPromptsResponse
-    Prompt:
-      properties:
-        id:
-          type: string
-          title: Id
-        analysis_types:
-          items:
-            type: string
-            enum:
-            - visibility
-            - sentiment
-            - sentiment_v2
-            - accuracy
-          type: array
-          title: Analysis Types
-          default: []
-        prompt_type:
-          type: string
-          title: Prompt Type
-          default: ''
-          deprecated: true
-        prompt:
-          type: string
-          title: Prompt
-        language:
-          type: string
-          title: Language
-        status:
-          type: string
-          enum:
-          - active
-          - disabled
-          title: Status
-        topic:
-          $ref: '#/components/schemas/NamedResource'
-        tags:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Tags
-          default: []
-        regions:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Regions
-        platforms:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Platforms
-        personas:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Personas
-          default: []
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
-      type: object
-      required:
-      - id
-      - prompt
-      - language
-      - status
-      - topic
-      - regions
-      - platforms
-      - created_at
-      - updated_at
-      title: Prompt
-    PersonaProfile:
-      properties:
-        behavior:
-          $ref: '#/components/schemas/PersonaProfileBehavior'
-        employment:
-          $ref: '#/components/schemas/PersonaProfileEmployment'
-        demographics:
-          $ref: '#/components/schemas/PersonaProfileDemographics'
-      type: object
-      required:
-      - behavior
-      - employment
-      - demographics
-      title: PersonaProfile
-    UpdatePromptsBody:
-      properties:
-        prompts:
-          items:
-            $ref: '#/components/schemas/UpdatePromptInput'
-          type: array
-          title: Prompts
-          description: List of prompt updates. Each entry must include an `id` and at least one field to change.
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: When true, validate and preview changes without persisting them.
-          default: false
-      type: object
-      required:
-      - prompts
-      title: UpdatePromptsBody
-    UpdatePromptStatusResponse:
-      properties:
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: Whether this was a dry run (no changes persisted).
-        updated_prompts:
-          type: integer
-          title: Updated Prompts
-          description: Number of prompts whose status was changed.
-          default: 0
-      type: object
-      required:
-      - dry_run
-      title: UpdatePromptStatusResponse
-      description: Response from updating prompt statuses.
-    CitationTagsResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/CitationTag'
-          type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: CitationTagsResponse
-    PersonaProfileBehavior:
-      properties:
-        painPoints:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Painpoints
-        motivations:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Motivations
-      type: object
-      title: PersonaProfileBehavior
-    PromptUpdatePreview:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: ID of the updated prompt.
-        prompt:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Prompt text diff.
-        topic:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Topic diff.
-        language:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Language diff.
-        tags:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Tags added and removed.
-        regions:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Regions added and removed.
-        platforms:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Platforms added and removed.
-        personas:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Personas added and removed.
-        analysis_types:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Analysis types diff.
-        asset:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Asset diff.
-      type: object
-      required:
-      - id
-      title: PromptUpdatePreview
-      description: Preview of changes applied (or to be applied) to a single prompt. Only changed fields are included.
-    OrderByDirection:
-      type: string
-      enum:
-      - asc
-      - desc
-      title: OrderByDirection
-    PersonaProfileDemographics:
-      properties:
-        ageRange:
-          items:
-            type: string
-          type: array
-          title: Agerange
-      type: object
-      title: PersonaProfileDemographics
   securitySchemes:
     APIKeyHeader:
       type: apiKey

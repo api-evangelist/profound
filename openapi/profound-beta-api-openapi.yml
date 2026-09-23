@@ -6,12 +6,12 @@ servers:
 - url: https://api.tryprofound.com
   description: Production Server
 tags:
-- name: beta
+- name: Beta
 paths:
   /v1/content/{asset_id}/optimization:
     get:
       tags:
-      - beta
+      - Beta
       summary: Optimization List
       operationId: optimization_list_v1_content__asset_id__optimization_get
       security:
@@ -62,7 +62,7 @@ paths:
   /v1/content/{asset_id}/optimization/{content_id}:
     get:
       tags:
-      - beta
+      - Beta
       summary: Optimization Analysis
       operationId: optimization_analysis_v1_content__asset_id__optimization__content_id__get
       security:
@@ -98,42 +98,18 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
+    AEOScore:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ContentType:
-      type: string
-      enum:
-      - file
-      - text
-      - url
-      title: ContentType
-    RecommendationStatus:
-      type: string
-      enum:
-      - done
-      - pending
-      title: RecommendationStatus
-    TopicInput:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
+        target_zone:
+          $ref: '#/components/schemas/AEOScoreTargetZone'
+        value:
+          type: number
+          title: Value
       type: object
       required:
-      - id
-      - name
-      title: TopicInput
+      - target_zone
+      - value
+      title: AEOScore
     Recommendation:
       properties:
         title:
@@ -154,6 +130,14 @@ components:
       - impact
       - suggestion
       title: Recommendation
+    ContentOptimizationAnalysisResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/ContentAnalysis'
+      type: object
+      required:
+      - data
+      title: ContentOptimizationAnalysisResponse
     PromptInput:
       properties:
         id:
@@ -168,45 +152,6 @@ components:
       - id
       - name
       title: PromptInput
-    ContentOptimizationResponse:
-      properties:
-        info:
-          $ref: '#/components/schemas/ContentOptimizationResponseInfo'
-        data:
-          items:
-            $ref: '#/components/schemas/ContentOptimization'
-          type: array
-          title: Data
-      type: object
-      required:
-      - info
-      - data
-      title: ContentOptimizationResponse
-    ContentAnalysis:
-      properties:
-        content:
-          $ref: '#/components/schemas/DocumentContent'
-        aeo_content_score:
-          anyOf:
-          - $ref: '#/components/schemas/AEOScore'
-          - type: 'null'
-        analysis:
-          $ref: '#/components/schemas/AnalysisSummary'
-        recommendations:
-          items:
-            $ref: '#/components/schemas/Recommendation'
-          type: array
-          title: Recommendations
-        inputs:
-          $ref: '#/components/schemas/AnalysisInputs'
-      type: object
-      required:
-      - content
-      - aeo_content_score
-      - analysis
-      - recommendations
-      - inputs
-      title: ContentAnalysis
     AnalysisBreakdown:
       properties:
         title:
@@ -224,18 +169,159 @@ components:
       - weight
       - score
       title: AnalysisBreakdown
-    DocumentContent:
+    ContentOptimizationResponse:
       properties:
-        format:
-          $ref: '#/components/schemas/ContentFormat'
+        info:
+          $ref: '#/components/schemas/ContentOptimizationResponseInfo'
+        data:
+          items:
+            $ref: '#/components/schemas/ContentOptimization'
+          type: array
+          title: Data
+      type: object
+      required:
+      - info
+      - data
+      title: ContentOptimizationResponse
+    ContentFormat:
+      type: string
+      enum:
+      - markdown
+      - html
+      title: ContentFormat
+    RecommendationSuggestion:
+      properties:
+        text:
+          type: string
+          title: Text
+        rationale:
+          type: string
+          title: Rationale
+      type: object
+      required:
+      - text
+      - rationale
+      title: RecommendationSuggestion
+    AEOScoreTargetZone:
+      properties:
+        low:
+          type: number
+          title: Low
+        high:
+          type: number
+          title: High
+      type: object
+      required:
+      - low
+      - high
+      title: AEOScoreTargetZone
+    UserInput:
+      properties:
+        type:
+          $ref: '#/components/schemas/ContentType'
         value:
           type: string
           title: Value
+        metadata:
+          additionalProperties:
+            anyOf:
+            - type: integer
+            - type: string
+          type: object
+          title: Metadata
       type: object
       required:
-      - format
+      - type
       - value
-      title: DocumentContent
+      - metadata
+      title: UserInput
+    TopicInput:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: TopicInput
+    AnalysisInputs:
+      properties:
+        topic:
+          anyOf:
+          - $ref: '#/components/schemas/TopicInput'
+          - type: 'null'
+        prompt:
+          anyOf:
+          - $ref: '#/components/schemas/PromptInput'
+          - type: 'null'
+        top_citations:
+          items:
+            type: string
+          type: array
+          title: Top Citations
+        user:
+          $ref: '#/components/schemas/UserInput'
+      type: object
+      required:
+      - topic
+      - prompt
+      - top_citations
+      - user
+      title: AnalysisInputs
+    AnalysisSummary:
+      properties:
+        breakdown:
+          items:
+            $ref: '#/components/schemas/AnalysisBreakdown'
+          type: array
+          title: Breakdown
+      type: object
+      required:
+      - breakdown
+      title: AnalysisSummary
+    ContentType:
+      type: string
+      enum:
+      - file
+      - text
+      - url
+      title: ContentType
+    OptimizationQuery:
+      properties:
+        asset_id:
+          type: string
+          format: uuid
+          title: Asset Id
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          description: Pagination parameters for the results. Default is 10,000 rows with no offset.
+      type: object
+      required:
+      - asset_id
+      title: OptimizationQuery
+    Pagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        offset:
+          type: integer
+          minimum: 0.0
+          title: Offset
+          description: Offset for the results. Used for pagination.
+          default: 0
+      type: object
+      title: Pagination
+      description: Offset-based pagination parameters.
     ContentOptimization:
       properties:
         id:
@@ -268,40 +354,59 @@ components:
       - type
       - status
       title: ContentOptimization
-    ContentOptimizationAnalysisResponse:
+    RecommendationStatus:
+      type: string
+      enum:
+      - done
+      - pending
+      title: RecommendationStatus
+    RecommendationImpact:
       properties:
-        data:
-          $ref: '#/components/schemas/ContentAnalysis'
-      type: object
-      required:
-      - data
-      title: ContentOptimizationAnalysisResponse
-    AEOScoreTargetZone:
-      properties:
-        low:
-          type: number
-          title: Low
-        high:
-          type: number
-          title: High
-      type: object
-      required:
-      - low
-      - high
-      title: AEOScoreTargetZone
-    RecommendationSuggestion:
-      properties:
-        text:
+        section:
           type: string
-          title: Text
-        rationale:
-          type: string
-          title: Rationale
+          title: Section
+        score:
+          type: number
+          title: Score
       type: object
       required:
-      - text
-      - rationale
-      title: RecommendationSuggestion
+      - section
+      - score
+      title: RecommendationImpact
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ContentAnalysis:
+      properties:
+        content:
+          $ref: '#/components/schemas/DocumentContent'
+        aeo_content_score:
+          anyOf:
+          - $ref: '#/components/schemas/AEOScore'
+          - type: 'null'
+        analysis:
+          $ref: '#/components/schemas/AnalysisSummary'
+        recommendations:
+          items:
+            $ref: '#/components/schemas/Recommendation'
+          type: array
+          title: Recommendations
+        inputs:
+          $ref: '#/components/schemas/AnalysisInputs'
+      type: object
+      required:
+      - content
+      - aeo_content_score
+      - analysis
+      - recommendations
+      - inputs
+      title: ContentAnalysis
     ValidationError:
       properties:
         loc:
@@ -328,123 +433,6 @@ components:
       - msg
       - type
       title: ValidationError
-    RecommendationImpact:
-      properties:
-        section:
-          type: string
-          title: Section
-        score:
-          type: number
-          title: Score
-      type: object
-      required:
-      - section
-      - score
-      title: RecommendationImpact
-    AnalysisSummary:
-      properties:
-        breakdown:
-          items:
-            $ref: '#/components/schemas/AnalysisBreakdown'
-          type: array
-          title: Breakdown
-      type: object
-      required:
-      - breakdown
-      title: AnalysisSummary
-    AnalysisInputs:
-      properties:
-        topic:
-          anyOf:
-          - $ref: '#/components/schemas/TopicInput'
-          - type: 'null'
-        prompt:
-          anyOf:
-          - $ref: '#/components/schemas/PromptInput'
-          - type: 'null'
-        top_citations:
-          items:
-            type: string
-          type: array
-          title: Top Citations
-        user:
-          $ref: '#/components/schemas/UserInput'
-      type: object
-      required:
-      - topic
-      - prompt
-      - top_citations
-      - user
-      title: AnalysisInputs
-    Pagination:
-      properties:
-        limit:
-          type: integer
-          maximum: 50000.0
-          exclusiveMinimum: 0.0
-          title: Limit
-          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
-          default: 10000
-        offset:
-          type: integer
-          minimum: 0.0
-          title: Offset
-          description: Offset for the results. Used for pagination.
-          default: 0
-      type: object
-      title: Pagination
-      description: Offset-based pagination parameters.
-    AEOScore:
-      properties:
-        target_zone:
-          $ref: '#/components/schemas/AEOScoreTargetZone'
-        value:
-          type: number
-          title: Value
-      type: object
-      required:
-      - target_zone
-      - value
-      title: AEOScore
-    UserInput:
-      properties:
-        type:
-          $ref: '#/components/schemas/ContentType'
-        value:
-          type: string
-          title: Value
-        metadata:
-          additionalProperties:
-            anyOf:
-            - type: integer
-            - type: string
-          type: object
-          title: Metadata
-      type: object
-      required:
-      - type
-      - value
-      - metadata
-      title: UserInput
-    ContentFormat:
-      type: string
-      enum:
-      - markdown
-      - html
-      title: ContentFormat
-    OptimizationQuery:
-      properties:
-        asset_id:
-          type: string
-          format: uuid
-          title: Asset Id
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-          description: Pagination parameters for the results. Default is 10,000 rows with no offset.
-      type: object
-      required:
-      - asset_id
-      title: OptimizationQuery
     ContentOptimizationResponseInfo:
       properties:
         total_rows:
@@ -457,6 +445,18 @@ components:
       - total_rows
       - query
       title: ContentOptimizationResponseInfo
+    DocumentContent:
+      properties:
+        format:
+          $ref: '#/components/schemas/ContentFormat'
+        value:
+          type: string
+          title: Value
+      type: object
+      required:
+      - format
+      - value
+      title: DocumentContent
   securitySchemes:
     APIKeyHeader:
       type: apiKey

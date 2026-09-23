@@ -364,7 +364,50 @@ paths:
       tags:
       - Documents
       summary: Replace a document's content
-      description: "Overwrite a document's entire body with new markdown, replacing what it held before.\n\nThis is a whole-body replace, not a patch: send the complete new text every time. An\nempty `content_markdown` is valid and clears the document.\n\nTwo destructive side effects apply on every call, regardless of what you send:\n\n- The document collapses to its default tab. Every non-default tab is deleted, and\n  the comments map is cleared for **all** tabs, including the default one — a\n  document with a live comment thread on any tab loses it.\n- `skip_title_sync` defaults to `false`, matching the Profound app: the title follows\n  the new content's first heading, so a replace silently renames the document unless\n  the heading matches the current title or `skip_title_sync` is set.\n\nThere is no compare-and-swap: this call does not accept a precondition, and nothing\nstops two concurrent replaces from silently overwriting each other last-writer-wins.\nUpstream's own `version_hash` documentation says as much — the token is \"still a\nchange detector rather than a precondition: a caller must not treat a matching token\nas licence to overwrite blindly, because it names the room at a moment cortex\nobserved and not the moment its own write lands.\" Sending a `working_version_hash`\n(or any spelling of it) is rejected with a `400` naming this rather than accepted\nand silently discarded, which is what happens on the upstream route this wraps.\n\nYou can replace a document this API created, or one you created yourself directly —\nnot merely one shared with you."
+      description: 'Overwrite a document''s entire body with new markdown, replacing what it held before.
+
+
+        This is a whole-body replace, not a patch: send the complete new text every time. An
+
+        empty `content_markdown` is valid and clears the document.
+
+
+        Two destructive side effects apply on every call, regardless of what you send:
+
+
+        - The document collapses to its default tab. Every non-default tab is deleted, and
+
+        the comments map is cleared for **all** tabs, including the default one — a
+
+        document with a live comment thread on any tab loses it.
+
+        - `skip_title_sync` defaults to `false`, matching the Profound app: the title follows
+
+        the new content''s first heading, so a replace silently renames the document unless
+
+        the heading matches the current title or `skip_title_sync` is set.
+
+
+        There is no compare-and-swap: this call does not accept a precondition, and nothing
+
+        stops two concurrent replaces from silently overwriting each other last-writer-wins.
+
+        Upstream''s own `version_hash` documentation says as much — the token is "still a
+
+        change detector rather than a precondition: a caller must not treat a matching token
+
+        as licence to overwrite blindly, because it names the room at a moment cortex
+
+        observed and not the moment its own write lands." Sending a `working_version_hash`
+
+        (or any spelling of it) is rejected with a `400` naming this rather than accepted
+
+        and silently discarded, which is what happens on the upstream route this wraps.
+
+
+        You can replace a document this API created, or one you created yourself directly —
+
+        not merely one shared with you.'
       operationId: replace_document_content_v1_documents__document_id__content_post
       security:
       - APIKeyHeader: []
@@ -401,6 +444,32 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    Comment:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The comment's text.
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+          description: Text the comment was left on. `null` for a comment on no specific text, never an empty string.
+      type: object
+      required:
+      - content
+      title: Comment
+      description: 'One review comment, mapped from upstream''s open, unvalidated shape into a closed contract.
+
+
+        Upstream''s own comment schema — `body`, `quoted_text`, `author`, `replies`, `resolved` — is
+
+        documented as not a closed contract. Only `body` and `quoted_text` are mapped through, as
+
+        `content` and `context`; commenter identity, reply threads and resolution state are dropped
+
+        here, not relayed.'
     HTTPValidationError:
       properties:
         detail:
@@ -410,35 +479,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    UpdateDocumentRequest:
-      properties:
-        organization_id:
-          type: string
-          format: uuid
-          title: Organization Id
-          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
-        name:
-          anyOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-          title: Name
-          description: 'New title for the document. Renaming sets a permanent lock: once a document is renamed through this route, its title stops following the first heading of its content, for the rest of the document''s life, and no route can undo the lock. Omit to leave the title as it is.'
-        visibility:
-          anyOf:
-          - type: string
-            enum:
-            - invited_only
-            - organization
-          - type: 'null'
-          title: Visibility
-          description: 'New sharing scope: `invited_only` for only the people invited to the document, or `organization` for everyone in the owning organization. Only the document''s creator can change this; omit to leave sharing as it is. Three things worth knowing before you set it: `organization` visibility grants view only — there is no value here that grants the organization edit access. Setting `invited_only` removes the organization''s access entirely. And re-asserting `organization` on a document whose organization grant is already `edit` silently downgrades the whole organization to view — upstream replays the access sync whenever this field is sent, and that sync always upserts view, even when the value you sent matches the one already stored.'
-      additionalProperties: false
-      type: object
-      required:
-      - organization_id
-      title: UpdateDocumentRequest
-      description: Request body for renaming or resharing a document.
     ReadDocumentResponse:
       properties:
         id:
@@ -557,6 +597,50 @@ components:
       description: 'A document''s metadata, its default tab''s body, its other tabs, its comments, and the
 
         change-detection token for it.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ListDocumentsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Document'
+          type: array
+          title: Data
+          description: Documents on this page.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination state for fetching the next page.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      - pagination
+      title: ListDocumentsResponse
+      description: A page of documents.
     CreateDocumentRequest:
       properties:
         id:
@@ -588,50 +672,6 @@ components:
       - content_markdown
       title: CreateDocumentRequest
       description: Request body for creating a document with markdown content.
-    ListDocumentsResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Document'
-          type: array
-          title: Data
-          description: Documents on this page.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination state for fetching the next page.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      - pagination
-      title: ListDocumentsResponse
-      description: A page of documents.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     CreateDocumentResponse:
       properties:
         id:
@@ -858,51 +898,35 @@ components:
       - content_markdown
       title: ReplaceDocumentContentRequest
       description: Request body for replacing a document's entire content.
-    Comment:
+    UpdateDocumentRequest:
       properties:
-        content:
+        organization_id:
           type: string
-          title: Content
-          description: The comment's text.
-        context:
+          format: uuid
+          title: Organization Id
+          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
+        name:
           anyOf:
           - type: string
+            minLength: 1
           - type: 'null'
-          title: Context
-          description: Text the comment was left on. `null` for a comment on no specific text, never an empty string.
-      type: object
-      required:
-      - content
-      title: Comment
-      description: 'One review comment, mapped from upstream''s open, unvalidated shape into a closed contract.
-
-
-        Upstream''s own comment schema — `body`, `quoted_text`, `author`, `replies`, `resolved` — is
-
-        documented as not a closed contract. Only `body` and `quoted_text` are mapped through, as
-
-        `content` and `context`; commenter identity, reply threads and resolution state are dropped
-
-        here, not relayed.'
-    CursorPagination:
-      properties:
-        limit:
-          type: integer
-          maximum: 50000.0
-          exclusiveMinimum: 0.0
-          title: Limit
-          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
-          default: 10000
-        next_cursor:
+          title: Name
+          description: 'New title for the document. Renaming sets a permanent lock: once a document is renamed through this route, its title stops following the first heading of its content, for the rest of the document''s life, and no route can undo the lock. Omit to leave the title as it is.'
+        visibility:
           anyOf:
           - type: string
+            enum:
+            - invited_only
+            - organization
           - type: 'null'
-          title: Next Cursor
-          description: Token for the next page, if more results are available.
+          title: Visibility
+          description: 'New sharing scope: `invited_only` for only the people invited to the document, or `organization` for everyone in the owning organization. Only the document''s creator can change this; omit to leave sharing as it is. Three things worth knowing before you set it: `organization` visibility grants view only — there is no value here that grants the organization edit access. Setting `invited_only` removes the organization''s access entirely. And re-asserting `organization` on a document whose organization grant is already `edit` silently downgrades the whole organization to view — upstream replays the access sync whenever this field is sent, and that sync always upserts view, even when the value you sent matches the one already stored.'
       additionalProperties: false
       type: object
-      title: CursorPagination
-      description: Cursor-based pagination metadata.
+      required:
+      - organization_id
+      title: UpdateDocumentRequest
+      description: Request body for renaming or resharing a document.
     Document:
       properties:
         id:
@@ -987,6 +1011,25 @@ components:
       - company_name
       title: Document
       description: A Profound document.
+    CursorPagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Token for the next page, if more results are available.
+      additionalProperties: false
+      type: object
+      title: CursorPagination
+      description: Cursor-based pagination metadata.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

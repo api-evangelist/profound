@@ -459,176 +459,57 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
+    NodeSchemaResponse:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ListNodeTypesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/NodeTypeSummary'
-          type: array
-          title: Data
-          description: Allowlisted node types, returned as thin summaries.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListNodeTypesResponse
-      description: List of node types available to v1 agent authors.
-    RunAgentRequest:
-      properties:
-        inputs:
+        node_type:
+          type: string
+          title: Node Type
+          description: Stable identifier for the node type, e.g. `llm`.
+        schema:
           additionalProperties: true
           type: object
-          title: Inputs
-          description: Input values for the run. Keys should match the property names defined in `schema.input`. Omit the request body when the agent does not require inputs.
-      additionalProperties: false
-      type: object
-      title: RunAgentRequest
-      description: Request body for starting an agent run.
-    AgentRun:
-      properties:
-        id:
+          title: Schema
+          description: Opaque JSON Schema for the node's configuration. Treat this as an arbitrary object; its internal shape can change between `schema_version` bumps.
+        schema_version:
           type: string
-          format: uuid
-          title: Id
-          description: Unique ID for the run.
-        agent_id:
-          type: string
-          format: uuid
-          title: Agent Id
-          description: Unique ID of the agent for this run.
-        status:
-          $ref: '#/components/schemas/AgentRunStatus'
-          description: Current status of the run.
-        started_at:
+          title: Schema Version
+          description: Opaque version string for the node schema. Bumps whenever the underlying schema changes, so it can be used as a client-side cache key.
+        description:
           anyOf:
           - type: string
-            format: date-time
           - type: 'null'
-          title: Started At
-          description: When the run started, if it has started.
-        finished_at:
+          title: Description
+          description: Short description of what the node type does, if provided.
+        examples:
           anyOf:
-          - type: string
-            format: date-time
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
           - type: 'null'
-          title: Finished At
-          description: When the run finished, if it has completed.
-        error:
+          title: Examples
+          description: 'Worked example configurations for the node type, in the canonical graph dialect. Curated authoring guidance, versioned by `docs_version` (NOT `schema_version`): they illustrate a valid shape at curation time but are a starting point, not the contract — they may lag the validator. The authoritative contract is `schema`, and the only authoritative check that a graph is valid is publishing it (or the agent-validation endpoint). Do not parse `examples` as the schema.'
+        documentation:
           anyOf:
           - additionalProperties: true
             type: object
           - type: 'null'
-          title: Error
-          description: Error details, when the run fails and error information is available.
-        outputs:
-          additionalProperties: true
-          type: object
-          title: Outputs
-          description: Output values returned by the run, keyed by variable ID. This object conforms to `schema.output` from the agent detail response and is empty when no outputs are available.
-        steps:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/AgentRunStep'
-            type: array
-          - type: 'null'
-          title: Steps
-          description: Ordered step-by-step execution trace — one entry per node that ran, in execution order. Always present once the run has executed a node; per-node `outputs` inside each step are included only when the request asks for `verbose`.
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - agent_id
-      - status
-      title: AgentRun
-      description: Status and result details for an agent run.
-    AcceptedAgentRun:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Unique ID for the accepted run.
-        agent_id:
-          type: string
-          format: uuid
-          title: Agent Id
-          description: Unique ID of the agent for this run.
-        status:
-          $ref: '#/components/schemas/AgentRunStatus'
-          description: Initial status of the accepted run.
-        started_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Started At
-          description: When the run started, if execution began immediately.
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - agent_id
-      - status
-      title: AcceptedAgentRun
-      description: Run details returned after a run request is accepted.
-    CursorPagination:
-      properties:
-        limit:
-          type: integer
-          maximum: 50000.0
-          exclusiveMinimum: 0.0
-          title: Limit
-          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
-          default: 10000
-        next_cursor:
+          title: Documentation
+          description: Opaque, human-oriented authoring guidance for the node type — purpose, constraints, enum values, and variable-flow notes that the machine `schema` does not always express (e.g. a conditional's else-branch rule, or an iteration's sub-graph shape). Treat as an arbitrary object; use `docs_version` as its cache key.
+        docs_version:
           anyOf:
           - type: string
           - type: 'null'
-          title: Next Cursor
-          description: Token for the next page, if more results are available.
-      additionalProperties: false
-      type: object
-      title: CursorPagination
-      description: Cursor-based pagination metadata.
-    AgentGraph:
-      properties:
-        agent_id:
-          type: string
-          format: uuid
-          title: Agent Id
-          description: Unique ID of the agent the graph belongs to.
-        version:
-          $ref: '#/components/schemas/AgentVersion'
-          description: Which version of the agent this graph is — `published` or `draft`.
-        graph:
-          additionalProperties: true
-          type: object
-          title: Graph
-          description: 'Workflow graph (`{nodes, edges}`) in the canonical dialect — the same shape `create` and `update` accept. Treat it as an opaque object: it is returned verbatim, so tool-backed nodes appear in their lowered `tool` form rather than the friendly v1 node types. Read it back to copy and edit a known-good agent.'
+          title: Docs Version
+          description: Opaque version string for `documentation`/`examples`, independent of `schema_version`. Bumps when the authoring guidance changes even if the underlying machine `schema` did not. When it trails the live `schema_version`, treat `documentation`/`examples` as guidance that may be stale and validate against the live `schema`.
       additionalProperties: false
       type: object
       required:
-      - agent_id
-      - version
-      - graph
-      title: AgentGraph
-      description: An agent version's workflow graph in the canonical dialect.
-    ListAgentsStatusFilter:
-      type: string
-      enum:
-      - published
-      - draft
-      title: ListAgentsStatusFilter
-      description: Statuses you can use to filter the list agents response.
+      - node_type
+      - schema
+      - schema_version
+      title: NodeSchemaResponse
+      description: JSON schema for a single node type.
     AgentValidationIssue:
       properties:
         code:
@@ -676,192 +557,20 @@ components:
       - message
       title: AgentValidationIssue
       description: A single problem found while validating an agent's graph.
-    ListAgentsResponse:
+    ListNodeTypesResponse:
       properties:
         data:
           items:
-            $ref: '#/components/schemas/Agent'
+            $ref: '#/components/schemas/NodeTypeSummary'
           type: array
           title: Data
-          description: Agents returned for this page.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Cursor pagination details for this response.
+          description: Allowlisted node types, returned as thin summaries.
       additionalProperties: false
       type: object
       required:
       - data
-      title: ListAgentsResponse
-      description: Paginated list of agents.
-    AgentStatus:
-      type: string
-      enum:
-      - draft
-      - published
-      - unknown
-      title: AgentStatus
-      description: Current availability status for an agent.
-    AgentSchema:
-      properties:
-        input:
-          additionalProperties: true
-          type: object
-          title: Input
-          description: JSON Schema for the agent's `inputs` object. Use the top-level property keys as input field names when starting a run.
-        output:
-          additionalProperties: true
-          type: object
-          title: Output
-          description: JSON Schema for the `outputs` object returned by `GET /v1/agents/{agent_id}/runs/{run_id}`.
-      additionalProperties: false
-      type: object
-      required:
-      - input
-      - output
-      title: AgentSchema
-      description: Schema metadata for an agent.
-    AgentVersion:
-      type: string
-      enum:
-      - published
-      - draft
-      title: AgentVersion
-      description: Version selector for retrieving a specific agent.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    AgentDetail:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Unique ID for the agent.
-        organization_id:
-          type: string
-          format: uuid
-          title: Organization Id
-          description: Unique ID of the organization that owns the agent.
-        name:
-          type: string
-          title: Name
-          description: Display name of the agent.
-        status:
-          $ref: '#/components/schemas/AgentStatus'
-          description: Current status of the agent.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: When the agent was created.
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Short description of the agent, if provided.
-        schema:
-          anyOf:
-          - $ref: '#/components/schemas/AgentSchema'
-          - type: 'null'
-          description: Input and output schemas for this agent. Omitted while the agent's graph cannot be previewed (e.g. an empty or structurally-invalid draft); check `validation` to see what needs fixing.
-        validation:
-          anyOf:
-          - $ref: '#/components/schemas/AgentValidation'
-          - type: 'null'
-          description: Validation report for the agent's graph, when available. Use `validation.valid` to check the agent is publishable.
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - organization_id
-      - name
-      - status
-      - created_at
-      title: AgentDetail
-      description: Detailed information for an agent.
-    UpdateAgentRequest:
-      properties:
-        graph:
-          additionalProperties: true
-          type: object
-          title: Graph
-          description: New workflow graph for the agent's draft version. Replaces the current draft graph; the agent is iterated in place rather than re-created, so its ID is stable. Required — a null graph is rejected as a 422 here rather than as a relayed upstream error.
-      additionalProperties: false
-      type: object
-      required:
-      - graph
-      title: UpdateAgentRequest
-      description: Request body for updating a draft agent's graph in place.
-    AgentValidation:
-      properties:
-        valid:
-          type: boolean
-          title: Valid
-          description: Whether the agent's graph is valid and ready to publish.
-        issues:
-          items:
-            $ref: '#/components/schemas/AgentValidationIssue'
-          type: array
-          title: Issues
-          description: Problems found while validating the graph. Empty when `valid` is true.
-      additionalProperties: false
-      type: object
-      required:
-      - valid
-      title: AgentValidation
-      description: 'Result of validating an agent''s graph.
-
-
-        Mirrors the report computed on every read, so callers can confirm a draft
-
-        is publishable before calling publish.'
-    NodeTypeSummary:
-      properties:
-        node_type:
-          type: string
-          title: Node Type
-          description: Stable identifier for the node type, e.g. `llm`.
-        display_name:
-          type: string
-          title: Display Name
-          description: Human-readable name for the node type.
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Short description of what the node type does, if provided.
-      additionalProperties: false
-      type: object
-      required:
-      - node_type
-      - display_name
-      title: NodeTypeSummary
-      description: Thin summary for a node type available to v1 agent authors.
+      title: ListNodeTypesResponse
+      description: List of node types available to v1 agent authors.
     AgentRunStep:
       properties:
         node_id:
@@ -920,57 +629,116 @@ components:
         The lightweight fields always ship; ``outputs`` is populated only when the
 
         run-retrieve request asks for ``verbose``.'
-    NodeSchemaResponse:
+    AgentGraph:
       properties:
-        node_type:
+        agent_id:
           type: string
-          title: Node Type
-          description: Stable identifier for the node type, e.g. `llm`.
-        schema:
+          format: uuid
+          title: Agent Id
+          description: Unique ID of the agent the graph belongs to.
+        version:
+          $ref: '#/components/schemas/AgentVersion'
+          description: Which version of the agent this graph is — `published` or `draft`.
+        graph:
           additionalProperties: true
           type: object
-          title: Schema
-          description: Opaque JSON Schema for the node's configuration. Treat this as an arbitrary object; its internal shape can change between `schema_version` bumps.
-        schema_version:
+          title: Graph
+          description: 'Workflow graph (`{nodes, edges}`) in the canonical dialect — the same shape `create` and `update` accept. Treat it as an opaque object: it is returned verbatim, so tool-backed nodes appear in their lowered `tool` form rather than the friendly v1 node types. Read it back to copy and edit a known-good agent.'
+      additionalProperties: false
+      type: object
+      required:
+      - agent_id
+      - version
+      - graph
+      title: AgentGraph
+      description: An agent version's workflow graph in the canonical dialect.
+    AgentValidation:
+      properties:
+        valid:
+          type: boolean
+          title: Valid
+          description: Whether the agent's graph is valid and ready to publish.
+        issues:
+          items:
+            $ref: '#/components/schemas/AgentValidationIssue'
+          type: array
+          title: Issues
+          description: Problems found while validating the graph. Empty when `valid` is true.
+      additionalProperties: false
+      type: object
+      required:
+      - valid
+      title: AgentValidation
+      description: 'Result of validating an agent''s graph.
+
+
+        Mirrors the report computed on every read, so callers can confirm a draft
+
+        is publishable before calling publish.'
+    ListAgentsStatusFilter:
+      type: string
+      enum:
+      - published
+      - draft
+      title: ListAgentsStatusFilter
+      description: Statuses you can use to filter the list agents response.
+    AgentRun:
+      properties:
+        id:
           type: string
-          title: Schema Version
-          description: Opaque version string for the node schema. Bumps whenever the underlying schema changes, so it can be used as a client-side cache key.
-        description:
+          format: uuid
+          title: Id
+          description: Unique ID for the run.
+        agent_id:
+          type: string
+          format: uuid
+          title: Agent Id
+          description: Unique ID of the agent for this run.
+        status:
+          $ref: '#/components/schemas/AgentRunStatus'
+          description: Current status of the run.
+        started_at:
           anyOf:
           - type: string
+            format: date-time
           - type: 'null'
-          title: Description
-          description: Short description of what the node type does, if provided.
-        examples:
+          title: Started At
+          description: When the run started, if it has started.
+        finished_at:
           anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
+          - type: string
+            format: date-time
           - type: 'null'
-          title: Examples
-          description: 'Worked example configurations for the node type, in the canonical graph dialect. Curated authoring guidance, versioned by `docs_version` (NOT `schema_version`): they illustrate a valid shape at curation time but are a starting point, not the contract — they may lag the validator. The authoritative contract is `schema`, and the only authoritative check that a graph is valid is publishing it (or the agent-validation endpoint). Do not parse `examples` as the schema.'
-        documentation:
+          title: Finished At
+          description: When the run finished, if it has completed.
+        error:
           anyOf:
           - additionalProperties: true
             type: object
           - type: 'null'
-          title: Documentation
-          description: Opaque, human-oriented authoring guidance for the node type — purpose, constraints, enum values, and variable-flow notes that the machine `schema` does not always express (e.g. a conditional's else-branch rule, or an iteration's sub-graph shape). Treat as an arbitrary object; use `docs_version` as its cache key.
-        docs_version:
+          title: Error
+          description: Error details, when the run fails and error information is available.
+        outputs:
+          additionalProperties: true
+          type: object
+          title: Outputs
+          description: Output values returned by the run, keyed by variable ID. This object conforms to `schema.output` from the agent detail response and is empty when no outputs are available.
+        steps:
           anyOf:
-          - type: string
+          - items:
+              $ref: '#/components/schemas/AgentRunStep'
+            type: array
           - type: 'null'
-          title: Docs Version
-          description: Opaque version string for `documentation`/`examples`, independent of `schema_version`. Bumps when the authoring guidance changes even if the underlying machine `schema` did not. When it trails the live `schema_version`, treat `documentation`/`examples` as guidance that may be stale and validate against the live `schema`.
+          title: Steps
+          description: Ordered step-by-step execution trace — one entry per node that ran, in execution order. Always present once the run has executed a node; per-node `outputs` inside each step are included only when the request asks for `verbose`.
       additionalProperties: false
       type: object
       required:
-      - node_type
-      - schema
-      - schema_version
-      title: NodeSchemaResponse
-      description: JSON schema for a single node type.
+      - id
+      - agent_id
+      - status
+      title: AgentRun
+      description: Status and result details for an agent run.
     AgentRunStatus:
       type: string
       enum:
@@ -983,38 +751,49 @@ components:
       - unknown
       title: AgentRunStatus
       description: Current execution status for an agent run.
-    CreateAgentRequest:
+    AcceptedAgentRun:
       properties:
-        organization_id:
+        id:
           type: string
           format: uuid
-          title: Organization Id
-          description: ID of the organization that will own the agent. Required — Profound API keys are user-scoped, so the owning organization must be chosen explicitly. The caller must be a member of this organization.
-        name:
+          title: Id
+          description: Unique ID for the accepted run.
+        agent_id:
           type: string
-          minLength: 1
-          title: Name
-          description: Display name for the agent. Must be non-empty.
-        description:
+          format: uuid
+          title: Agent Id
+          description: Unique ID of the agent for this run.
+        status:
+          $ref: '#/components/schemas/AgentRunStatus'
+          description: Initial status of the accepted run.
+        started_at:
           anyOf:
           - type: string
+            format: date-time
           - type: 'null'
-          title: Description
-          description: Short description of the agent.
-        graph:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Graph
-          description: Initial workflow graph for the agent's draft version. Optional — an agent can be created empty and have its graph filled in later.
+          title: Started At
+          description: When the run started, if execution began immediately.
       additionalProperties: false
       type: object
       required:
-      - organization_id
-      - name
-      title: CreateAgentRequest
-      description: Request body for creating a draft agent.
+      - id
+      - agent_id
+      - status
+      title: AcceptedAgentRun
+      description: Run details returned after a run request is accepted.
+    UpdateAgentRequest:
+      properties:
+        graph:
+          additionalProperties: true
+          type: object
+          title: Graph
+          description: New workflow graph for the agent's draft version. Replaces the current draft graph; the agent is iterated in place rather than re-created, so its ID is stable. Required — a null graph is rejected as a 422 here rather than as a relayed upstream error.
+      additionalProperties: false
+      type: object
+      required:
+      - graph
+      title: UpdateAgentRequest
+      description: Request body for updating a draft agent's graph in place.
     Agent:
       properties:
         id:
@@ -1055,6 +834,227 @@ components:
       - created_at
       title: Agent
       description: Summary information for an agent.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NodeTypeSummary:
+      properties:
+        node_type:
+          type: string
+          title: Node Type
+          description: Stable identifier for the node type, e.g. `llm`.
+        display_name:
+          type: string
+          title: Display Name
+          description: Human-readable name for the node type.
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Short description of what the node type does, if provided.
+      additionalProperties: false
+      type: object
+      required:
+      - node_type
+      - display_name
+      title: NodeTypeSummary
+      description: Thin summary for a node type available to v1 agent authors.
+    CreateAgentRequest:
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+          description: ID of the organization that will own the agent. Required — Profound API keys are user-scoped, so the owning organization must be chosen explicitly. The caller must be a member of this organization.
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Display name for the agent. Must be non-empty.
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Short description of the agent.
+        graph:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Graph
+          description: Initial workflow graph for the agent's draft version. Optional — an agent can be created empty and have its graph filled in later.
+      additionalProperties: false
+      type: object
+      required:
+      - organization_id
+      - name
+      title: CreateAgentRequest
+      description: Request body for creating a draft agent.
+    AgentDetail:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Unique ID for the agent.
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+          description: Unique ID of the organization that owns the agent.
+        name:
+          type: string
+          title: Name
+          description: Display name of the agent.
+        status:
+          $ref: '#/components/schemas/AgentStatus'
+          description: Current status of the agent.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the agent was created.
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Short description of the agent, if provided.
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/AgentSchema'
+          - type: 'null'
+          description: Input and output schemas for this agent. Omitted while the agent's graph cannot be previewed (e.g. an empty or structurally-invalid draft); check `validation` to see what needs fixing.
+        validation:
+          anyOf:
+          - $ref: '#/components/schemas/AgentValidation'
+          - type: 'null'
+          description: Validation report for the agent's graph, when available. Use `validation.valid` to check the agent is publishable.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - organization_id
+      - name
+      - status
+      - created_at
+      title: AgentDetail
+      description: Detailed information for an agent.
+    RunAgentRequest:
+      properties:
+        inputs:
+          additionalProperties: true
+          type: object
+          title: Inputs
+          description: Input values for the run. Keys should match the property names defined in `schema.input`. Omit the request body when the agent does not require inputs.
+      additionalProperties: false
+      type: object
+      title: RunAgentRequest
+      description: Request body for starting an agent run.
+    AgentVersion:
+      type: string
+      enum:
+      - published
+      - draft
+      title: AgentVersion
+      description: Version selector for retrieving a specific agent.
+    ListAgentsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Agent'
+          type: array
+          title: Data
+          description: Agents returned for this page.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Cursor pagination details for this response.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ListAgentsResponse
+      description: Paginated list of agents.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AgentSchema:
+      properties:
+        input:
+          additionalProperties: true
+          type: object
+          title: Input
+          description: JSON Schema for the agent's `inputs` object. Use the top-level property keys as input field names when starting a run.
+        output:
+          additionalProperties: true
+          type: object
+          title: Output
+          description: JSON Schema for the `outputs` object returned by `GET /v1/agents/{agent_id}/runs/{run_id}`.
+      additionalProperties: false
+      type: object
+      required:
+      - input
+      - output
+      title: AgentSchema
+      description: Schema metadata for an agent.
+    AgentStatus:
+      type: string
+      enum:
+      - draft
+      - published
+      - unknown
+      title: AgentStatus
+      description: Current availability status for an agent.
+    CursorPagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Token for the next page, if more results are available.
+      additionalProperties: false
+      type: object
+      title: CursorPagination
+      description: Cursor-based pagination metadata.
   securitySchemes:
     APIKeyHeader:
       type: apiKey
