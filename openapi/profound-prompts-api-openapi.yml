@@ -98,6 +98,45 @@ paths:
       - BearerAuth: []
 components:
   schemas:
+    PromptTypeFilter:
+      properties:
+        field:
+          type: string
+          const: prompt_type
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            enum:
+            - visibility
+            - sentiment
+          - items:
+              type: string
+              enum:
+              - visibility
+              - sentiment
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: PromptTypeFilter
+      description: "Filter by prompt type (visibility or sentiment).\n\n.. deprecated::\n    Use :class:`AnalysisTypeFilter` instead. ``prompt_type`` is normalised\n    to ``analysis_type`` at parse time."
     AnswerRow:
       properties:
         run_id:
@@ -204,211 +243,7 @@ components:
       type: object
       title: AnswerRow
       description: One answer row. Present fields depend on `include`; `model` is an `{id, name}` reference.
-    FilterNode:
-      properties:
-        and:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/FilterNode'
-            type: array
-          - type: 'null'
-          title: And
-        or:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/FilterNode'
-            type: array
-          - type: 'null'
-          title: Or
-        not:
-          anyOf:
-          - $ref: '#/components/schemas/FilterNode'
-          - type: 'null'
-        field:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Field
-        op:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Op
-        value:
-          title: Value
-      additionalProperties: false
-      type: object
-      title: FilterNode
-      description: A leaf (`field`/`op`/`value`) or an `and`/`or`/`not` group.
-    AnswersV2Query:
-      properties:
-        category_id:
-          type: string
-          format: uuid
-          title: Category Id
-        start_date:
-          type: string
-          title: Start Date
-          description: YYYY-MM-DD, ET, inclusive
-        end_date:
-          type: string
-          title: End Date
-          description: YYYY-MM-DD, ET, inclusive
-        include:
-          anyOf:
-          - items:
-              type: string
-              enum:
-              - run_id
-              - date
-              - model
-              - topic
-              - topic_id
-              - persona
-              - region
-              - tags
-              - prompt
-              - prompt_id
-              - response
-              - mentions
-              - citations
-              - citation_details
-              - search_queries
-              - analysis_types
-              - sentiment_claims
-            type: array
-          - type: 'null'
-          title: Include
-          description: 'Which row fields to return: `run_id`, `date`, `model`, `topic`, `topic_id`, `region`, `persona`, `tags`, `prompt`, `prompt_id`, `response`, `mentions`, `citations`, `citation_details`, `search_queries`, `analysis_types`, `sentiment_claims`. Omit for all fields except `citation_details`, which must be requested explicitly because it is expensive.'
-        filter:
-          anyOf:
-          - $ref: '#/components/schemas/FilterNode'
-          - type: 'null'
-          description: 'and/or/not tree over `model`, `topic`, `region`, `persona`, `prompt`, `tag`, `analysis_type` (visibility/sentiment/factcheck); plus top-level `and` leaves `domain` or `page` (`is` one value, or `in` a list). Substring-search the prompt with `{"field": "prompt", "op": "contains", "value": "…"}`.'
-        limit:
-          anyOf:
-          - type: integer
-            maximum: 200.0
-            exclusiveMinimum: 0.0
-          - type: 'null'
-          title: Limit
-          description: Page size; default 10, max 200.
-        max_results:
-          anyOf:
-          - type: integer
-            exclusiveMinimum: 0.0
-          - type: 'null'
-          title: Max Results
-          description: 'Stream endpoint only: cap the number of streamed rows (default: all).'
-        cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Cursor
-      additionalProperties: false
-      type: object
-      required:
-      - category_id
-      - start_date
-      - end_date
-      title: AnswersV2Query
-    AnswersResponse:
-      properties:
-        info:
-          $ref: '#/components/schemas/AnswersResponseInfo'
-        data:
-          items:
-            $ref: '#/components/schemas/AnswersRawData'
-          type: array
-          title: Data
-      type: object
-      required:
-      - info
-      - data
-      title: AnswersResponse
-      description: Response for the answers endpoint.
-    TopicIdFilter:
-      properties:
-        field:
-          anyOf:
-          - type: string
-            const: topic_id
-          - type: string
-            const: topic
-            deprecated: true
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-            format: uuid
-          - items:
-              type: string
-              format: uuid
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: TopicIdFilter
-      description: Filter by topic UUID.
-    ModelIdFilter:
-      properties:
-        field:
-          anyOf:
-          - type: string
-            const: model_id
-          - type: string
-            const: model
-            deprecated: true
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-            format: uuid
-          - items:
-              type: string
-              format: uuid
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: ModelIdFilter
-      description: Filter by AI model/platform UUID.
-    CitationDetailGroup:
-      properties:
-        group_id:
-          type: integer
-          title: Group Id
-        group_position:
-          type: integer
-          title: Group Position
-      type: object
-      required:
-      - group_id
-      - group_position
-      title: CitationDetailGroup
-    ExecutionCitationDetail:
+    CitationDetail:
       properties:
         url:
           type: string
@@ -430,6 +265,11 @@ components:
         path:
           type: string
           title: Path
+        first_cited_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Cited At
         positions:
           items:
             type: integer
@@ -442,11 +282,6 @@ components:
             type: array
           - type: 'null'
           title: Groups
-        first_cited_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: First Cited At
         citation_category:
           anyOf:
           - type: string
@@ -459,254 +294,7 @@ components:
       - title
       - hostname
       - path
-      title: ExecutionCitationDetail
-    RegionIdFilter:
-      properties:
-        field:
-          anyOf:
-          - type: string
-            const: region_id
-          - type: string
-            const: region
-            deprecated: true
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-            format: uuid
-          - items:
-              type: string
-              format: uuid
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: RegionIdFilter
-      description: Filter by region UUID.
-    PromptTypeFilter:
-      properties:
-        field:
-          type: string
-          const: prompt_type
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          - contains
-          - not_contains
-          - matches
-          - contains_case_insensitive
-          - not_contains_case_insensitive
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-            enum:
-            - visibility
-            - sentiment
-          - items:
-              type: string
-              enum:
-              - visibility
-              - sentiment
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: PromptTypeFilter
-      description: "Filter by prompt type (visibility or sentiment).\n\n.. deprecated::\n    Use :class:`AnalysisTypeFilter` instead. ``prompt_type`` is normalised\n    to ``analysis_type`` at parse time."
-    AnswersResponseInfo:
-      properties:
-        total_rows:
-          type: integer
-          title: Total Rows
-      type: object
-      required:
-      - total_rows
-      title: AnswersResponseInfo
-    PromptIdFilter:
-      properties:
-        field:
-          type: string
-          const: prompt_id
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-            format: uuid
-          - items:
-              type: string
-              format: uuid
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: PromptIdFilter
-      description: Filter by prompt UUID.
-    profound_answer_engine_insights__filters__AssetNameFilter:
-      properties:
-        field:
-          type: string
-          const: asset_name
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          - contains
-          - not_contains
-          - matches
-          - contains_case_insensitive
-          - not_contains_case_insensitive
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-          - items:
-              type: string
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: AssetNameFilter
-      description: Filter by asset name
-    AnswersV2Info:
-      properties:
-        total_results:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Total Results
-          description: Total rows matching the query before pagination (null when not computed).
-        count:
-          type: integer
-          title: Count
-          description: Number of rows returned in `data` for this page.
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Next Cursor
-          description: Opaque cursor for the next page; null on the last page.
-        models:
-          items:
-            type: string
-          type: array
-          title: Models
-          description: Display names of the models the report covers.
-        start_date:
-          type: string
-          title: Start Date
-          description: Echoed request start date (YYYY-MM-DD, ET).
-        end_date:
-          type: string
-          title: End Date
-          description: Echoed request end date (YYYY-MM-DD, ET).
-        filter:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Filter
-          description: Echoed normalized filter tree, or null when no filter was sent.
-        include:
-          items:
-            type: string
-          type: array
-          title: Include
-          description: Row fields returned (echoes `include`, or all fields when omitted).
-      additionalProperties: true
-      type: object
-      required:
-      - count
-      - models
-      - start_date
-      - end_date
-      - include
-      title: AnswersV2Info
-    Pagination:
-      properties:
-        limit:
-          type: integer
-          maximum: 50000.0
-          exclusiveMinimum: 0.0
-          title: Limit
-          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
-          default: 10000
-        offset:
-          type: integer
-          minimum: 0.0
-          title: Offset
-          description: Offset for the results. Used for pagination.
-          default: 0
-      type: object
-      title: Pagination
-      description: Offset-based pagination parameters.
-    PersonaIdFilter:
-      properties:
-        field:
-          type: string
-          const: persona_id
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-            format: uuid
-          - items:
-              type: string
-              format: uuid
-            type: array
-          title: Value
-      type: object
-      required:
-      - field
-      - operator
-      - value
-      title: PersonaIdFilter
-      description: Filter by persona UUID.
+      title: CitationDetail
     AnalysisTypeFilter:
       properties:
         field:
@@ -854,64 +442,29 @@ components:
           default: false
       type: object
       title: EnabledFieldsResponse
-    PromptFilter:
+    AnswersResponse:
       properties:
-        field:
-          type: string
-          const: prompt
-          title: Field
-        operator:
-          type: string
-          enum:
-          - is
-          - not_is
-          - in
-          - not_in
-          - contains
-          - not_contains
-          - matches
-          - contains_case_insensitive
-          - not_contains_case_insensitive
-          title: Operator
-        value:
-          anyOf:
-          - type: string
-          - items:
-              type: string
-            type: array
-          title: Value
+        info:
+          $ref: '#/components/schemas/AnswersResponseInfo'
+        data:
+          items:
+            $ref: '#/components/schemas/AnswersRawData'
+          type: array
+          title: Data
       type: object
       required:
-      - field
-      - operator
-      - value
-      title: PromptFilter
-      description: Filter by prompt text
-    SentimentTheme:
-      properties:
-        type:
-          anyOf:
-          - type: string
-            const: positive
-          - type: string
-            const: negative
-          title: Type
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - type
-      - name
-      title: SentimentTheme
-    TagIdFilter:
+      - info
+      - data
+      title: AnswersResponse
+      description: Response for the answers endpoint.
+    TopicIdFilter:
       properties:
         field:
           anyOf:
           - type: string
-            const: tag_id
+            const: topic_id
           - type: string
-            const: tag
+            const: topic
             deprecated: true
           title: Field
         operator:
@@ -936,60 +489,247 @@ components:
       - field
       - operator
       - value
-      title: TagIdFilter
-      description: Filter by tag (prompt group) UUID.
-    CitationDetail:
+      title: TopicIdFilter
+      description: Filter by topic UUID.
+    FilterNode:
       properties:
-        url:
-          type: string
-          title: Url
-        clean_url:
-          type: string
-          title: Clean Url
-        title:
-          type: string
-          title: Title
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-        hostname:
-          type: string
-          title: Hostname
-        path:
-          type: string
-          title: Path
-        first_cited_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: First Cited At
-        positions:
-          items:
-            type: integer
-          type: array
-          title: Positions
-        groups:
+        and:
           anyOf:
           - items:
-              $ref: '#/components/schemas/CitationDetailGroup'
+              $ref: '#/components/schemas/FilterNode'
             type: array
           - type: 'null'
-          title: Groups
-        citation_category:
+          title: And
+        or:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/FilterNode'
+            type: array
+          - type: 'null'
+          title: Or
+        not:
+          anyOf:
+          - $ref: '#/components/schemas/FilterNode'
+          - type: 'null'
+        field:
           anyOf:
           - type: string
           - type: 'null'
-          title: Citation Category
+          title: Field
+        op:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Op
+        value:
+          title: Value
+      additionalProperties: false
+      type: object
+      title: FilterNode
+      description: A leaf (`field`/`op`/`value`) or an `and`/`or`/`not` group.
+    SentimentTheme:
+      properties:
+        type:
+          anyOf:
+          - type: string
+            const: positive
+          - type: string
+            const: negative
+          title: Type
+        name:
+          type: string
+          title: Name
       type: object
       required:
-      - url
-      - clean_url
-      - title
-      - hostname
-      - path
-      title: CitationDetail
+      - type
+      - name
+      title: SentimentTheme
+    AnswersV2Info:
+      properties:
+        total_results:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Results
+          description: Total rows matching the query before pagination (null when not computed).
+        count:
+          type: integer
+          title: Count
+          description: Number of rows returned in `data` for this page.
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Opaque cursor for the next page; null on the last page.
+        models:
+          items:
+            type: string
+          type: array
+          title: Models
+          description: Display names of the models the report covers.
+        start_date:
+          type: string
+          title: Start Date
+          description: Echoed request start date (YYYY-MM-DD, ET).
+        end_date:
+          type: string
+          title: End Date
+          description: Echoed request end date (YYYY-MM-DD, ET).
+        filter:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Filter
+          description: Echoed normalized filter tree, or null when no filter was sent.
+        include:
+          items:
+            type: string
+          type: array
+          title: Include
+          description: Row fields returned (echoes `include`, or all fields when omitted).
+      additionalProperties: true
+      type: object
+      required:
+      - count
+      - models
+      - start_date
+      - end_date
+      - include
+      title: AnswersV2Info
+    PersonaIdFilter:
+      properties:
+        field:
+          type: string
+          const: persona_id
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            format: uuid
+          - items:
+              type: string
+              format: uuid
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: PersonaIdFilter
+      description: Filter by persona UUID.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    RegionIdFilter:
+      properties:
+        field:
+          anyOf:
+          - type: string
+            const: region_id
+          - type: string
+            const: region
+            deprecated: true
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            format: uuid
+          - items:
+              type: string
+              format: uuid
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: RegionIdFilter
+      description: Filter by region UUID.
+    Pagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        offset:
+          type: integer
+          minimum: 0.0
+          title: Offset
+          description: Offset for the results. Used for pagination.
+          default: 0
+      type: object
+      title: Pagination
+      description: Offset-based pagination parameters.
+    DimensionRef:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      type: object
+      title: DimensionRef
+      description: An ``{id, name}`` reference for a grouped dimension value.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     AnswersRawData:
       properties:
         run_id:
@@ -1140,25 +880,11 @@ components:
       type: object
       title: AnswersRawData
       description: Raw data for the answers endpoint.
-    AnswersV2Response:
-      properties:
-        info:
-          $ref: '#/components/schemas/AnswersV2Info'
-        data:
-          items:
-            $ref: '#/components/schemas/AnswerRow'
-          type: array
-          title: Data
-      type: object
-      required:
-      - info
-      - data
-      title: AnswersV2Response
-    RegionNameFilter:
+    PromptFilter:
       properties:
         field:
           type: string
-          const: region_name
+          const: prompt
           title: Field
         operator:
           type: string
@@ -1185,8 +911,217 @@ components:
       - field
       - operator
       - value
-      title: RegionNameFilter
-      description: Filter by region name.
+      title: PromptFilter
+      description: Filter by prompt text
+    CitationDetailGroup:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        group_position:
+          type: integer
+          title: Group Position
+      type: object
+      required:
+      - group_id
+      - group_position
+      title: CitationDetailGroup
+    ModelIdFilter:
+      properties:
+        field:
+          anyOf:
+          - type: string
+            const: model_id
+          - type: string
+            const: model
+            deprecated: true
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            format: uuid
+          - items:
+              type: string
+              format: uuid
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: ModelIdFilter
+      description: Filter by AI model/platform UUID.
+    AnswersV2Response:
+      properties:
+        info:
+          $ref: '#/components/schemas/AnswersV2Info'
+        data:
+          items:
+            $ref: '#/components/schemas/AnswerRow'
+          type: array
+          title: Data
+      type: object
+      required:
+      - info
+      - data
+      title: AnswersV2Response
+    AnswersV2Query:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        start_date:
+          type: string
+          title: Start Date
+          description: YYYY-MM-DD, ET, inclusive
+        end_date:
+          type: string
+          title: End Date
+          description: YYYY-MM-DD, ET, inclusive
+        include:
+          anyOf:
+          - items:
+              type: string
+              enum:
+              - run_id
+              - date
+              - model
+              - topic
+              - topic_id
+              - persona
+              - region
+              - tags
+              - prompt
+              - prompt_id
+              - response
+              - mentions
+              - citations
+              - citation_details
+              - search_queries
+              - analysis_types
+              - sentiment_claims
+            type: array
+          - type: 'null'
+          title: Include
+          description: 'Which row fields to return: `run_id`, `date`, `model`, `topic`, `topic_id`, `region`, `persona`, `tags`, `prompt`, `prompt_id`, `response`, `mentions`, `citations`, `citation_details`, `search_queries`, `analysis_types`, `sentiment_claims`. Omit for all fields except `citation_details`, which must be requested explicitly because it is expensive.'
+        filter:
+          anyOf:
+          - $ref: '#/components/schemas/FilterNode'
+          - type: 'null'
+          description: 'and/or/not tree over `model`, `topic`, `region`, `persona`, `prompt`, `tag`, `analysis_type` (visibility/sentiment/factcheck); plus top-level `and` leaves `domain` or `page` (`is` one value, or `in` a list). Substring-search the prompt with `{"field": "prompt", "op": "contains", "value": "…"}`.'
+        limit:
+          anyOf:
+          - type: integer
+            maximum: 200.0
+            exclusiveMinimum: 0.0
+          - type: 'null'
+          title: Limit
+          description: Page size; default 10, max 200.
+        max_results:
+          anyOf:
+          - type: integer
+            exclusiveMinimum: 0.0
+          - type: 'null'
+          title: Max Results
+          description: 'Stream endpoint only: cap the number of streamed rows (default: all).'
+        cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      additionalProperties: false
+      type: object
+      required:
+      - category_id
+      - start_date
+      - end_date
+      title: AnswersV2Query
+    profound_answer_engine_insights__filters__AssetNameFilter:
+      properties:
+        field:
+          type: string
+          const: asset_name
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: AssetNameFilter
+      description: Filter by asset name
+    AnswersResponseInfo:
+      properties:
+        total_rows:
+          type: integer
+          title: Total Rows
+      type: object
+      required:
+      - total_rows
+      title: AnswersResponseInfo
+    TagIdFilter:
+      properties:
+        field:
+          anyOf:
+          - type: string
+            const: tag_id
+          - type: string
+            const: tag
+            deprecated: true
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            format: uuid
+          - items:
+              type: string
+              format: uuid
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: TagIdFilter
+      description: Filter by tag (prompt group) UUID.
     AnswersQuery:
       properties:
         category_id:
@@ -1250,56 +1185,39 @@ components:
       - end_date
       title: AnswersQuery
       description: Body for the answers endpoint.
-    HTTPValidationError:
+    RegionNameFilter:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
+        field:
           type: string
-          title: Message
-        type:
+          const: region_name
+          title: Field
+        operator:
           type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          - contains
+          - not_contains
+          - matches
+          - contains_case_insensitive
+          - not_contains_case_insensitive
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+          title: Value
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    DimensionRef:
-      properties:
-        id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Id
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-      type: object
-      title: DimensionRef
-      description: An ``{id, name}`` reference for a grouped dimension value.
+      - field
+      - operator
+      - value
+      title: RegionNameFilter
+      description: Filter by region name.
     AssetIdFilter:
       properties:
         field:
@@ -1329,6 +1247,88 @@ components:
       - operator
       - value
       title: AssetIdFilter
+    PromptIdFilter:
+      properties:
+        field:
+          type: string
+          const: prompt_id
+          title: Field
+        operator:
+          type: string
+          enum:
+          - is
+          - not_is
+          - in
+          - not_in
+          title: Operator
+        value:
+          anyOf:
+          - type: string
+            format: uuid
+          - items:
+              type: string
+              format: uuid
+            type: array
+          title: Value
+      type: object
+      required:
+      - field
+      - operator
+      - value
+      title: PromptIdFilter
+      description: Filter by prompt UUID.
+    ExecutionCitationDetail:
+      properties:
+        url:
+          type: string
+          title: Url
+        clean_url:
+          type: string
+          title: Clean Url
+        title:
+          type: string
+          title: Title
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        hostname:
+          type: string
+          title: Hostname
+        path:
+          type: string
+          title: Path
+        positions:
+          items:
+            type: integer
+          type: array
+          title: Positions
+        groups:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CitationDetailGroup'
+            type: array
+          - type: 'null'
+          title: Groups
+        first_cited_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Cited At
+        citation_category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Citation Category
+      type: object
+      required:
+      - url
+      - clean_url
+      - title
+      - hostname
+      - path
+      title: ExecutionCitationDetail
   securitySchemes:
     APIKeyHeader:
       type: apiKey

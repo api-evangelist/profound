@@ -697,131 +697,46 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ProjectStatusResponse:
+    ProjectTaskStatusPayload:
       properties:
-        data:
-          $ref: '#/components/schemas/ProjectStatusPayload'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ProjectStatusResponse
-    ProjectAttachment:
-      properties:
-        id:
-          type: string
-          minLength: 1
-          title: Id
-        name:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Name
-        mime_type:
-          type: string
-          minLength: 1
-          title: Mime Type
-        size_bytes:
-          type: integer
-          maximum: 10485760.0
-          exclusiveMinimum: 0.0
-          title: Size Bytes
-        data_base64:
-          type: string
-          maxLength: 13981016
-          minLength: 1
-          title: Data Base64
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - name
-      - mime_type
-      - size_bytes
-      - data_base64
-      title: ProjectAttachment
-    ProjectGenerationStatus:
-      properties:
-        run_id:
+        task_id:
           type: string
           format: uuid
-          title: Run Id
-        category_id:
+          title: Task Id
+        project_id:
           type: string
           format: uuid
-          title: Category Id
-        mode:
-          type: string
-          enum:
-          - generate
-          - adhoc
-          title: Mode
-        focus_prompt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Focus Prompt
+          title: Project Id
         status:
           type: string
           enum:
-          - queued
-          - running
-          - completed
-          - failed
+          - not_started
+          - in_progress
+          - done
+          - abandoned
           title: Status
-        started_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Started At
-        finished_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Finished At
-        error:
+        changed_at:
+          type: string
+          format: date-time
+          title: Changed At
+        changed_by:
           anyOf:
           - type: string
           - type: 'null'
-          title: Error
+          title: Changed By
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
       additionalProperties: false
       type: object
       required:
-      - run_id
-      - category_id
-      - mode
+      - task_id
+      - project_id
       - status
-      title: ProjectGenerationStatus
-    ListProjectsResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/ProjectListItem'
-          type: array
-          title: Data
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListProjectsResponse
-    ListProjectGenerationsResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/ProjectGenerationStatus'
-          type: array
-          title: Data
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListProjectGenerationsResponse
+      - changed_at
+      title: ProjectTaskStatusPayload
     ProjectGenerationResponse:
       properties:
         data:
@@ -831,149 +746,6 @@ components:
       required:
       - data
       title: ProjectGenerationResponse
-    ProjectResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/Project'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ProjectResponse
-    ProjectGenerationContextItem:
-      properties:
-        id:
-          type: string
-          maxLength: 200
-          minLength: 1
-          title: Id
-        name:
-          type: string
-          maxLength: 200
-          minLength: 1
-          title: Name
-        slug:
-          anyOf:
-          - type: string
-            maxLength: 200
-          - type: 'null'
-          title: Slug
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - name
-      title: ProjectGenerationContextItem
-    ListProjectTasksResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/ProjectTask'
-          type: array
-          title: Data
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListProjectTasksResponse
-    ProjectGenerationStatusResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/ProjectGenerationStatus'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ProjectGenerationStatusResponse
-    ProjectListItem:
-      properties:
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-        category_id:
-          type: string
-          format: uuid
-          title: Category Id
-        status:
-          type: string
-          enum:
-          - suggested
-          - tracked
-          - retired
-          title: Status
-          default: suggested
-        title:
-          type: string
-          title: Title
-        summary:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Summary
-        initiated_by_user_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Initiated By User Id
-        topics:
-          items:
-            type: string
-          type: array
-          title: Topics
-        updated_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Updated At
-        task_types:
-          items:
-            type: string
-          type: array
-          title: Task Types
-        task_count:
-          type: integer
-          minimum: 0.0
-          title: Task Count
-          default: 0
-        new_task_count:
-          type: integer
-          minimum: 0.0
-          title: New Task Count
-          default: 0
-        retired_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Retired At
-        retired_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Retired Reason
-        live_generation:
-          anyOf:
-          - $ref: '#/components/schemas/LiveGeneration'
-          - type: 'null'
-      type: object
-      required:
-      - project_id
-      - category_id
-      - title
-      title: ProjectListItem
-    ProjectTaskStatusResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/ProjectTaskStatusPayload'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ProjectTaskStatusResponse
     Project:
       properties:
         project_id:
@@ -1099,145 +871,159 @@ components:
       - category_id
       - title
       title: Project
-    ProjectStatusPayload:
-      properties:
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-        category_id:
-          type: string
-          format: uuid
-          title: Category Id
-        status:
-          type: string
-          enum:
-          - suggested
-          - tracked
-          - retired
-          title: Status
-        live_generation:
-          anyOf:
-          - $ref: '#/components/schemas/LiveGeneration'
-          - type: 'null'
-        updated_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Updated At
-      additionalProperties: false
-      type: object
-      required:
-      - project_id
-      - category_id
-      - status
-      title: ProjectStatusPayload
-    ProjectTaskResponse:
+    ListProjectTasksResponse:
       properties:
         data:
-          $ref: '#/components/schemas/ProjectTask'
+          items:
+            $ref: '#/components/schemas/ProjectTask'
+          type: array
+          title: Data
+        pagination:
+          $ref: '#/components/schemas/Pagination'
       additionalProperties: false
       type: object
       required:
       - data
-      title: ProjectTaskResponse
-    ProjectTask:
+      title: ListProjectTasksResponse
+    ProjectTaskStatusResponse:
       properties:
-        task_id:
-          type: string
-          format: uuid
-          title: Task Id
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
+        data:
+          $ref: '#/components/schemas/ProjectTaskStatusPayload'
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ProjectTaskStatusResponse
+    CreateProjectRequest:
+      properties:
         category_id:
           type: string
           format: uuid
           title: Category Id
-        type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Type
         title:
-          type: string
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
           title: Title
-        summary:
+        project_name:
           anyOf:
           - type: string
+            maxLength: 120
+            minLength: 1
           - type: 'null'
-          title: Summary
-        brief:
+          title: Project Name
+        focus:
           anyOf:
           - type: string
+            maxLength: 2000
+            minLength: 1
           - type: 'null'
-          title: Brief
-        topic:
+          title: Focus
+        topics:
+          items:
+            type: string
+            minLength: 1
+          type: array
+          maxItems: 6
+          title: Topics
+        attachments:
+          items:
+            $ref: '#/components/schemas/ProjectAttachment'
+          type: array
+          maxItems: 3
+          title: Attachments
+        generation_context:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/ProjectGenerationContext'
           - type: 'null'
-          title: Topic
-        impact:
-          anyOf:
-          - type: integer
-            maximum: 5.0
-            minimum: 1.0
-          - type: 'null'
-          title: Impact
-        reference_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reference Url
-        reference_label:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reference Label
-        status:
-          type: string
-          enum:
-          - not_started
-          - in_progress
-          - done
-          - abandoned
-          title: Status
-          default: not_started
-        status_changed_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Status Changed At
-        is_new:
-          type: boolean
-          title: Is New
-          default: true
-        created_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Created At
       additionalProperties: false
       type: object
       required:
-      - task_id
-      - project_id
       - category_id
-      - title
-      title: ProjectTask
-    ProjectTaskDetailResponse:
+      title: CreateProjectRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ProjectGenerationStatusResponse:
       properties:
         data:
-          $ref: '#/components/schemas/ProjectTaskDetail'
+          $ref: '#/components/schemas/ProjectGenerationStatus'
       additionalProperties: false
       type: object
       required:
       - data
-      title: ProjectTaskDetailResponse
+      title: ProjectGenerationStatusResponse
+    LiveGeneration:
+      properties:
+        run_id:
+          type: string
+          format: uuid
+          title: Run Id
+        status:
+          type: string
+          enum:
+          - queued
+          - running
+          - completed
+          - failed
+          title: Status
+        started_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Started At
+        finished_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Finished At
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      additionalProperties: false
+      type: object
+      required:
+      - run_id
+      - status
+      title: LiveGeneration
+    ProjectStatusResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/ProjectStatusPayload'
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ProjectStatusResponse
     Pagination:
       properties:
         limit:
@@ -1256,215 +1042,63 @@ components:
       type: object
       title: Pagination
       description: Offset-based pagination parameters.
-    ProjectGenerationContext:
+    ListProjectGenerationsResponse:
       properties:
-        dateRange:
-          anyOf:
-          - $ref: '#/components/schemas/ProjectGenerationDateRange'
-          - type: 'null'
-        platforms:
+        data:
           items:
-            $ref: '#/components/schemas/ProjectGenerationContextItem'
+            $ref: '#/components/schemas/ProjectGenerationStatus'
           type: array
-          maxItems: 20
-          title: Platforms
-        projectCategories:
-          items:
-            type: string
-            enum:
-            - creative
-            - earned
-            - publish
-            - refresh
-            - social
-          type: array
-          maxItems: 5
-          title: Projectcategories
-        regions:
-          items:
-            $ref: '#/components/schemas/ProjectGenerationContextItem'
-          type: array
-          maxItems: 50
-          title: Regions
-        tags:
-          items:
-            $ref: '#/components/schemas/ProjectGenerationContextItem'
-          type: array
-          maxItems: 100
-          title: Tags
-      additionalProperties: false
-      type: object
-      title: ProjectGenerationContext
-    ProjectTaskStatusPayload:
-      properties:
-        task_id:
-          type: string
-          format: uuid
-          title: Task Id
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-        status:
-          type: string
-          enum:
-          - not_started
-          - in_progress
-          - done
-          - abandoned
-          title: Status
-        changed_at:
-          type: string
-          format: date-time
-          title: Changed At
-        changed_by:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Changed By
-        note:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Note
+          title: Data
+        pagination:
+          $ref: '#/components/schemas/Pagination'
       additionalProperties: false
       type: object
       required:
-      - task_id
-      - project_id
-      - status
-      - changed_at
-      title: ProjectTaskStatusPayload
-    ProjectTaskDetail:
+      - data
+      title: ListProjectGenerationsResponse
+    ProjectResponse:
       properties:
-        task_id:
-          type: string
-          format: uuid
-          title: Task Id
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-        category_id:
-          type: string
-          format: uuid
-          title: Category Id
-        type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Type
-        title:
-          type: string
-          title: Title
-        summary:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Summary
-        brief:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Brief
-        topic:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Topic
-        impact:
-          anyOf:
-          - type: integer
-            maximum: 5.0
-            minimum: 1.0
-          - type: 'null'
-          title: Impact
-        reference_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reference Url
-        reference_label:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reference Label
-        status:
-          type: string
-          enum:
-          - not_started
-          - in_progress
-          - done
-          - abandoned
-          title: Status
-          default: not_started
-        status_changed_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Status Changed At
-        is_new:
-          type: boolean
-          title: Is New
-          default: true
-        created_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Created At
-        project_title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Project Title
+        data:
+          $ref: '#/components/schemas/Project'
       additionalProperties: false
       type: object
       required:
-      - task_id
-      - project_id
-      - category_id
-      - title
-      title: ProjectTaskDetail
-    ProjectGenerationDateRange:
+      - data
+      title: ProjectResponse
+    ProjectAttachment:
       properties:
-        endDate:
-          anyOf:
-          - type: string
-            maxLength: 40
-          - type: 'null'
-          title: Enddate
-        label:
+        id:
           type: string
-          maxLength: 80
           minLength: 1
-          title: Label
-        mode:
-          anyOf:
-          - type: string
-            enum:
-            - custom
-            - relative
-          - type: 'null'
-          title: Mode
-        preset:
+          title: Id
+        name:
           type: string
-          maxLength: 80
+          maxLength: 255
           minLength: 1
-          title: Preset
-        startDate:
-          anyOf:
-          - type: string
-            maxLength: 40
-          - type: 'null'
-          title: Startdate
+          title: Name
+        mime_type:
+          type: string
+          minLength: 1
+          title: Mime Type
+        size_bytes:
+          type: integer
+          maximum: 10485760.0
+          exclusiveMinimum: 0.0
+          title: Size Bytes
+        data_base64:
+          type: string
+          maxLength: 13981016
+          minLength: 1
+          title: Data Base64
       additionalProperties: false
       type: object
       required:
-      - label
-      - preset
-      title: ProjectGenerationDateRange
+      - id
+      - name
+      - mime_type
+      - size_bytes
+      - data_base64
+      title: ProjectAttachment
     ProjectDetail:
       properties:
         project_id:
@@ -1595,12 +1229,370 @@ components:
       - category_id
       - title
       title: ProjectDetail
-    LiveGeneration:
+    ProjectGenerationContextItem:
+      properties:
+        id:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Id
+        name:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Name
+        slug:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Slug
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - name
+      title: ProjectGenerationContextItem
+    ProjectGeneration:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        run_id:
+          type: string
+          format: uuid
+          title: Run Id
+        status:
+          type: string
+          enum:
+          - queued
+          - running
+          title: Status
+          default: queued
+      additionalProperties: false
+      type: object
+      required:
+      - project_id
+      - run_id
+      title: ProjectGeneration
+    ProjectGenerationDateRange:
+      properties:
+        endDate:
+          anyOf:
+          - type: string
+            maxLength: 40
+          - type: 'null'
+          title: Enddate
+        label:
+          type: string
+          maxLength: 80
+          minLength: 1
+          title: Label
+        mode:
+          anyOf:
+          - type: string
+            enum:
+            - custom
+            - relative
+          - type: 'null'
+          title: Mode
+        preset:
+          type: string
+          maxLength: 80
+          minLength: 1
+          title: Preset
+        startDate:
+          anyOf:
+          - type: string
+            maxLength: 40
+          - type: 'null'
+          title: Startdate
+      additionalProperties: false
+      type: object
+      required:
+      - label
+      - preset
+      title: ProjectGenerationDateRange
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ProjectTaskDetail:
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          title: Task Id
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+        title:
+          type: string
+          title: Title
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        brief:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Brief
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+        impact:
+          anyOf:
+          - type: integer
+            maximum: 5.0
+            minimum: 1.0
+          - type: 'null'
+          title: Impact
+        reference_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reference Url
+        reference_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reference Label
+        status:
+          type: string
+          enum:
+          - not_started
+          - in_progress
+          - done
+          - abandoned
+          title: Status
+          default: not_started
+        status_changed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Status Changed At
+        is_new:
+          type: boolean
+          title: Is New
+          default: true
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+        project_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Title
+      additionalProperties: false
+      type: object
+      required:
+      - task_id
+      - project_id
+      - category_id
+      - title
+      title: ProjectTaskDetail
+    UpdateProjectTaskStatusRequest:
+      properties:
+        status:
+          type: string
+          enum:
+          - not_started
+          - in_progress
+          - done
+          - abandoned
+          title: Status
+        note:
+          anyOf:
+          - type: string
+            maxLength: 2000
+            minLength: 1
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - status
+      title: UpdateProjectTaskStatusRequest
+    ProjectTaskDetailResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/ProjectTaskDetail'
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ProjectTaskDetailResponse
+    ProjectStatusPayload:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        status:
+          type: string
+          enum:
+          - suggested
+          - tracked
+          - retired
+          title: Status
+        live_generation:
+          anyOf:
+          - $ref: '#/components/schemas/LiveGeneration'
+          - type: 'null'
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+      additionalProperties: false
+      type: object
+      required:
+      - project_id
+      - category_id
+      - status
+      title: ProjectStatusPayload
+    ProjectListItem:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        status:
+          type: string
+          enum:
+          - suggested
+          - tracked
+          - retired
+          title: Status
+          default: suggested
+        title:
+          type: string
+          title: Title
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        initiated_by_user_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Initiated By User Id
+        topics:
+          items:
+            type: string
+          type: array
+          title: Topics
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+        task_types:
+          items:
+            type: string
+          type: array
+          title: Task Types
+        task_count:
+          type: integer
+          minimum: 0.0
+          title: Task Count
+          default: 0
+        new_task_count:
+          type: integer
+          minimum: 0.0
+          title: New Task Count
+          default: 0
+        retired_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Retired At
+        retired_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Retired Reason
+        live_generation:
+          anyOf:
+          - $ref: '#/components/schemas/LiveGeneration'
+          - type: 'null'
+      type: object
+      required:
+      - project_id
+      - category_id
+      - title
+      title: ProjectListItem
+    ListProjectsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/ProjectListItem'
+          type: array
+          title: Data
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ListProjectsResponse
+    ProjectGenerationStatus:
       properties:
         run_id:
           type: string
           format: uuid
           title: Run Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        mode:
+          type: string
+          enum:
+          - generate
+          - adhoc
+          title: Mode
+        focus_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Focus Prompt
         status:
           type: string
           enum:
@@ -1630,124 +1622,10 @@ components:
       type: object
       required:
       - run_id
-      - status
-      title: LiveGeneration
-    ProjectGeneration:
-      properties:
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-        run_id:
-          type: string
-          format: uuid
-          title: Run Id
-        status:
-          type: string
-          enum:
-          - queued
-          - running
-          title: Status
-          default: queued
-      additionalProperties: false
-      type: object
-      required:
-      - project_id
-      - run_id
-      title: ProjectGeneration
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CreateProjectRequest:
-      properties:
-        category_id:
-          type: string
-          format: uuid
-          title: Category Id
-        title:
-          anyOf:
-          - type: string
-            maxLength: 120
-            minLength: 1
-          - type: 'null'
-          title: Title
-        project_name:
-          anyOf:
-          - type: string
-            maxLength: 120
-            minLength: 1
-          - type: 'null'
-          title: Project Name
-        focus:
-          anyOf:
-          - type: string
-            maxLength: 2000
-            minLength: 1
-          - type: 'null'
-          title: Focus
-        topics:
-          items:
-            type: string
-            minLength: 1
-          type: array
-          maxItems: 6
-          title: Topics
-        attachments:
-          items:
-            $ref: '#/components/schemas/ProjectAttachment'
-          type: array
-          maxItems: 3
-          title: Attachments
-        generation_context:
-          anyOf:
-          - $ref: '#/components/schemas/ProjectGenerationContext'
-          - type: 'null'
-      additionalProperties: false
-      type: object
-      required:
       - category_id
-      title: CreateProjectRequest
-    ProjectDetailResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/ProjectDetail'
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ProjectDetailResponse
+      - mode
+      - status
+      title: ProjectGenerationStatus
     UpdateProjectTaskRequest:
       properties:
         title:
@@ -1809,8 +1687,99 @@ components:
       additionalProperties: false
       type: object
       title: UpdateProjectTaskRequest
-    UpdateProjectTaskStatusRequest:
+    ProjectGenerationContext:
       properties:
+        dateRange:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectGenerationDateRange'
+          - type: 'null'
+        platforms:
+          items:
+            $ref: '#/components/schemas/ProjectGenerationContextItem'
+          type: array
+          maxItems: 20
+          title: Platforms
+        projectCategories:
+          items:
+            type: string
+            enum:
+            - creative
+            - earned
+            - publish
+            - refresh
+            - social
+          type: array
+          maxItems: 5
+          title: Projectcategories
+        regions:
+          items:
+            $ref: '#/components/schemas/ProjectGenerationContextItem'
+          type: array
+          maxItems: 50
+          title: Regions
+        tags:
+          items:
+            $ref: '#/components/schemas/ProjectGenerationContextItem'
+          type: array
+          maxItems: 100
+          title: Tags
+      additionalProperties: false
+      type: object
+      title: ProjectGenerationContext
+    ProjectTask:
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          title: Task Id
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+        title:
+          type: string
+          title: Title
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        brief:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Brief
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+        impact:
+          anyOf:
+          - type: integer
+            maximum: 5.0
+            minimum: 1.0
+          - type: 'null'
+          title: Impact
+        reference_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reference Url
+        reference_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reference Label
         status:
           type: string
           enum:
@@ -1819,18 +1788,31 @@ components:
           - done
           - abandoned
           title: Status
-        note:
+          default: not_started
+        status_changed_at:
           anyOf:
           - type: string
-            maxLength: 2000
-            minLength: 1
+            format: date-time
           - type: 'null'
-          title: Note
+          title: Status Changed At
+        is_new:
+          type: boolean
+          title: Is New
+          default: true
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
       additionalProperties: false
       type: object
       required:
-      - status
-      title: UpdateProjectTaskStatusRequest
+      - task_id
+      - project_id
+      - category_id
+      - title
+      title: ProjectTask
     ArchiveProjectRequest:
       properties:
         reason:
@@ -1843,6 +1825,24 @@ components:
       additionalProperties: false
       type: object
       title: ArchiveProjectRequest
+    ProjectTaskResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/ProjectTask'
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ProjectTaskResponse
+    ProjectDetailResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/ProjectDetail'
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ProjectDetailResponse
     CreateProjectTaskRequest:
       properties:
         title:

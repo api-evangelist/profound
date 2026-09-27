@@ -780,89 +780,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    NamedResource:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - id
-      - name
-      title: NamedResource
-      description: Generic id+name reference used across domain boundaries.
-    NamedResourceDiffList:
-      properties:
-        added:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Added
-          description: Resources that were added.
-          default: []
-        removed:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Removed
-          description: Resources that were removed.
-          default: []
-      type: object
-      title: NamedResourceDiffList
-      description: Shows which resources were added or removed.
-    CategoryAsset:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
-        website:
-          type: string
-          title: Website
-        alternate_domains:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Alternate Domains
-        is_owned:
-          type: boolean
-          title: Is Owned
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        logo_url:
-          type: string
-          title: Logo Url
-      type: object
-      required:
-      - id
-      - name
-      - website
-      - is_owned
-      - created_at
-      - logo_url
-      title: CategoryAsset
-    OrganizationPersonasWithCategoryResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/OrganizationPersonasWithCategory'
-          type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: OrganizationPersonasWithCategoryResponse
-    CategoryWithOrganization:
+    Category:
       properties:
         id:
           type: string
@@ -876,111 +794,24 @@ components:
           - type: string
           - type: 'null'
           title: Internal Name
-        organization:
-          $ref: '#/components/schemas/Organization'
       type: object
       required:
       - id
       - name
-      - organization
-      title: CategoryWithOrganization
-      description: A category annotated with the organization that owns it.
-    IdOrName:
+      title: Category
+    Tag:
       properties:
         id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           title: Id
-          description: UUID of the resource.
         name:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           title: Name
-          description: Display name of the resource.
-      type: object
-      title: IdOrName
-      description: 'Reference by id, name, or both. Plain strings work too:
-
-        UUIDs become id lookups, other strings become name lookups.'
-    Prompt:
-      properties:
-        id:
-          type: string
-          title: Id
-        analysis_types:
-          items:
-            type: string
-            enum:
-            - visibility
-            - sentiment
-            - sentiment_v2
-            - accuracy
-          type: array
-          title: Analysis Types
-          default: []
-        prompt_type:
-          type: string
-          title: Prompt Type
-          default: ''
-          deprecated: true
-        prompt:
-          type: string
-          title: Prompt
-        language:
-          type: string
-          title: Language
-        status:
-          type: string
-          enum:
-          - active
-          - disabled
-          title: Status
-        topic:
-          $ref: '#/components/schemas/NamedResource'
-        tags:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Tags
-          default: []
-        regions:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Regions
-        platforms:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Platforms
-        personas:
-          items:
-            $ref: '#/components/schemas/NamedResource'
-          type: array
-          title: Personas
-          default: []
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
       type: object
       required:
       - id
-      - prompt
-      - language
-      - status
-      - topic
-      - regions
-      - platforms
-      - created_at
-      - updated_at
-      title: Prompt
+      - name
+      title: Tag
     UpdatePromptStatusBody:
       properties:
         prompt_ids:
@@ -1008,166 +839,6 @@ components:
       - prompt_ids
       - status
       title: UpdatePromptStatusBody
-    CategoryAssetWithCategory:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
-        website:
-          type: string
-          title: Website
-        alternate_domains:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Alternate Domains
-        is_owned:
-          type: boolean
-          title: Is Owned
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        logo_url:
-          type: string
-          title: Logo Url
-        category:
-          $ref: '#/components/schemas/Category'
-        organization:
-          $ref: '#/components/schemas/Organization'
-      type: object
-      required:
-      - id
-      - name
-      - website
-      - is_owned
-      - created_at
-      - logo_url
-      - category
-      - organization
-      title: CategoryAssetWithCategory
-    CategoryPromptsResponse:
-      properties:
-        info:
-          $ref: '#/components/schemas/PaginationInfo'
-        data:
-          items:
-            $ref: '#/components/schemas/Prompt'
-          type: array
-          title: Data
-      type: object
-      required:
-      - info
-      - data
-      title: CategoryPromptsResponse
-    PromptUpdatePreview:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: ID of the updated prompt.
-        prompt:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Prompt text diff.
-        topic:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Topic diff.
-        language:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Language diff.
-        tags:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Tags added and removed.
-        regions:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Regions added and removed.
-        platforms:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Platforms added and removed.
-        personas:
-          anyOf:
-          - $ref: '#/components/schemas/NamedResourceDiffList'
-          - type: 'null'
-          description: Personas added and removed.
-        analysis_types:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Analysis types diff.
-        asset:
-          anyOf:
-          - $ref: '#/components/schemas/FieldDiff'
-          - type: 'null'
-          description: Asset diff.
-      type: object
-      required:
-      - id
-      title: PromptUpdatePreview
-      description: Preview of changes applied (or to be applied) to a single prompt. Only changed fields are included.
-    FieldDiff:
-      properties:
-        old:
-          title: Old
-          description: Previous value.
-        new:
-          title: New
-          description: New value.
-      type: object
-      title: FieldDiff
-      description: Shows the old and new value for a changed field.
-    PersonaProfile:
-      properties:
-        behavior:
-          $ref: '#/components/schemas/PersonaProfileBehavior'
-        employment:
-          $ref: '#/components/schemas/PersonaProfileEmployment'
-        demographics:
-          $ref: '#/components/schemas/PersonaProfileDemographics'
-      type: object
-      required:
-      - behavior
-      - employment
-      - demographics
-      title: PersonaProfile
-    CitationCategory:
-      properties:
-        value:
-          type: string
-          title: Value
-          description: Value to pass to the v2 citations `citation_category` filter.
-        name:
-          type: string
-          title: Name
-          description: Display name.
-      type: object
-      required:
-      - value
-      - name
-      title: CitationCategory
-    PromptOrderBy:
-      type: string
-      enum:
-      - created_at
-      - prompt
-      title: PromptOrderBy
     Organization:
       properties:
         id:
@@ -1184,197 +855,30 @@ components:
       - id
       - name
       title: Organization
-    OrganizationPersonasWithCategory:
+    PersonaProfileEmployment:
       properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        persona:
-          $ref: '#/components/schemas/PersonaProfile'
-        category:
-          $ref: '#/components/schemas/Category'
-        organization:
-          $ref: '#/components/schemas/Organization'
-      type: object
-      required:
-      - id
-      - name
-      - persona
-      - category
-      - organization
-      title: OrganizationPersonasWithCategory
-    PersonaProfileDemographics:
-      properties:
-        ageRange:
+        industry:
           items:
             type: string
           type: array
-          title: Agerange
-      type: object
-      title: PersonaProfileDemographics
-    PersonaProfileBehavior:
-      properties:
-        painPoints:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Painpoints
-        motivations:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Motivations
-      type: object
-      title: PersonaProfileBehavior
-    UpdatePromptStatusResponse:
-      properties:
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: Whether this was a dry run (no changes persisted).
-        updated_prompts:
-          type: integer
-          title: Updated Prompts
-          description: Number of prompts whose status was changed.
-          default: 0
-      type: object
-      required:
-      - dry_run
-      title: UpdatePromptStatusResponse
-      description: Response from updating prompt statuses.
-    OrganizationAssetsResponse:
-      properties:
-        data:
+          title: Industry
+        jobTitle:
           items:
-            $ref: '#/components/schemas/CategoryAssetWithCategory'
+            type: string
           type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: OrganizationAssetsResponse
-    CategoryPersonasResponse:
-      properties:
-        data:
+          title: Jobtitle
+        companySize:
           items:
-            $ref: '#/components/schemas/CategoryPersona'
+            type: string
           type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: CategoryPersonasResponse
-    DomainWithOrganization:
-      properties:
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
-        organization:
-          $ref: '#/components/schemas/Organization'
-      type: object
-      required:
-      - created_at
-      - id
-      - name
-      - organization
-      title: DomainWithOrganization
-      description: A domain paired with the organization edge it belongs to.
-    AnalysisType:
-      type: string
-      enum:
-      - visibility
-      - sentiment
-      - sentiment_v2
-      - accuracy
-      title: AnalysisType
-    OrderByDirection:
-      type: string
-      enum:
-      - asc
-      - desc
-      title: OrderByDirection
-    PromptType:
-      type: string
-      enum:
-      - visibility
-      - sentiment
-      title: PromptType
-    CitationTag:
-      properties:
-        value:
-          type: string
-          title: Value
-          description: Value to pass to the v2 citations `citation_tag` filter.
-        name:
-          type: string
-          title: Name
-          description: Display name.
-      type: object
-      required:
-      - value
-      - name
-      title: CitationTag
-    CreatePromptsBody:
-      properties:
-        prompts:
+          title: Companysize
+        roleSeniority:
           items:
-            $ref: '#/components/schemas/CreatePromptInput'
+            type: string
           type: array
-          title: Prompts
-          description: List of prompts to create.
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: When true, validate and preview changes without persisting them.
-          default: false
+          title: Roleseniority
       type: object
-      required:
-      - prompts
-      title: CreatePromptsBody
-    CategoryPersona:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        persona:
-          $ref: '#/components/schemas/PersonaProfile'
-      type: object
-      required:
-      - id
-      - name
-      - persona
-      title: CategoryPersona
-    UpdatePromptsBody:
-      properties:
-        prompts:
-          items:
-            $ref: '#/components/schemas/UpdatePromptInput'
-          type: array
-          title: Prompts
-          description: List of prompt updates. Each entry must include an `id` and at least one field to change.
-        dry_run:
-          type: boolean
-          title: Dry Run
-          description: When true, validate and preview changes without persisting them.
-          default: false
-      type: object
-      required:
-      - prompts
-      title: UpdatePromptsBody
+      title: PersonaProfileEmployment
     UpdatePromptsResponse:
       properties:
         dry_run:
@@ -1408,15 +912,151 @@ components:
       - dry_run
       title: UpdatePromptsResponse
       description: Response from updating prompts.
-    HTTPValidationError:
+    OrganizationPersonasWithCategory:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        persona:
+          $ref: '#/components/schemas/PersonaProfile'
+        category:
+          $ref: '#/components/schemas/Category'
+        organization:
+          $ref: '#/components/schemas/Organization'
       type: object
-      title: HTTPValidationError
+      required:
+      - id
+      - name
+      - persona
+      - category
+      - organization
+      title: OrganizationPersonasWithCategory
+    CitationCategoriesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CitationCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CitationCategoriesResponse
+    PromptOrderBy:
+      type: string
+      enum:
+      - created_at
+      - prompt
+      title: PromptOrderBy
+    UpdatePromptStatusResponse:
+      properties:
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Whether this was a dry run (no changes persisted).
+        updated_prompts:
+          type: integer
+          title: Updated Prompts
+          description: Number of prompts whose status was changed.
+          default: 0
+      type: object
+      required:
+      - dry_run
+      title: UpdatePromptStatusResponse
+      description: Response from updating prompt statuses.
+    CategoryWithOrganization:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        internal_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Name
+        organization:
+          $ref: '#/components/schemas/Organization'
+      type: object
+      required:
+      - id
+      - name
+      - organization
+      title: CategoryWithOrganization
+      description: A category annotated with the organization that owns it.
+    CategoryPersonasResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CategoryPersona'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CategoryPersonasResponse
+    PersonaProfileBehavior:
+      properties:
+        painPoints:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Painpoints
+        motivations:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Motivations
+      type: object
+      title: PersonaProfileBehavior
+    CategoryPersona:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        persona:
+          $ref: '#/components/schemas/PersonaProfile'
+      type: object
+      required:
+      - id
+      - name
+      - persona
+      title: CategoryPersona
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     PromptPreview:
       properties:
         id:
@@ -1487,83 +1127,30 @@ components:
       - language
       title: PromptPreview
       description: Preview of a prompt that was (or would be) created.
-    ValidationError:
+    AnalysisType:
+      type: string
+      enum:
+      - visibility
+      - sentiment
+      - sentiment_v2
+      - accuracy
+      title: AnalysisType
+    CitationCategory:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
+        value:
           type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    PaginationInfo:
-      properties:
-        total_rows:
-          type: integer
-          title: Total Rows
-        limit:
-          type: integer
-          title: Limit
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Next Cursor
-      type: object
-      required:
-      - total_rows
-      - limit
-      - next_cursor
-      title: PaginationInfo
-    Topic:
-      properties:
-        id:
-          type: string
-          title: Id
+          title: Value
+          description: Value to pass to the v2 citations `citation_category` filter.
         name:
           type: string
           title: Name
-        status:
-          type: string
-          enum:
-          - active
-          - disabled
-          title: Status
+          description: Display name.
       type: object
       required:
-      - id
+      - value
       - name
-      - status
-      title: Topic
-    CitationCategoriesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/CitationCategory'
-          type: array
-          title: Data
-      type: object
-      required:
-      - data
-      title: CitationCategoriesResponse
-    Category:
+      title: CitationCategory
+    CategoryAsset:
       properties:
         id:
           type: string
@@ -1572,16 +1159,91 @@ components:
         name:
           type: string
           title: Name
-        internal_name:
+        website:
+          type: string
+          title: Website
+        alternate_domains:
           anyOf:
-          - type: string
+          - items:
+              type: string
+            type: array
           - type: 'null'
-          title: Internal Name
+          title: Alternate Domains
+        is_owned:
+          type: boolean
+          title: Is Owned
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        logo_url:
+          type: string
+          title: Logo Url
       type: object
       required:
       - id
       - name
-      title: Category
+      - website
+      - is_owned
+      - created_at
+      - logo_url
+      title: CategoryAsset
+    PromptUpdatePreview:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: ID of the updated prompt.
+        prompt:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Prompt text diff.
+        topic:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Topic diff.
+        language:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Language diff.
+        tags:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Tags added and removed.
+        regions:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Regions added and removed.
+        platforms:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Platforms added and removed.
+        personas:
+          anyOf:
+          - $ref: '#/components/schemas/NamedResourceDiffList'
+          - type: 'null'
+          description: Personas added and removed.
+        analysis_types:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Analysis types diff.
+        asset:
+          anyOf:
+          - $ref: '#/components/schemas/FieldDiff'
+          - type: 'null'
+          description: Asset diff.
+      type: object
+      required:
+      - id
+      title: PromptUpdatePreview
+      description: Preview of changes applied (or to be applied) to a single prompt. Only changed fields are included.
     CreatePromptInput:
       properties:
         id:
@@ -1664,17 +1326,25 @@ components:
       - platforms
       title: CreatePromptInput
       description: A single prompt to create within a category.
-    CitationTagsResponse:
+    NamedResourceDiffList:
       properties:
-        data:
+        added:
           items:
-            $ref: '#/components/schemas/CitationTag'
+            $ref: '#/components/schemas/NamedResource'
           type: array
-          title: Data
+          title: Added
+          description: Resources that were added.
+          default: []
+        removed:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Removed
+          description: Resources that were removed.
+          default: []
       type: object
-      required:
-      - data
-      title: CitationTagsResponse
+      title: NamedResourceDiffList
+      description: Shows which resources were added or removed.
     UpdatePromptInput:
       properties:
         id:
@@ -1760,6 +1430,306 @@ components:
       - id
       title: UpdatePromptInput
       description: Fields to update on an existing prompt. Only provided fields are changed; omitted fields are left unchanged.
+    PersonaProfile:
+      properties:
+        behavior:
+          $ref: '#/components/schemas/PersonaProfileBehavior'
+        employment:
+          $ref: '#/components/schemas/PersonaProfileEmployment'
+        demographics:
+          $ref: '#/components/schemas/PersonaProfileDemographics'
+      type: object
+      required:
+      - behavior
+      - employment
+      - demographics
+      title: PersonaProfile
+    Topic:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          title: Status
+      type: object
+      required:
+      - id
+      - name
+      - status
+      title: Topic
+    CitationTagsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CitationTag'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: CitationTagsResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Prompt:
+      properties:
+        id:
+          type: string
+          title: Id
+        analysis_types:
+          items:
+            type: string
+            enum:
+            - visibility
+            - sentiment
+            - sentiment_v2
+            - accuracy
+          type: array
+          title: Analysis Types
+          default: []
+        prompt_type:
+          type: string
+          title: Prompt Type
+          default: ''
+          deprecated: true
+        prompt:
+          type: string
+          title: Prompt
+        language:
+          type: string
+          title: Language
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          title: Status
+        topic:
+          $ref: '#/components/schemas/NamedResource'
+        tags:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Tags
+          default: []
+        regions:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Regions
+        platforms:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Platforms
+        personas:
+          items:
+            $ref: '#/components/schemas/NamedResource'
+          type: array
+          title: Personas
+          default: []
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - prompt
+      - language
+      - status
+      - topic
+      - regions
+      - platforms
+      - created_at
+      - updated_at
+      title: Prompt
+    PersonaProfileDemographics:
+      properties:
+        ageRange:
+          items:
+            type: string
+          type: array
+          title: Agerange
+      type: object
+      title: PersonaProfileDemographics
+    NamedResource:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: NamedResource
+      description: Generic id+name reference used across domain boundaries.
+    IdOrName:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: UUID of the resource.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Display name of the resource.
+      type: object
+      title: IdOrName
+      description: 'Reference by id, name, or both. Plain strings work too:
+
+        UUIDs become id lookups, other strings become name lookups.'
+    OrderByDirection:
+      type: string
+      enum:
+      - asc
+      - desc
+      title: OrderByDirection
+    OrganizationPersonasWithCategoryResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/OrganizationPersonasWithCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: OrganizationPersonasWithCategoryResponse
+    CreatePromptsBody:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/CreatePromptInput'
+          type: array
+          title: Prompts
+          description: List of prompts to create.
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompts
+      title: CreatePromptsBody
+    PaginationInfo:
+      properties:
+        total_rows:
+          type: integer
+          title: Total Rows
+        limit:
+          type: integer
+          title: Limit
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+      type: object
+      required:
+      - total_rows
+      - limit
+      - next_cursor
+      title: PaginationInfo
+    PromptType:
+      type: string
+      enum:
+      - visibility
+      - sentiment
+      title: PromptType
+    CitationTag:
+      properties:
+        value:
+          type: string
+          title: Value
+          description: Value to pass to the v2 citations `citation_tag` filter.
+        name:
+          type: string
+          title: Name
+          description: Display name.
+      type: object
+      required:
+      - value
+      - name
+      title: CitationTag
+    CategoryPromptsResponse:
+      properties:
+        info:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          items:
+            $ref: '#/components/schemas/Prompt'
+          type: array
+          title: Data
+      type: object
+      required:
+      - info
+      - data
+      title: CategoryPromptsResponse
+    UpdatePromptsBody:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/UpdatePromptInput'
+          type: array
+          title: Prompts
+          description: List of prompt updates. Each entry must include an `id` and at least one field to change.
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: When true, validate and preview changes without persisting them.
+          default: false
+      type: object
+      required:
+      - prompts
+      title: UpdatePromptsBody
+    FieldDiff:
+      properties:
+        old:
+          title: Old
+          description: Previous value.
+        new:
+          title: New
+          description: New value.
+      type: object
+      title: FieldDiff
+      description: Shows the old and new value for a changed field.
+    OrganizationAssetsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CategoryAssetWithCategory'
+          type: array
+          title: Data
+      type: object
+      required:
+      - data
+      title: OrganizationAssetsResponse
     CreatePromptsResponse:
       properties:
         dry_run:
@@ -1793,43 +1763,73 @@ components:
       - dry_run
       title: CreatePromptsResponse
       description: Response from creating prompts.
-    PersonaProfileEmployment:
+    DomainWithOrganization:
       properties:
-        industry:
-          items:
-            type: string
-          type: array
-          title: Industry
-        jobTitle:
-          items:
-            type: string
-          type: array
-          title: Jobtitle
-        companySize:
-          items:
-            type: string
-          type: array
-          title: Companysize
-        roleSeniority:
-          items:
-            type: string
-          type: array
-          title: Roleseniority
-      type: object
-      title: PersonaProfileEmployment
-    Tag:
-      properties:
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
         id:
           type: string
+          format: uuid
           title: Id
         name:
           type: string
           title: Name
+        organization:
+          $ref: '#/components/schemas/Organization'
+      type: object
+      required:
+      - created_at
+      - id
+      - name
+      - organization
+      title: DomainWithOrganization
+      description: A domain paired with the organization edge it belongs to.
+    CategoryAssetWithCategory:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        website:
+          type: string
+          title: Website
+        alternate_domains:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Alternate Domains
+        is_owned:
+          type: boolean
+          title: Is Owned
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        logo_url:
+          type: string
+          title: Logo Url
+        category:
+          $ref: '#/components/schemas/Category'
+        organization:
+          $ref: '#/components/schemas/Organization'
       type: object
       required:
       - id
       - name
-      title: Tag
+      - website
+      - is_owned
+      - created_at
+      - logo_url
+      - category
+      - organization
+      title: CategoryAssetWithCategory
   securitySchemes:
     APIKeyHeader:
       type: apiKey

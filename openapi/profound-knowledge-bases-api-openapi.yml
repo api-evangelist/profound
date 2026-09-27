@@ -422,6 +422,22 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ListKnowledgeBasesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseItem'
+          type: array
+          title: Data
+          description: Knowledge bases accessible to the API key.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ListKnowledgeBasesResponse
     SearchKnowledgeBaseRequest:
       properties:
         query:
@@ -451,59 +467,18 @@ components:
       - query
       - top_k
       title: SearchKnowledgeBaseRequest
-    DeleteFolderRequest:
+    DeleteDocumentRequest:
       properties:
-        path:
+        name:
           type: string
           minLength: 1
-          title: Path
-          description: Folder path to delete.
-        recursive:
-          type: boolean
-          title: Recursive
-          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
-          default: false
+          title: Name
+          description: Document path to delete.
       additionalProperties: false
       type: object
       required:
-      - path
-      title: DeleteFolderRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    KnowledgeBaseSearchResult:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Document or chunk path.
-        score:
-          type: number
-          title: Score
-          description: Relevance score.
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Result metadata, including folder path.
-        content:
-          type: string
-          title: Content
-          description: Matched content.
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - score
-      - metadata
-      - content
-      title: KnowledgeBaseSearchResult
+      - name
+      title: DeleteDocumentRequest
     DocumentOperationResponse:
       properties:
         message:
@@ -557,6 +532,78 @@ components:
       - msg
       - type
       title: ValidationError
+    KnowledgeBaseSearchResult:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Document or chunk path.
+        score:
+          type: number
+          title: Score
+          description: Relevance score.
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Result metadata, including folder path.
+        content:
+          type: string
+          title: Content
+          description: Matched content.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - score
+      - metadata
+      - content
+      title: KnowledgeBaseSearchResult
+    CursorPagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Token for the next page, if more results are available.
+      additionalProperties: false
+      type: object
+      title: CursorPagination
+      description: Cursor-based pagination metadata.
+    DeleteFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to delete.
+        recursive:
+          type: boolean
+          title: Recursive
+          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: DeleteFolderRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     KnowledgeBaseItem:
       properties:
         id:
@@ -592,18 +639,34 @@ components:
       - name
       - created_at
       title: KnowledgeBaseItem
-    DeleteDocumentRequest:
+    KnowledgeBaseSearchResponse:
       properties:
-        name:
-          type: string
-          minLength: 1
-          title: Name
-          description: Document path to delete.
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseSearchResult'
+          type: array
+          title: Data
+          description: Knowledge base search results.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
       additionalProperties: false
       type: object
       required:
-      - name
-      title: DeleteDocumentRequest
+      - data
+      title: KnowledgeBaseSearchResponse
+    AddFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to create.
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: AddFolderRequest
     FolderOperationResponse:
       properties:
         message:
@@ -620,34 +683,6 @@ components:
       - message
       - path
       title: FolderOperationResponse
-    ListKnowledgeBasesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/KnowledgeBaseItem'
-          type: array
-          title: Data
-          description: Knowledge bases accessible to the API key.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination metadata.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListKnowledgeBasesResponse
-    AddFolderRequest:
-      properties:
-        path:
-          type: string
-          minLength: 1
-          title: Path
-          description: Folder path to create.
-      additionalProperties: false
-      type: object
-      required:
-      - path
-      title: AddFolderRequest
     SearchKnowledgeBaseFilters:
       properties:
         tags:
@@ -674,41 +709,6 @@ components:
       additionalProperties: false
       type: object
       title: SearchKnowledgeBaseFilters
-    KnowledgeBaseSearchResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/KnowledgeBaseSearchResult'
-          type: array
-          title: Data
-          description: Knowledge base search results.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination metadata.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: KnowledgeBaseSearchResponse
-    CursorPagination:
-      properties:
-        limit:
-          type: integer
-          maximum: 50000.0
-          exclusiveMinimum: 0.0
-          title: Limit
-          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
-          default: 10000
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Next Cursor
-          description: Token for the next page, if more results are available.
-      additionalProperties: false
-      type: object
-      title: CursorPagination
-      description: Cursor-based pagination metadata.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

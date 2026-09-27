@@ -59,6 +59,7 @@ tags:
 - Brand Visibility
 - Citations
 - MCP
+- A2A
 tags_raw:
 - Company
 - AI
@@ -72,6 +73,7 @@ tags_raw:
 - Brand Visibility
 - Citations
 - MCP
+- A2A
 apis:
 - aid: profound:profound-agent-analytics-ingestion-api
   name: Profound Agent Analytics Ingestion API
@@ -503,3 +505,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 18
   pass: local-v1
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://docs.tryprofound.com/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "0.3"
+  control: 404
