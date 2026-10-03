@@ -422,90 +422,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ListKnowledgeBasesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/KnowledgeBaseItem'
-          type: array
-          title: Data
-          description: Knowledge bases accessible to the API key.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination metadata.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: ListKnowledgeBasesResponse
-    SearchKnowledgeBaseRequest:
-      properties:
-        query:
-          type: string
-          minLength: 1
-          title: Query
-          description: Search query.
-        top_k:
-          type: integer
-          maximum: 100.0
-          minimum: 1.0
-          title: Top K
-          description: Maximum number of results to return.
-        return_full_page:
-          type: boolean
-          title: Return Full Page
-          description: Return full page content instead of snippets.
-          default: false
-        filters:
-          anyOf:
-          - $ref: '#/components/schemas/SearchKnowledgeBaseFilters'
-          - type: 'null'
-          description: Optional search filters.
-      additionalProperties: false
-      type: object
-      required:
-      - query
-      - top_k
-      title: SearchKnowledgeBaseRequest
-    DeleteDocumentRequest:
-      properties:
-        name:
-          type: string
-          minLength: 1
-          title: Name
-          description: Document path to delete.
-      additionalProperties: false
-      type: object
-      required:
-      - name
-      title: DeleteDocumentRequest
-    DocumentOperationResponse:
-      properties:
-        message:
-          type: string
-          title: Message
-          description: Operation result message.
-        name:
-          type: string
-          title: Name
-          description: Document name.
-        path:
-          type: string
-          title: Path
-          description: Document path.
-        folder:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder
-          description: Document folder path.
-      additionalProperties: false
-      type: object
-      required:
-      - message
-      - name
-      - path
-      title: DocumentOperationResponse
     ValidationError:
       properties:
         loc:
@@ -532,33 +448,6 @@ components:
       - msg
       - type
       title: ValidationError
-    KnowledgeBaseSearchResult:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Document or chunk path.
-        score:
-          type: number
-          title: Score
-          description: Relevance score.
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Result metadata, including folder path.
-        content:
-          type: string
-          title: Content
-          description: Matched content.
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - score
-      - metadata
-      - content
-      title: KnowledgeBaseSearchResult
     CursorPagination:
       properties:
         limit:
@@ -578,32 +467,6 @@ components:
       type: object
       title: CursorPagination
       description: Cursor-based pagination metadata.
-    DeleteFolderRequest:
-      properties:
-        path:
-          type: string
-          minLength: 1
-          title: Path
-          description: Folder path to delete.
-        recursive:
-          type: boolean
-          title: Recursive
-          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
-          default: false
-      additionalProperties: false
-      type: object
-      required:
-      - path
-      title: DeleteFolderRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     KnowledgeBaseItem:
       properties:
         id:
@@ -655,6 +518,54 @@ components:
       required:
       - data
       title: KnowledgeBaseSearchResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DocumentOperationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Operation result message.
+        name:
+          type: string
+          title: Name
+          description: Document name.
+        path:
+          type: string
+          title: Path
+          description: Document path.
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+          description: Document folder path.
+      additionalProperties: false
+      type: object
+      required:
+      - message
+      - name
+      - path
+      title: DocumentOperationResponse
+    DeleteDocumentRequest:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Document path to delete.
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      title: DeleteDocumentRequest
     AddFolderRequest:
       properties:
         path:
@@ -667,6 +578,35 @@ components:
       required:
       - path
       title: AddFolderRequest
+    SearchKnowledgeBaseRequest:
+      properties:
+        query:
+          type: string
+          minLength: 1
+          title: Query
+          description: Search query.
+        top_k:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Top K
+          description: Maximum number of results to return.
+        return_full_page:
+          type: boolean
+          title: Return Full Page
+          description: Return full page content instead of snippets.
+          default: false
+        filters:
+          anyOf:
+          - $ref: '#/components/schemas/SearchKnowledgeBaseFilters'
+          - type: 'null'
+          description: Optional search filters.
+      additionalProperties: false
+      type: object
+      required:
+      - query
+      - top_k
+      title: SearchKnowledgeBaseRequest
     FolderOperationResponse:
       properties:
         message:
@@ -683,6 +623,66 @@ components:
       - message
       - path
       title: FolderOperationResponse
+    DeleteFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to delete.
+        recursive:
+          type: boolean
+          title: Recursive
+          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: DeleteFolderRequest
+    ListKnowledgeBasesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseItem'
+          type: array
+          title: Data
+          description: Knowledge bases accessible to the API key.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: ListKnowledgeBasesResponse
+    KnowledgeBaseSearchResult:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Document or chunk path.
+        score:
+          type: number
+          title: Score
+          description: Relevance score.
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Result metadata, including folder path.
+        content:
+          type: string
+          title: Content
+          description: Matched content.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - score
+      - metadata
+      - content
+      title: KnowledgeBaseSearchResult
     SearchKnowledgeBaseFilters:
       properties:
         tags:
