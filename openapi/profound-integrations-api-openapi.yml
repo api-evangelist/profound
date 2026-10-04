@@ -78,6 +78,29 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    IntegrationsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Integration'
+          type: array
+          title: Data
+          description: Connected integrations.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: IntegrationsResponse
+      description: Connected integrations visible to the caller's org/user context.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -104,15 +127,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     Integration:
       properties:
         id:
@@ -162,20 +176,6 @@ components:
       - level
       title: Integration
       description: One connected integration installation visible to the caller.
-    IntegrationsResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Integration'
-          type: array
-          title: Data
-          description: Connected integrations.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: IntegrationsResponse
-      description: Connected integrations visible to the caller's org/user context.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

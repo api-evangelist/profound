@@ -126,78 +126,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    InsightsResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/InsightRow'
-          type: array
-          title: Data
-          description: Insight rows.
-        count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Count
-          description: Total row count, when reported upstream.
-        first_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: First Id
-          description: ID of the first item; pass as `before` to page back.
-        last_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Id
-          description: ID of the last item; pass as `after` to page forward.
-        has_more:
-          type: boolean
-          title: Has More
-          description: Whether more items are available.
-          default: false
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: InsightsResponse
-      description: Cursor-paginated insights, mirroring the OpenAI Ads insights envelope.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     InsightRow:
       properties:
         id:
@@ -312,6 +240,78 @@ components:
         time bucket); the entity id/name fields (`campaign_*`, `ad_group_*`, `ad_*`)
 
         are present when rows are broken down by that entity.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    InsightsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/InsightRow'
+          type: array
+          title: Data
+          description: Insight rows.
+        count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Count
+          description: Total row count, when reported upstream.
+        first_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Id
+          description: ID of the first item; pass as `before` to page back.
+        last_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Id
+          description: ID of the last item; pass as `after` to page forward.
+        has_more:
+          type: boolean
+          title: Has More
+          description: Whether more items are available.
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: InsightsResponse
+      description: Cursor-paginated insights, mirroring the OpenAI Ads insights envelope.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

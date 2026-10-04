@@ -463,24 +463,41 @@ components:
       type: object
       title: CursorPagination
       description: Cursor-based pagination metadata.
-    ListDocumentsResponse:
+    HTTPValidationError:
       properties:
-        data:
+        detail:
           items:
-            $ref: '#/components/schemas/Document'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Data
-          description: Documents on this page.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination state for fetching the next page.
-      additionalProperties: false
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - data
-      - pagination
-      title: ListDocumentsResponse
-      description: A page of documents.
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ReplaceDocumentContentRequest:
       properties:
         organization_id:
@@ -504,7 +521,7 @@ components:
       - content_markdown
       title: ReplaceDocumentContentRequest
       description: Request body for replacing a document's entire content.
-    ReadDocumentResponse:
+    ReplaceDocumentContentResponse:
       properties:
         id:
           type: string
@@ -572,37 +589,16 @@ components:
           - type: 'null'
           title: Company Name
           description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
-        content_markdown:
-          type: string
-          title: Content Markdown
-          description: The default tab's body as markdown. Empty string for a document with no content — never absent, so you can read it without a presence check.
-        additional_tabs:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/AdditionalTab'
-            type: array
-          - type: 'null'
-          title: Additional Tabs
-          description: 'Every tab beyond the default one, in document order, each as `{title, content_markdown}`. Upstream allows up to twenty. Omitted from the response entirely when `include_tabs=false`; an empty list is a real answer meaning this document has no other tabs, and the two are never confused. Tabs are readable through this API but not writable: create cannot make one, and replacing this document''s content does not preserve them.'
-        comments:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/Comment'
-            type: array
-          - type: 'null'
-          title: Comments
-          description: Review comments left on the document, each mapped to `{content, context}` — the comment's text and, if any, the text it was left on. Omitted from the response entirely when `include_comments=false`; an empty list is a real answer meaning this document has no comments. Mapped from upstream's own open, unvalidated shape — commenter identity, reply threads and resolution state are dropped, never relayed. A comment whose shape this mapping cannot read is dropped from the list rather than failing the read, so this list can be shorter than the document's real thread count.
         version_hash:
           anyOf:
           - type: string
           - type: 'null'
           title: Version Hash
-          description: 'Opaque token that changes whenever the document''s content changes, sampled before this body was read — so it names this body or an older state, never a newer one. `null` when the collaboration service could not be asked for it; the read itself still succeeded, only the token is missing. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. It detects change; it is not a precondition, and a matching token is not licence to overwrite blindly. Omitted entirely — not `null` — on a `preview=true` read: a hash next to a body you have not fully seen invites replacing content you never read. Ask for `preview=false` before you intend to write.'
-        content_truncated:
-          type: boolean
-          title: Content Truncated
-          description: Whether any body in this response was cut short — `content_markdown` or any tab's. `true` only on a `preview=true` read where one of them exceeded the preview length; a short document, or a `preview=false` read, always gets `false` and every body whole. It does not say which one was cut. Preview truncation saves your context, not upstream cost — the full round trip through the collaborative editor happens either way.
-          default: false
+          description: 'Opaque token that changes whenever the document''s collaborative-editing snapshot changes — a digest over that snapshot, not over the markdown. It moves on a comment reply, because a comment changes the snapshot, and it does not move on a rename, because metadata sits outside the snapshot. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. `null` when no token could be minted; never omitted. It is a change detector, not a precondition: a caller must not treat a matching token as licence to overwrite blindly, because it names the room at a moment cortex observed and not the moment its own write lands.'
+        content_chars:
+          type: integer
+          title: Content Chars
+          description: Character count of the markdown that landed — 0 when this call cleared the document. The only confirmation of how much was written, on the most destructive operation this surface exposes.
       type: object
       required:
       - id
@@ -617,20 +613,149 @@ components:
       - app_delegate
       - category_name
       - company_name
-      - content_markdown
-      title: ReadDocumentResponse
-      description: 'A document''s metadata, its default tab''s body, its other tabs, its comments, and the
-
-        change-detection token for it.'
-    HTTPValidationError:
+      - version_hash
+      - content_chars
+      title: ReplaceDocumentContentResponse
+      description: The document after its content was replaced, plus the change-detection token and how much landed.
+    Comment:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        content:
+          type: string
+          title: Content
+          description: The comment's text.
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+          description: Text the comment was left on. `null` for a comment on no specific text, never an empty string.
       type: object
-      title: HTTPValidationError
+      required:
+      - content
+      title: Comment
+      description: 'One review comment, mapped from upstream''s open, unvalidated shape into a closed contract.
+
+
+        Upstream''s own comment schema — `body`, `quoted_text`, `author`, `replies`, `resolved` — is
+
+        documented as not a closed contract. Only `body` and `quoted_text` are mapped through, as
+
+        `content` and `context`; commenter identity, reply threads and resolution state are dropped
+
+        here, not relayed.'
+    Document:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: The document's ID.
+        name:
+          type: string
+          title: Name
+          description: The document's title.
+        url:
+          type: string
+          title: Url
+          description: Link to open the document in the Profound app.
+        visibility:
+          type: string
+          enum:
+          - invited_only
+          - organization
+          title: Visibility
+          description: General access scope. New documents are `invited_only`.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the document was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: When the document was last modified. Seeding the initial content counts, so a freshly created document is normally modified a moment after it was created.
+        owner_user_id:
+          type: string
+          format: uuid
+          title: Owner User Id
+          description: ID of the document's owner.
+        owner_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Owner Email
+          description: Email of the document's owner. `null` when the owning profile has been deleted or could not be resolved.
+        author_type:
+          type: string
+          enum:
+          - user
+          - agent
+          title: Author Type
+          description: Whether the document's owner is a person (`user`) or an agent (`agent`).
+        app_delegate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: App Delegate
+          description: Which integration created the document, derived server-side from the credential that authenticated the write. `null` for documents created outside any integration. An open-ended value, not a fixed set — known values today include `external-api` and `context-manager`, and more are added as new integrations ship.
+        category_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Name
+          description: Name of the brand category set on the document, if any. Paired with `company_name`; writable only on create.
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
+      type: object
+      required:
+      - id
+      - name
+      - url
+      - visibility
+      - created_at
+      - updated_at
+      - owner_user_id
+      - owner_email
+      - author_type
+      - app_delegate
+      - category_name
+      - company_name
+      title: Document
+      description: A Profound document.
+    UpdateDocumentRequest:
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
+        name:
+          anyOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+          title: Name
+          description: 'New title for the document. Renaming sets a permanent lock: once a document is renamed through this route, its title stops following the first heading of its content, for the rest of the document''s life, and no route can undo the lock. Omit to leave the title as it is.'
+        visibility:
+          anyOf:
+          - type: string
+            enum:
+            - invited_only
+            - organization
+          - type: 'null'
+          title: Visibility
+          description: 'New sharing scope: `invited_only` for only the people invited to the document, or `organization` for everyone in the owning organization. Only the document''s creator can change this; omit to leave sharing as it is. Three things worth knowing before you set it: `organization` visibility grants view only — there is no value here that grants the organization edit access. Setting `invited_only` removes the organization''s access entirely. And re-asserting `organization` on a document whose organization grant is already `edit` silently downgrades the whole organization to view — upstream replays the access sync whenever this field is sent, and that sync always upserts view, even when the value you sent matches the one already stored.'
+      additionalProperties: false
+      type: object
+      required:
+      - organization_id
+      title: UpdateDocumentRequest
+      description: Request body for renaming or resharing a document.
     CreateDocumentResponse:
       properties:
         id:
@@ -753,61 +878,6 @@ components:
       - content_markdown
       title: CreateDocumentRequest
       description: Request body for creating a document with markdown content.
-    UpdateDocumentRequest:
-      properties:
-        organization_id:
-          type: string
-          format: uuid
-          title: Organization Id
-          description: ID of the organization that owns the document. Required — Profound API keys are user-scoped, so the owning organization must be named explicitly. The caller must be a member of this organization.
-        name:
-          anyOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-          title: Name
-          description: 'New title for the document. Renaming sets a permanent lock: once a document is renamed through this route, its title stops following the first heading of its content, for the rest of the document''s life, and no route can undo the lock. Omit to leave the title as it is.'
-        visibility:
-          anyOf:
-          - type: string
-            enum:
-            - invited_only
-            - organization
-          - type: 'null'
-          title: Visibility
-          description: 'New sharing scope: `invited_only` for only the people invited to the document, or `organization` for everyone in the owning organization. Only the document''s creator can change this; omit to leave sharing as it is. Three things worth knowing before you set it: `organization` visibility grants view only — there is no value here that grants the organization edit access. Setting `invited_only` removes the organization''s access entirely. And re-asserting `organization` on a document whose organization grant is already `edit` silently downgrades the whole organization to view — upstream replays the access sync whenever this field is sent, and that sync always upserts view, even when the value you sent matches the one already stored.'
-      additionalProperties: false
-      type: object
-      required:
-      - organization_id
-      title: UpdateDocumentRequest
-      description: Request body for renaming or resharing a document.
-    Comment:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: The comment's text.
-        context:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context
-          description: Text the comment was left on. `null` for a comment on no specific text, never an empty string.
-      type: object
-      required:
-      - content
-      title: Comment
-      description: 'One review comment, mapped from upstream''s open, unvalidated shape into a closed contract.
-
-
-        Upstream''s own comment schema — `body`, `quoted_text`, `author`, `replies`, `resolved` — is
-
-        documented as not a closed contract. Only `body` and `quoted_text` are mapped through, as
-
-        `content` and `context`; commenter identity, reply threads and resolution state are dropped
-
-        here, not relayed.'
     AdditionalTab:
       properties:
         title:
@@ -824,33 +894,7 @@ components:
       - content_markdown
       title: AdditionalTab
       description: One of a document's tabs beyond the default one.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    Document:
+    ReadDocumentResponse:
       properties:
         id:
           type: string
@@ -918,100 +962,37 @@ components:
           - type: 'null'
           title: Company Name
           description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
-      type: object
-      required:
-      - id
-      - name
-      - url
-      - visibility
-      - created_at
-      - updated_at
-      - owner_user_id
-      - owner_email
-      - author_type
-      - app_delegate
-      - category_name
-      - company_name
-      title: Document
-      description: A Profound document.
-    ReplaceDocumentContentResponse:
-      properties:
-        id:
+        content_markdown:
           type: string
-          format: uuid
-          title: Id
-          description: The document's ID.
-        name:
-          type: string
-          title: Name
-          description: The document's title.
-        url:
-          type: string
-          title: Url
-          description: Link to open the document in the Profound app.
-        visibility:
-          type: string
-          enum:
-          - invited_only
-          - organization
-          title: Visibility
-          description: General access scope. New documents are `invited_only`.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: When the document was created.
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
-          description: When the document was last modified. Seeding the initial content counts, so a freshly created document is normally modified a moment after it was created.
-        owner_user_id:
-          type: string
-          format: uuid
-          title: Owner User Id
-          description: ID of the document's owner.
-        owner_email:
+          title: Content Markdown
+          description: The default tab's body as markdown. Empty string for a document with no content — never absent, so you can read it without a presence check.
+        additional_tabs:
           anyOf:
-          - type: string
+          - items:
+              $ref: '#/components/schemas/AdditionalTab'
+            type: array
           - type: 'null'
-          title: Owner Email
-          description: Email of the document's owner. `null` when the owning profile has been deleted or could not be resolved.
-        author_type:
-          type: string
-          enum:
-          - user
-          - agent
-          title: Author Type
-          description: Whether the document's owner is a person (`user`) or an agent (`agent`).
-        app_delegate:
+          title: Additional Tabs
+          description: 'Every tab beyond the default one, in document order, each as `{title, content_markdown}`. Upstream allows up to twenty. Omitted from the response entirely when `include_tabs=false`; an empty list is a real answer meaning this document has no other tabs, and the two are never confused. Tabs are readable through this API but not writable: create cannot make one, and replacing this document''s content does not preserve them.'
+        comments:
           anyOf:
-          - type: string
+          - items:
+              $ref: '#/components/schemas/Comment'
+            type: array
           - type: 'null'
-          title: App Delegate
-          description: Which integration created the document, derived server-side from the credential that authenticated the write. `null` for documents created outside any integration. An open-ended value, not a fixed set — known values today include `external-api` and `context-manager`, and more are added as new integrations ship.
-        category_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category Name
-          description: Name of the brand category set on the document, if any. Paired with `company_name`; writable only on create.
-        company_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Name
-          description: Name of the brand/company set on the document, if any. Paired with `category_name`; writable only on create.
+          title: Comments
+          description: Review comments left on the document, each mapped to `{content, context}` — the comment's text and, if any, the text it was left on. Omitted from the response entirely when `include_comments=false`; an empty list is a real answer meaning this document has no comments. Mapped from upstream's own open, unvalidated shape — commenter identity, reply threads and resolution state are dropped, never relayed. A comment whose shape this mapping cannot read is dropped from the list rather than failing the read, so this list can be shorter than the document's real thread count.
         version_hash:
           anyOf:
           - type: string
           - type: 'null'
           title: Version Hash
-          description: 'Opaque token that changes whenever the document''s collaborative-editing snapshot changes — a digest over that snapshot, not over the markdown. It moves on a comment reply, because a comment changes the snapshot, and it does not move on a rename, because metadata sits outside the snapshot. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. `null` when no token could be minted; never omitted. It is a change detector, not a precondition: a caller must not treat a matching token as licence to overwrite blindly, because it names the room at a moment cortex observed and not the moment its own write lands.'
-        content_chars:
-          type: integer
-          title: Content Chars
-          description: Character count of the markdown that landed — 0 when this call cleared the document. The only confirmation of how much was written, on the most destructive operation this surface exposes.
+          description: 'Opaque token that changes whenever the document''s content changes, sampled before this body was read — so it names this body or an older state, never a newer one. `null` when the collaboration service could not be asked for it; the read itself still succeeded, only the token is missing. Bare hex, up to 128 characters, with no fixed prefix — treat it as opaque and do not parse it. It detects change; it is not a precondition, and a matching token is not licence to overwrite blindly. Omitted entirely — not `null` — on a `preview=true` read: a hash next to a body you have not fully seen invites replacing content you never read. Ask for `preview=false` before you intend to write.'
+        content_truncated:
+          type: boolean
+          title: Content Truncated
+          description: Whether any body in this response was cut short — `content_markdown` or any tab's. `true` only on a `preview=true` read where one of them exceeded the preview length; a short document, or a `preview=false` read, always gets `false` and every body whole. It does not say which one was cut. Preview truncation saves your context, not upstream cost — the full round trip through the collaborative editor happens either way.
+          default: false
       type: object
       required:
       - id
@@ -1026,10 +1007,29 @@ components:
       - app_delegate
       - category_name
       - company_name
-      - version_hash
-      - content_chars
-      title: ReplaceDocumentContentResponse
-      description: The document after its content was replaced, plus the change-detection token and how much landed.
+      - content_markdown
+      title: ReadDocumentResponse
+      description: 'A document''s metadata, its default tab''s body, its other tabs, its comments, and the
+
+        change-detection token for it.'
+    ListDocumentsResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Document'
+          type: array
+          title: Data
+          description: Documents on this page.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination state for fetching the next page.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      - pagination
+      title: ListDocumentsResponse
+      description: A page of documents.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

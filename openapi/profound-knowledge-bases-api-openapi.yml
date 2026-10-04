@@ -422,6 +422,79 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    DeleteFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to delete.
+        recursive:
+          type: boolean
+          title: Recursive
+          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: DeleteFolderRequest
+    CursorPagination:
+      properties:
+        limit:
+          type: integer
+          maximum: 50000.0
+          exclusiveMinimum: 0.0
+          title: Limit
+          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
+          default: 10000
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Token for the next page, if more results are available.
+      additionalProperties: false
+      type: object
+      title: CursorPagination
+      description: Cursor-based pagination metadata.
+    FolderOperationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Operation result message.
+        path:
+          type: string
+          title: Path
+          description: Folder path.
+      additionalProperties: false
+      type: object
+      required:
+      - message
+      - path
+      title: FolderOperationResponse
+    AddFolderRequest:
+      properties:
+        path:
+          type: string
+          minLength: 1
+          title: Path
+          description: Folder path to create.
+      additionalProperties: false
+      type: object
+      required:
+      - path
+      title: AddFolderRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -448,25 +521,88 @@ components:
       - msg
       - type
       title: ValidationError
-    CursorPagination:
+    KnowledgeBaseSearchResponse:
       properties:
-        limit:
-          type: integer
-          maximum: 50000.0
-          exclusiveMinimum: 0.0
-          title: Limit
-          description: Maximum number of results to return. Default is 10,000, maximum is 50,000.
-          default: 10000
-        next_cursor:
+        data:
+          items:
+            $ref: '#/components/schemas/KnowledgeBaseSearchResult'
+          type: array
+          title: Data
+          description: Knowledge base search results.
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+          description: Pagination metadata.
+      additionalProperties: false
+      type: object
+      required:
+      - data
+      title: KnowledgeBaseSearchResponse
+    KnowledgeBaseSearchResult:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Document or chunk path.
+        score:
+          type: number
+          title: Score
+          description: Relevance score.
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Result metadata, including folder path.
+        content:
+          type: string
+          title: Content
+          description: Matched content.
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - score
+      - metadata
+      - content
+      title: KnowledgeBaseSearchResult
+    DeleteDocumentRequest:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Document path to delete.
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      title: DeleteDocumentRequest
+    DocumentOperationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Operation result message.
+        name:
+          type: string
+          title: Name
+          description: Document name.
+        path:
+          type: string
+          title: Path
+          description: Document path.
+        folder:
           anyOf:
           - type: string
           - type: 'null'
-          title: Next Cursor
-          description: Token for the next page, if more results are available.
+          title: Folder
+          description: Document folder path.
       additionalProperties: false
       type: object
-      title: CursorPagination
-      description: Cursor-based pagination metadata.
+      required:
+      - message
+      - name
+      - path
+      title: DocumentOperationResponse
     KnowledgeBaseItem:
       properties:
         id:
@@ -502,82 +638,32 @@ components:
       - name
       - created_at
       title: KnowledgeBaseItem
-    KnowledgeBaseSearchResponse:
+    SearchKnowledgeBaseFilters:
       properties:
-        data:
-          items:
-            $ref: '#/components/schemas/KnowledgeBaseSearchResult'
-          type: array
-          title: Data
-          description: Knowledge base search results.
-        pagination:
-          $ref: '#/components/schemas/CursorPagination'
-          description: Pagination metadata.
-      additionalProperties: false
-      type: object
-      required:
-      - data
-      title: KnowledgeBaseSearchResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    DocumentOperationResponse:
-      properties:
-        message:
-          type: string
-          title: Message
-          description: Operation result message.
-        name:
-          type: string
-          title: Name
-          description: Document name.
-        path:
-          type: string
-          title: Path
-          description: Document path.
-        folder:
+        tags:
           anyOf:
-          - type: string
+          - items:
+              type: string
+              minLength: 1
+            type: array
+            minItems: 1
           - type: 'null'
-          title: Folder
-          description: Document folder path.
+          title: Tags
+          description: Optional tags to match. Documents with any matching tag are included.
+        folders:
+          anyOf:
+          - items:
+              type: string
+              minLength: 1
+            type: array
+            maxItems: 1
+            minItems: 1
+          - type: 'null'
+          title: Folders
+          description: Optional folder paths to search within. Currently limited to one folder.
       additionalProperties: false
       type: object
-      required:
-      - message
-      - name
-      - path
-      title: DocumentOperationResponse
-    DeleteDocumentRequest:
-      properties:
-        name:
-          type: string
-          minLength: 1
-          title: Name
-          description: Document path to delete.
-      additionalProperties: false
-      type: object
-      required:
-      - name
-      title: DeleteDocumentRequest
-    AddFolderRequest:
-      properties:
-        path:
-          type: string
-          minLength: 1
-          title: Path
-          description: Folder path to create.
-      additionalProperties: false
-      type: object
-      required:
-      - path
-      title: AddFolderRequest
+      title: SearchKnowledgeBaseFilters
     SearchKnowledgeBaseRequest:
       properties:
         query:
@@ -607,39 +693,6 @@ components:
       - query
       - top_k
       title: SearchKnowledgeBaseRequest
-    FolderOperationResponse:
-      properties:
-        message:
-          type: string
-          title: Message
-          description: Operation result message.
-        path:
-          type: string
-          title: Path
-          description: Folder path.
-      additionalProperties: false
-      type: object
-      required:
-      - message
-      - path
-      title: FolderOperationResponse
-    DeleteFolderRequest:
-      properties:
-        path:
-          type: string
-          minLength: 1
-          title: Path
-          description: Folder path to delete.
-        recursive:
-          type: boolean
-          title: Recursive
-          description: When false, only empty folders are deleted and non-empty folders return a conflict. When true, the folder and all contents are deleted.
-          default: false
-      additionalProperties: false
-      type: object
-      required:
-      - path
-      title: DeleteFolderRequest
     ListKnowledgeBasesResponse:
       properties:
         data:
@@ -656,59 +709,6 @@ components:
       required:
       - data
       title: ListKnowledgeBasesResponse
-    KnowledgeBaseSearchResult:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Document or chunk path.
-        score:
-          type: number
-          title: Score
-          description: Relevance score.
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Result metadata, including folder path.
-        content:
-          type: string
-          title: Content
-          description: Matched content.
-      additionalProperties: false
-      type: object
-      required:
-      - id
-      - score
-      - metadata
-      - content
-      title: KnowledgeBaseSearchResult
-    SearchKnowledgeBaseFilters:
-      properties:
-        tags:
-          anyOf:
-          - items:
-              type: string
-              minLength: 1
-            type: array
-            minItems: 1
-          - type: 'null'
-          title: Tags
-          description: Optional tags to match. Documents with any matching tag are included.
-        folders:
-          anyOf:
-          - items:
-              type: string
-              minLength: 1
-            type: array
-            maxItems: 1
-            minItems: 1
-          - type: 'null'
-          title: Folders
-          description: Optional folder paths to search within. Currently limited to one folder.
-      additionalProperties: false
-      type: object
-      title: SearchKnowledgeBaseFilters
   securitySchemes:
     APIKeyHeader:
       type: apiKey
