@@ -1,0 +1,36 @@
+slug: profound
+provider: Profound
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: OpenAI Ads
+  spec_file: profound-openai-ads-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.8
+  evidence: GET /v1/ads/openai-ads/ad-account/insights  Get Account Insights; schemas 'InsightsResponse',
+    'InsightRow'
+  reason: Ad account insights for OpenAI Ads is paid-media/digital marketing performance reporting, squarely
+    Digital Marketing Management.
+- tag: Reports
+  spec_file: profound-reports-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: '''Query Visibility'', ''Query Sentiment'', ''Query Citations'', ''Get Referrals Report V1'';
+    schemas ''VisibilityRow'', ''SentimentV2Info'''
+  reason: Reporting on brand visibility, sentiment and citations across AI answer engines — competitive/brand
+    insight analytics. Fits Market Intelligence Management; some overlap with Brand Management, hence
+    0.7.
