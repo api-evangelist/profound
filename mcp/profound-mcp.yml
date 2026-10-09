@@ -149,3 +149,17 @@ x-evidence:
   tool_catalog_source: Tool names and descriptions are taken from the published capability pages (docs.tryprofound.com/mcp/capabilities/*),
     not from a live tools/list — the live manifest requires authentication. Input schemas therefore require
     authenticated introspection and are not recorded here.
+rfc9728:
+  endpoint: https://mcp.tryprofound.com/mcp
+  metadata_url: https://mcp.tryprofound.com/.well-known/oauth-protected-resource/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://mcp.tryprofound.com/mcp
+    authorization_servers:
+    - https://auth.tryprofound.com/
+    scopes_supported: []
+    bearer_methods_supported:
+    - header
