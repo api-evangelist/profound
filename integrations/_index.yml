@@ -207,3 +207,16 @@
   relationship: platform-app
   status: not-a-workflow
   arazzo: null
+- slug: profound-adobe-analytics-own
+  label: Adobe Analytics (own)
+  partner: adobe-analytics
+  partner_name: Adobe Analytics (own)
+  category: Adobe Exchange Experience Cloud listing (Analytics)
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://exchange.adobe.com/apps/ec/600242
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null

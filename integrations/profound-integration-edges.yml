@@ -225,6 +225,23 @@ edges:
   detected_by: mirror-platform-listings.py
   category: Vercel Marketplace
   partner_tier: connectable-account
+- partner_name: Adobe Analytics (own)
+  partner: adobe-analytics
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://exchange.adobe.com/apps/ec/600242
+  mirror_of: adobe-analytics/integrations/adobe-analytics-integration-edges.yml
+  apps:
+  - Adobe Analytics - Profound Agent Analytics Integration
+  listing_count: 1
+  detected: '2026-10-23'
+  detected_by: mirror-platform-listings.py
+  category: Adobe Exchange Experience Cloud listing (Analytics)
 generated: '2026-10-15'
 method: searched
 source:
@@ -251,3 +268,4 @@ checked:
 - https://www.sequoiacap.com/our-companies/
 - https://www.sequoiacap.com/sitemap.xml
 - vercel/integrations/vercel-integration-edges.yml
+- adobe-analytics/integrations/adobe-analytics-integration-edges.yml
